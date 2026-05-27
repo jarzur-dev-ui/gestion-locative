@@ -1,0 +1,45 @@
+.page {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.intro {
+	color: var(--muted);
+	margin: 0;
+}
+
+.grid {
+	display: grid;
+	gap: var(--space-4);
+	grid-template-columns: 1fr 1fr;
+}
+
+.signature {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	padding: var(--space-4);
+}
+
+.preview {
+	background: #fff;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	height: 80px;
+	object-fit: contain;
+	padding: var(--space-2);
+	width: 260px;
+}
+
+.muted {
+	color: var(--muted);
+}
+
+.actions {
+	display: flex;
+	gap: var(--space-2);
+}

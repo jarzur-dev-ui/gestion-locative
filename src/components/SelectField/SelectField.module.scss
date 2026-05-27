@@ -1,0 +1,24 @@
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.label {
+	color: var(--muted);
+	font-size: 13px;
+}
+
+.select {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	font-size: 14px;
+	padding: 8px 10px;
+	width: 100%;
+
+	&:focus {
+		border-color: var(--primary);
+		outline: none;
+	}
+}

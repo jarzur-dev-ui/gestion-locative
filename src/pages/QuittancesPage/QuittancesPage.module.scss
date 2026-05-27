@@ -1,0 +1,61 @@
+.page {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.controls {
+	display: flex;
+	gap: var(--space-4);
+	margin-bottom: var(--space-4);
+}
+
+.empty {
+	background: var(--surface);
+	border: 1px dashed var(--border);
+	border-radius: var(--radius);
+	color: var(--muted);
+	padding: var(--space-5);
+	text-align: center;
+}
+
+.optionsList {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+}
+
+.optionRow {
+	align-items: flex-end;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	display: grid;
+	gap: var(--space-3);
+	grid-template-columns: 1.5fr 1fr 1fr 1fr;
+	padding: var(--space-3);
+}
+
+.optionName {
+	display: flex;
+	flex-direction: column;
+	font-weight: 600;
+}
+
+.optionType {
+	color: var(--muted);
+	font-size: 12px;
+	font-weight: 400;
+}
+
+.na {
+	color: var(--muted);
+	font-size: 12px;
+	grid-column: span 2;
+}
+
+.actions {
+	display: flex;
+	gap: var(--space-2);
+	margin-top: var(--space-4);
+}

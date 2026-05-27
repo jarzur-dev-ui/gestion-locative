@@ -1,0 +1,46 @@
+.app {
+	min-height: 100vh;
+}
+
+.header {
+	align-items: center;
+	background: var(--primary);
+	color: #fff;
+	display: flex;
+	gap: var(--space-6);
+	padding: var(--space-3) var(--space-5);
+}
+
+.brand {
+	font-size: 16px;
+	font-weight: 700;
+	letter-spacing: 0.5px;
+}
+
+.nav {
+	display: flex;
+	gap: var(--space-4);
+}
+
+.link {
+	border-radius: var(--radius);
+	color: rgba(255, 255, 255, 0.8);
+	padding: 6px 12px;
+	text-decoration: none;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.1);
+		color: #fff;
+	}
+}
+
+.active {
+	background: rgba(255, 255, 255, 0.18);
+	color: #fff;
+}
+
+.main {
+	margin: 0 auto;
+	max-width: 1000px;
+	padding: var(--space-5);
+}

@@ -1,0 +1,188 @@
+.doc {
+	color: #1a1a1a;
+	font-family: var(--font-base);
+	font-size: 10pt;
+	line-height: 1.4;
+}
+
+.topbar {
+	align-items: flex-start;
+	border-bottom: 2px solid var(--primary);
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 1.4em;
+	padding-bottom: 0.7em;
+}
+
+.bailleurNom {
+	color: var(--primary);
+	font-size: 12.5pt;
+	font-weight: 700;
+}
+
+.bailleurCoord {
+	color: var(--muted);
+	font-size: 9pt;
+	margin-top: 0.2em;
+}
+
+.role {
+	color: var(--muted);
+	font-size: 8pt;
+	letter-spacing: 1px;
+	text-align: right;
+	text-transform: uppercase;
+}
+
+.cols {
+	display: flex;
+	gap: 2em;
+	justify-content: space-between;
+	margin-bottom: 1.3em;
+}
+
+.refs {
+	width: 55%;
+}
+
+.line {
+	display: flex;
+	margin: 0.12em 0;
+}
+
+.k {
+	color: var(--muted);
+	font-size: 9pt;
+	width: 42%;
+}
+
+.v {
+	font-weight: 600;
+	width: 58%;
+}
+
+.tenant {
+	background: var(--primary-soft);
+	border-left: 3px solid var(--primary);
+	padding: 0.6em 0.8em;
+	width: 42%;
+}
+
+.tenantLabel {
+	color: var(--primary);
+	font-size: 7.5pt;
+	letter-spacing: 1px;
+	margin-bottom: 0.25em;
+	text-transform: uppercase;
+}
+
+.tenantNom {
+	font-weight: 700;
+}
+
+.band {
+	align-items: center;
+	background: var(--primary);
+	color: #fff;
+	display: flex;
+	font-size: 11pt;
+	font-weight: 700;
+	justify-content: space-between;
+	letter-spacing: 0.5px;
+	margin: 1.3em 0 0.6em;
+	padding: 0.4em 0.8em;
+}
+
+.echeance {
+	font-size: 9.5pt;
+	font-weight: 600;
+}
+
+.disclaimer {
+	color: var(--muted);
+	font-size: 8.5pt;
+	margin-bottom: 0.6em;
+	text-align: justify;
+}
+
+.detail {
+	border-collapse: collapse;
+	margin-bottom: 0.4em;
+	width: 100%;
+
+	thead th {
+		background: #34506f;
+		color: #fff;
+		font-size: 8pt;
+		font-weight: 600;
+		letter-spacing: 0.5px;
+		padding: 0.35em 0.7em;
+		text-align: left;
+		text-transform: uppercase;
+	}
+
+	tbody td {
+		border-bottom: 1px solid var(--border);
+		padding: 0.4em 0.7em;
+	}
+}
+
+.date {
+	color: var(--muted);
+	white-space: nowrap;
+	width: 16%;
+}
+
+.amount {
+	text-align: right;
+	white-space: nowrap;
+	width: 20%;
+}
+
+.total td {
+	background: var(--primary-soft);
+	border-bottom: none;
+	font-size: 10.5pt;
+	font-weight: 700;
+}
+
+.total .amount {
+	color: var(--primary);
+}
+
+.reserve {
+	color: var(--muted);
+	font-size: 9pt;
+	font-style: italic;
+	margin-bottom: 1em;
+}
+
+.signatureBlock {
+	margin-bottom: 0.5em;
+	text-align: right;
+}
+
+.lieuDate {
+	font-size: 9.5pt;
+	margin-bottom: 0.3em;
+}
+
+.signatureLabel {
+	color: var(--muted);
+	display: block;
+	font-size: 8.5pt;
+	margin-bottom: 0.15em;
+}
+
+.signature {
+	height: 48px;
+}
+
+.footer {
+	border-top: 1px solid var(--border);
+	color: var(--muted);
+	font-size: 8pt;
+	margin-top: 0.8em;
+	padding-top: 0.6em;
+	text-align: justify;
+}

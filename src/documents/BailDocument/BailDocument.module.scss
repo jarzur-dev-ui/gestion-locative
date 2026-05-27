@@ -1,0 +1,97 @@
+.doc {
+	color: #1a1a1a;
+	font-family: var(--font-base);
+	font-size: 10pt;
+	line-height: 1.45;
+
+	p {
+		margin: 0.3em 0;
+	}
+}
+
+.title {
+	color: var(--primary);
+	font-size: 15pt;
+	letter-spacing: 2px;
+	margin: 0 0 0.2em;
+	text-align: center;
+}
+
+.subtitle {
+	color: var(--muted);
+	letter-spacing: 1px;
+	margin-bottom: 1.6em;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.band {
+	background: var(--primary);
+	color: #fff;
+	font-size: 10.5pt;
+	letter-spacing: 0.5px;
+	margin: 1.3em 0 0.6em;
+	padding: 0.35em 0.7em;
+}
+
+.muted {
+	color: var(--muted);
+}
+
+.kv {
+	border-collapse: collapse;
+	margin: 0.4em 0;
+	width: 100%;
+
+	td {
+		border-bottom: 1px solid var(--border);
+		padding: 0.25em 0.5em;
+		vertical-align: top;
+	}
+}
+
+.k {
+	color: var(--muted);
+	width: 42%;
+}
+
+.v {
+	font-weight: 600;
+}
+
+.legal {
+	color: var(--muted);
+	font-size: 9pt;
+	text-align: justify;
+}
+
+.montantBand {
+	background: var(--primary-soft);
+	border-left: 3px solid var(--primary);
+	font-weight: 700;
+	margin: 0.6em 0;
+	padding: 0.5em 0.8em;
+}
+
+.signatures {
+	display: flex;
+	gap: 3em;
+	justify-content: space-between;
+	margin-top: 2em;
+}
+
+.col {
+	width: 45%;
+}
+
+.who {
+	font-weight: 700;
+	margin-bottom: 0.2em;
+}
+
+.mention {
+	color: var(--muted);
+	font-size: 9pt;
+	font-style: italic;
+	margin-bottom: 3.2em;
+}

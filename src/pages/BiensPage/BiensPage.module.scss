@@ -1,0 +1,45 @@
+.page {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.header {
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+}
+
+.empty {
+	background: var(--surface);
+	border: 1px dashed var(--border);
+	border-radius: var(--radius);
+	color: var(--muted);
+	padding: var(--space-6);
+	text-align: center;
+}
+
+.table {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-collapse: collapse;
+	border-radius: var(--radius);
+	overflow: hidden;
+	width: 100%;
+
+	th,
+	td {
+		border-bottom: 1px solid var(--border);
+		padding: var(--space-3);
+		text-align: left;
+	}
+
+	th {
+		color: var(--muted);
+		font-size: 13px;
+	}
+}
+
+.right {
+	text-align: right;
+}
