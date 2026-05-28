@@ -14,3 +14,15 @@
 	gap: var(--space-3);
 	padding: var(--space-3);
 }
+
+.sigs {
+	display: grid;
+	gap: var(--space-3);
+	grid-template-columns: 1fr 1fr;
+}
+
+.sigCol {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+}

@@ -5,6 +5,7 @@ import {
 } from 'react-router-dom';
 
 import { Button } from '@/components/Button/Button';
+import { SignaturePad } from '@/components/SignaturePad/SignaturePad';
 import { TextField } from '@/components/TextField/TextField';
 import { useData } from '@/contexts/DataContext';
 import { BailDocument } from '@/documents/BailDocument/BailDocument';
@@ -20,6 +21,10 @@ export const BailPrintPage = () => {
 
 	const [lieu, setLieu] = useState(bailleur.lieuSignature);
 	const [dateSignature, setDateSignature] = useState(todayIso());
+	const [bailleurSig, setBailleurSig] = useState(bailleur.signatureDataUrl);
+	const [locataireSig, setLocataireSig] = useState('');
+	const [bailleurMention, setBailleurMention] = useState('Lu et approuvé');
+	const [locataireMention, setLocataireMention] = useState('Lu et approuvé');
 
 	if (!bail) {
 		return (
@@ -50,12 +55,45 @@ export const BailPrintPage = () => {
 				<Button onClick={() => window.print()}>Imprimer / PDF</Button>
 			</div>
 
+			<div className={`${styles.sigs} no-print`}>
+				<div className={styles.sigCol}>
+					<TextField
+						hint="Affiché en cursive au-dessus de la signature. Vider pour signer à la main."
+						label="Mention « Lu et approuvé » — bailleur"
+						onChange={(e) => setBailleurMention(e.target.value)}
+						value={bailleurMention}
+					/>
+					<SignaturePad
+						label="Signature du bailleur"
+						onChange={setBailleurSig}
+						value={bailleurSig}
+					/>
+				</div>
+				<div className={styles.sigCol}>
+					<TextField
+						hint="Affiché en cursive au-dessus de la signature. Vider pour signer à la main."
+						label="Mention « Lu et approuvé » — locataire"
+						onChange={(e) => setLocataireMention(e.target.value)}
+						value={locataireMention}
+					/>
+					<SignaturePad
+						label="Signature du locataire"
+						onChange={setLocataireSig}
+						value={locataireSig}
+					/>
+				</div>
+			</div>
+
 			<div className="print-area">
 				<BailDocument
 					bail={bail}
 					bailleur={bailleur}
+					bailleurMention={bailleurMention}
+					bailleurSignatureDataUrl={bailleurSig}
 					dateSignature={dateSignature}
 					lieuSignature={lieu}
+					locataireMention={locataireMention}
+					locataireSignatureDataUrl={locataireSig}
 				/>
 			</div>
 		</div>

@@ -1,0 +1,78 @@
+.pad {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	padding: var(--space-3);
+}
+
+.head {
+	align-items: center;
+	display: flex;
+	gap: var(--space-3);
+	justify-content: space-between;
+}
+
+.label {
+	color: var(--primary);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.3px;
+	text-transform: uppercase;
+}
+
+.tabs {
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	display: flex;
+	overflow: hidden;
+}
+
+.tab {
+	background: transparent;
+	border: none;
+	color: var(--muted);
+	cursor: pointer;
+	font-size: 13px;
+	padding: 4px 12px;
+}
+
+.active {
+	background: var(--primary);
+	color: #fff;
+}
+
+.hint {
+	color: var(--muted);
+	font-size: 12px;
+	margin: 0;
+}
+
+.canvas {
+	background: #fff;
+	border: 1px dashed var(--border);
+	border-radius: var(--radius);
+	height: 120px;
+	touch-action: none;
+	width: 100%;
+}
+
+.canvasDraw {
+	border-style: solid;
+	cursor: crosshair;
+}
+
+.actions {
+	align-items: center;
+	display: flex;
+	gap: var(--space-3);
+	justify-content: space-between;
+}
+
+.status {
+	color: var(--success);
+	font-size: 12px;
+}

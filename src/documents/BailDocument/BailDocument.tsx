@@ -17,6 +17,10 @@ export interface BailDocumentProps {
 	bailleur: Bailleur;
 	lieuSignature: string;
 	dateSignature: string; // ISO
+	bailleurSignatureDataUrl?: string;
+	locataireSignatureDataUrl?: string;
+	bailleurMention?: string;
+	locataireMention?: string;
 }
 
 const Row = ({ k, v }: { k: string; v: string }) => (
@@ -31,6 +35,10 @@ export const BailDocument = ({
 	bailleur,
 	lieuSignature,
 	dateSignature,
+	bailleurSignatureDataUrl,
+	locataireSignatureDataUrl,
+	bailleurMention,
+	locataireMention,
 }: BailDocumentProps) => {
 	const total = bail.loyer + bail.charges;
 	const bienAdresse = `${bail.rue} ${bail.cpVille}`.trim();
@@ -181,11 +189,35 @@ export const BailDocument = ({
 					<div className={styles.mention}>
 						Signature précédée de la mention « Lu et approuvé »
 					</div>
+					<div className={styles.sigArea}>
+						{bailleurMention ? (
+							<div className={styles.mentionUser}>{bailleurMention}</div>
+						) : null}
+						{bailleurSignatureDataUrl ? (
+							<img
+								alt="signature du bailleur"
+								className={styles.sigImg}
+								src={bailleurSignatureDataUrl}
+							/>
+						) : null}
+					</div>
 				</div>
 				<div className={styles.col}>
 					<div className={styles.who}>Le locataire</div>
 					<div className={styles.mention}>
 						Signature précédée de la mention « Lu et approuvé »
+					</div>
+					<div className={styles.sigArea}>
+						{locataireMention ? (
+							<div className={styles.mentionUser}>{locataireMention}</div>
+						) : null}
+						{locataireSignatureDataUrl ? (
+							<img
+								alt="signature du locataire"
+								className={styles.sigImg}
+								src={locataireSignatureDataUrl}
+							/>
+						) : null}
 					</div>
 				</div>
 			</div>
