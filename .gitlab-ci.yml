@@ -1,0 +1,78 @@
+image: docker:git
+stages:
+  - build
+  - docker-build
+  - deploy
+
+services:
+  - docker:dind
+
+before_script:
+  - "which ssh-agent || ( apk add --update --no-cache openssh-client )"
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
+compile:
+  image: node:$NODE_VERSION-alpine
+  stage: build
+  interruptible: true
+  environment:
+    name: $CI_COMMIT_REF_SLUG
+  cache:
+    - key: pnpm-store-$NODE_VERSION
+      paths:
+        - $CI_PROJECT_DIR/.pnpm-store
+      policy: pull-push
+  script:
+    - env | grep REACT
+    - corepack enable && corepack prepare pnpm@latest --activate
+    - pnpm config set store-dir $CI_PROJECT_DIR/.pnpm-store
+    - pnpm install --frozen-lockfile
+    - pnpm build
+  artifacts:
+    name: build-$NODE_VERSION-$CI_COMMIT_SHORT_SHA
+    paths:
+      - build/
+    expire_in: 2 hour
+
+build-docker-image-multiarch:
+  image: docker:latest
+  stage: docker-build
+  needs: ["compile"]
+  interruptible: true
+  environment:
+    name: $CI_COMMIT_REF_SLUG
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+  script:
+    - ls -lah build
+    - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - docker run --rm --privileged tonistiigi/binfmt --install all
+    - docker context create builder-context --docker "host=tcp://docker:2376,ca=/certs/client/ca.pem,cert=/certs/client/cert.pem,key=/certs/client/key.pem"
+    - docker buildx create --driver docker-container --use builder-context
+    - docker buildx inspect --bootstrap
+    - docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64 --push -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --build-arg VITE_APP_URL=$VITE_APP_URL --build-arg NODE_VERSION=$NODE_VERSION -f Dockerfile.ci .
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  needs: ["build-docker-image-multiarch"]
+  interruptible: false
+  variables:
+    GIT_STRATEGY: none
+  environment:
+    name: $CI_COMMIT_REF_SLUG
+    url: $VITE_APP_URL
+  script:
+    - ssh root@$MAIN_DOCKER_HOST -t "echo $CI_REGISTRY_PASSWORD | docker login -u \"$CI_REGISTRY_USER\" --password-stdin $CI_REGISTRY;docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG && docker stop $CONTAINER_NAME; docker rm $CONTAINER_NAME;docker run -d --restart=always --name $CONTAINER_NAME -p $EXPOSED_PORT:80 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  only:
+    - main
