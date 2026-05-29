@@ -27,7 +27,7 @@ compile:
         - $CI_PROJECT_DIR/.pnpm-store
       policy: pull-push
   script:
-    - env | grep REACT
+    - env | grep VITE
     - corepack enable && corepack prepare pnpm@latest --activate
     - pnpm config set store-dir $CI_PROJECT_DIR/.pnpm-store
     - pnpm install --frozen-lockfile
