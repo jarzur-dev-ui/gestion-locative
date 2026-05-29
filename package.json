@@ -9,6 +9,11 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher"
+    ]
+  },
   "dependencies": {
     "classnames": "^2.5.1",
     "react": "^19.2.6",
