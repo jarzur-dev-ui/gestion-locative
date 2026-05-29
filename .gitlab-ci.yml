@@ -28,7 +28,7 @@ compile:
       policy: pull-push
   script:
     - env | grep VITE
-    - corepack enable && corepack prepare pnpm@latest --activate
+    - npm install -g corepack@latest pnpm@latest && corepack enable && corepack prepare pnpm@latest --activate
     - pnpm config set store-dir $CI_PROJECT_DIR/.pnpm-store
     - pnpm install --frozen-lockfile
     - pnpm build
