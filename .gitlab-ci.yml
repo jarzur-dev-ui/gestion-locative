@@ -35,7 +35,7 @@ compile:
   artifacts:
     name: build-$NODE_VERSION-$CI_COMMIT_SHORT_SHA
     paths:
-      - build/
+      - dist/
     expire_in: 2 hour
 
 build-docker-image-multiarch:
