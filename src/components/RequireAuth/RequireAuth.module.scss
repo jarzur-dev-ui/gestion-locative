@@ -1,0 +1,15 @@
+.loading,
+.forbidden {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 60vh;
+	padding: 2rem;
+	font-size: 1rem;
+	color: var(--color-text-muted, #666);
+	text-align: center;
+}
+
+.forbidden {
+	color: var(--color-danger, #c33);
+}
