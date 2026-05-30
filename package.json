@@ -8,16 +8,21 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "gen:api": "openapi-typescript ${API_URL:-http://localhost:3000}/openapi.json -o src/api/schema.gen.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.100.14",
     "classnames": "^2.5.1",
+    "openapi-fetch": "^0.17.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.15.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@tanstack/react-query-devtools": "^5.100.14",
     "@types/node": "^24.12.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -26,6 +31,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "openapi-typescript": "^7.13.0",
     "sass": "^1.100.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
