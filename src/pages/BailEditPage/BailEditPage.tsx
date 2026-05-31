@@ -1,3 +1,8 @@
+// ⚠ M6 Phase 3 — TODO migration localStorage → API
+// Cette page utilise encore `useData()` / DataContext (localStorage).
+// Migration prévue : remplacer par useLease/useCreateLease/usePatchLease + useProperties
+// + useTenants/useGuarantors + adapter BailDocument pour le nouveau shape API.
+// L'app fonctionne en hybride pour l'instant.
 import {
 	useMemo,
 	useState,

@@ -28,6 +28,12 @@ export const Layout = () => {
 					<NavLink className={navClass} to="/biens">
 						Biens &amp; baux
 					</NavLink>
+					<NavLink className={navClass} to="/locataires">
+						Locataires
+					</NavLink>
+					<NavLink className={navClass} to="/garants">
+						Garants
+					</NavLink>
 					<NavLink className={navClass} to="/quittances">
 						Quittances
 					</NavLink>

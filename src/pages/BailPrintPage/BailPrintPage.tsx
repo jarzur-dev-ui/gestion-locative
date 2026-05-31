@@ -1,3 +1,7 @@
+// ⚠ M6 Phase 3 — TODO migration localStorage → API
+// Cette page utilise encore `useData()` / DataContext + l'ancien shape Bail.
+// Migration prévue : useLease + useLandlordProfile + adapter pour BailDocument.
+// L'app fonctionne en hybride pour l'instant.
 import { useState } from 'react';
 import {
 	useNavigate,

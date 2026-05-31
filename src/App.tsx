@@ -6,6 +6,8 @@ import { AcceptInvitationPage } from '@/pages/AcceptInvitationPage/AcceptInvitat
 import { BailEditPage } from '@/pages/BailEditPage/BailEditPage';
 import { BailPrintPage } from '@/pages/BailPrintPage/BailPrintPage';
 import { BiensPage } from '@/pages/BiensPage/BiensPage';
+import { GarantsPage } from '@/pages/GarantsPage/GarantsPage';
+import { LocatairesPage } from '@/pages/LocatairesPage/LocatairesPage';
 import { LoginPage } from '@/pages/LoginPage/LoginPage';
 import { QuittancesPage } from '@/pages/QuittancesPage/QuittancesPage';
 import { ReglagesPage } from '@/pages/ReglagesPage/ReglagesPage';
@@ -24,6 +26,8 @@ export const App = () => (
 				<Route element={<BailEditPage />} path="/biens/nouveau" />
 				<Route element={<BailEditPage />} path="/biens/:id" />
 				<Route element={<BailPrintPage />} path="/biens/:id/bail" />
+				<Route element={<LocatairesPage />} path="/locataires" />
+				<Route element={<GarantsPage />} path="/garants" />
 				<Route element={<QuittancesPage />} path="/quittances" />
 				<Route element={<ReglagesPage />} path="/reglages" />
 			</Route>
