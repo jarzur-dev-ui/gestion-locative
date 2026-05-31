@@ -1,286 +1,381 @@
-// ⚠ M6 Phase 3 — TODO migration localStorage → API
-// Cette page utilise encore `useData()` / DataContext (localStorage).
-// Migration prévue : remplacer par useLease/useCreateLease/usePatchLease + useProperties
-// + useTenants/useGuarantors + adapter BailDocument pour le nouveau shape API.
-// L'app fonctionne en hybride pour l'instant.
-import {
-	useMemo,
-	useState,
-} from 'react';
-import {
-	useNavigate,
-	useParams,
-} from 'react-router-dom';
+import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import { Button } from '@/components/Button';
-import { SelectField } from '@/components/SelectField';
-import { TextField } from '@/components/TextField';
+import type { components } from '@/api/client';
+import { useGuarantors } from '@/api/guarantors';
 import {
-	BIEN_TYPES,
-	CIVILITES,
-	createBail,
-	DPE_CLASSES,
-	MODES_PAIEMENT,
-	PERIODES_CONSTRUCTION,
-	PRODUCTION,
-	REGIMES,
-	TYPES_IMMEUBLE,
-} from '@/config/defaults';
-import { useData } from '@/contexts/DataContext';
-import type {
-	Bail,
-	BienType,
-	Civilite,
-} from '@/types';
-import { slugify } from '@/utils/format';
+	useChangeLeaseStatus,
+	useCreateLease,
+	useDeleteLease,
+	useLease,
+	usePatchLease,
+} from '@/api/leases';
+import { useProperty } from '@/api/properties';
+import { useTenants } from '@/api/tenants';
+import { Button } from '@/components/Button';
+import { ConfirmDialog } from '@/components/Modal';
+import { SelectField } from '@/components/SelectField';
+import { Skeleton } from '@/components/Skeleton';
+import { TextField } from '@/components/TextField';
+import { toast } from '@/components/Toast';
 
 import styles from './BailEditPage.module.scss';
 
-const cityFromCp = (cp: string): string =>
-	cp.split(/\s+/).slice(1).join('-') || cp;
+type Lease = components['schemas']['Lease'];
+
+type FormState = {
+	leaseTypeKey: 'empty' | 'furnished';
+	startDate: string;
+	endDate: string;
+	monthlyRentCents: number;
+	monthlyChargesCents: number;
+	chargesTypeKey: 'package' | 'real';
+	depositCents: number;
+	paymentDay: number;
+	solidarity: boolean;
+	tenantIds: string[];
+	guarantorIds: string[];
+};
+
+const emptyForm: FormState = {
+	leaseTypeKey: 'empty',
+	startDate: new Date().toISOString().slice(0, 10),
+	endDate: '',
+	monthlyRentCents: 0,
+	monthlyChargesCents: 0,
+	chargesTypeKey: 'package',
+	depositCents: 0,
+	paymentDay: 5,
+	solidarity: false,
+	tenantIds: [],
+	guarantorIds: [],
+};
+
+const leaseToForm = (lease: Lease): FormState => ({
+	leaseTypeKey: lease.leaseTypeKey,
+	startDate: lease.startDate,
+	endDate: lease.endDate ?? '',
+	monthlyRentCents: lease.monthlyRentCents,
+	monthlyChargesCents: lease.monthlyChargesCents,
+	chargesTypeKey: lease.chargesTypeKey,
+	depositCents: lease.depositCents,
+	paymentDay: lease.paymentDay,
+	solidarity: lease.solidarity,
+	tenantIds: lease.tenants?.map((t) => t.id) ?? [],
+	guarantorIds: lease.guarantors?.map((g) => g.id) ?? [],
+});
+
+const euros = (cents: number): string => (cents / 100).toFixed(2);
+const eurosToCents = (str: string): number => Math.round(parseFloat(str || '0') * 100);
 
 export const BailEditPage = () => {
-	const { id } = useParams();
+	const { propertyId, leaseId } = useParams<{ propertyId: string; leaseId?: string }>();
 	const navigate = useNavigate();
-	const { baux, getBail, upsertBail } = useData();
+	const isEdit = Boolean(leaseId);
 
-	const existing = id ? getBail(id) : undefined;
-	const [bail, setBail] = useState<Bail>(existing ?? createBail());
+	const propertyQ = useProperty(propertyId);
+	const leaseQ = useLease(leaseId);
+	const tenantsQ = useTenants();
+	const guarantorsQ = useGuarantors();
 
-	const set = <K extends keyof Bail>(key: K, value: Bail[K]): void =>
-		setBail((prev) => ({ ...prev, [key]: value }));
+	const createMut = useCreateLease();
+	const patchMut = usePatchLease();
+	const statusMut = useChangeLeaseStatus();
+	const deleteMut = useDeleteLease();
 
-	const num = (value: string): number => parseFloat(value) || 0;
+	const [form, setForm] = useState<FormState>(emptyForm);
+	const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
-	const resolvedId = useMemo(() => {
-		if (bail.id) {
-			return bail.id;
+	useEffect(() => {
+		if (isEdit && leaseQ.data) setForm(leaseToForm(leaseQ.data));
+	}, [isEdit, leaseQ.data]);
+
+	const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
+		setForm((prev) => ({ ...prev, [key]: value }));
+
+	const tenantOptions = useMemo(() => tenantsQ.data ?? [], [tenantsQ.data]);
+	const guarantorOptions = useMemo(() => guarantorsQ.data ?? [], [guarantorsQ.data]);
+
+	const onSubmit = (e: FormEvent) => {
+		e.preventDefault();
+		if (!propertyId) return;
+		if (form.tenantIds.length === 0) {
+			toast.error('Sélectionne au moins un locataire avant de créer le bail.');
+			return;
 		}
-		const base = `${slugify(cityFromCp(bail.cpVille))}-${bail.type}`;
-		if (!baux.some((b) => b.id === base)) {
-			return base;
-		}
-		let i = 2;
-		while (baux.some((b) => b.id === `${base}-${i}`)) {
-			i += 1;
-		}
-		return `${base}-${i}`;
-	}, [bail.id, bail.cpVille, bail.type, baux]);
 
-	const save = (): string => {
-		const saved = { ...bail, id: resolvedId };
-		upsertBail(saved);
-		return saved.id;
+		const basePayload = {
+			leaseTypeKey: form.leaseTypeKey,
+			startDate: form.startDate,
+			...(form.endDate ? { endDate: form.endDate } : {}),
+			monthlyRentCents: form.monthlyRentCents,
+			monthlyChargesCents: form.monthlyChargesCents,
+			chargesTypeKey: form.chargesTypeKey,
+			depositCents: form.depositCents,
+			paymentDay: form.paymentDay,
+			solidarity: form.solidarity,
+			tenantIds: form.tenantIds,
+			guarantorIds: form.guarantorIds,
+		};
+
+		if (isEdit && leaseId) {
+			patchMut.mutate(
+				{ id: leaseId, body: basePayload },
+				{ onSuccess: () => toast.success('Bail mis à jour') },
+			);
+		} else {
+			createMut.mutate(
+				{
+					propertyId,
+					signatureMethodKey: 'handwritten_scanned',
+					originalPaperArchived: false,
+					...basePayload,
+				},
+				{
+					onSuccess: (created) => {
+						toast.success('Bail créé en draft');
+						navigate(`/biens/${propertyId}/baux/${created.id}`);
+					},
+				},
+			);
+		}
 	};
 
+	const onChangeStatus = (statusKey: 'draft' | 'active' | 'ended') => {
+		if (!leaseId) return;
+		statusMut.mutate(
+			{ id: leaseId, statusKey },
+			{ onSuccess: () => toast.success(`Bail marqué comme ${statusKey}`) },
+		);
+	};
+
+	const onDelete = () => {
+		if (!leaseId || !propertyId) return;
+		deleteMut.mutate(leaseId, {
+			onSuccess: () => {
+				toast.success('Bail supprimé');
+				navigate(`/biens`);
+			},
+		});
+	};
+
+	const isLoading = propertyQ.isLoading || (isEdit && leaseQ.isLoading);
+	if (isLoading) return <Skeleton lines={10} />;
+
+	if (!propertyQ.data) {
+		return (
+			<div className={styles.wrap}>
+				<p>Bien introuvable.</p>
+				<Button onPress={() => navigate('/biens')}>Retour</Button>
+			</div>
+		);
+	}
+
+	const property = propertyQ.data;
+	const lease = leaseQ.data;
+	const status = lease?.statusKey ?? 'draft';
+	const isDraft = status === 'draft';
+
 	return (
-		<div className={styles.page}>
-			<h1>{existing ? 'Éditer le bail' : 'Nouveau bail'}</h1>
-
-			<section className={styles.section}>
-				<h2>Locataire</h2>
-				<div className={styles.grid}>
-					<SelectField
-						label="Civilité"
-						onChange={(e) => set('civilite', e.target.value as Civilite)}
-						options={CIVILITES}
-						value={bail.civilite}
-					/>
-					<TextField
-						label="Nom complet du locataire"
-						onChange={(e) => set('locataire', e.target.value)}
-						value={bail.locataire}
-					/>
-					<TextField
-						label="Email du locataire (optionnel)"
-						onChange={(e) => set('locataireEmail', e.target.value)}
-						value={bail.locataireEmail}
-					/>
-					<TextField
-						label="Garant — nom et adresse (optionnel)"
-						onChange={(e) => set('garant', e.target.value)}
-						value={bail.garant}
-					/>
+		<form className={styles.wrap} onSubmit={onSubmit}>
+			<header className={styles.header}>
+				<div>
+					<h1>{isEdit ? 'Modifier le bail' : 'Nouveau bail'}</h1>
+					<p className={styles.subtitle}>
+						{property.addressLine} — {property.postalCode} {property.city}
+						{lease ? ` · Statut : ${status}` : null}
+					</p>
 				</div>
+				<Button onPress={() => navigate('/biens')} variant="ghost">
+					← Retour
+				</Button>
+			</header>
+
+			{/* ── Locataires ── */}
+			<section className={styles.section}>
+				<h2>Locataires</h2>
+				<p className={styles.hint}>Sélectionne 1 ou plusieurs locataires existants (créés depuis la page Locataires).</p>
+				{tenantOptions.length === 0 ? (
+					<p className={styles.empty}>
+						Aucun locataire enregistré. <Button onPress={() => navigate('/locataires')} variant="ghost">Créer un locataire</Button>
+					</p>
+				) : (
+					<div className={styles.chips}>
+						{tenantOptions.map((t) => {
+							const selected = form.tenantIds.includes(t.id);
+							return (
+								<button
+									className={`${styles.chip} ${selected ? styles.chipSelected : ''}`}
+									key={t.id}
+									onClick={() =>
+										set(
+											'tenantIds',
+											selected
+												? form.tenantIds.filter((id) => id !== t.id)
+												: [...form.tenantIds, t.id],
+										)
+									}
+									type="button"
+								>
+									{t.firstName} {t.lastName}
+								</button>
+							);
+						})}
+					</div>
+				)}
 			</section>
 
+			{/* ── Garants (optionnel) ── */}
 			<section className={styles.section}>
-				<h2>Bien</h2>
-				<div className={styles.grid}>
-					<SelectField
-						label="Nature du bien"
-						onChange={(e) => set('type', e.target.value as BienType)}
-						options={BIEN_TYPES}
-						value={bail.type}
-					/>
-					<TextField
-						label="Adresse (rue)"
-						onChange={(e) => set('rue', e.target.value)}
-						value={bail.rue}
-					/>
-					<TextField
-						label="Code postal + ville"
-						onChange={(e) => set('cpVille', e.target.value)}
-						value={bail.cpVille}
-					/>
-					<TextField
-						label="Bâtiment / étage / porte"
-						onChange={(e) => set('batiment', e.target.value)}
-						value={bail.batiment}
-					/>
-					<SelectField
-						label="Type d'habitat"
-						onChange={(e) => set('typeImmeuble', e.target.value)}
-						options={TYPES_IMMEUBLE}
-						value={bail.typeImmeuble}
-					/>
-					<SelectField
-						label="Régime"
-						onChange={(e) => set('regime', e.target.value)}
-						options={REGIMES}
-						value={bail.regime}
-					/>
-					<SelectField
-						label="Période de construction"
-						onChange={(e) => set('periodeConstruction', e.target.value)}
-						options={PERIODES_CONSTRUCTION}
-						value={bail.periodeConstruction}
-					/>
-					<TextField
-						label="Surface habitable (m²)"
-						onChange={(e) => set('surface', e.target.value)}
-						value={bail.surface}
-					/>
-					<TextField
-						label="Nombre de pièces"
-						onChange={(e) => set('nbPieces', e.target.value)}
-						value={bail.nbPieces}
-					/>
-					<SelectField
-						label="Chauffage"
-						onChange={(e) => set('chauffage', e.target.value)}
-						options={PRODUCTION}
-						value={bail.chauffage}
-					/>
-					<SelectField
-						label="Eau chaude"
-						onChange={(e) => set('eauChaude', e.target.value)}
-						options={PRODUCTION}
-						value={bail.eauChaude}
-					/>
-					<TextField
-						label="Locaux accessoires (cave, parking n°…)"
-						onChange={(e) => set('accessoires', e.target.value)}
-						value={bail.accessoires}
-					/>
-					<TextField
-						hint="Obligatoire depuis 2024"
-						label="Identifiant fiscal du logement"
-						onChange={(e) => set('identifiantFiscal', e.target.value)}
-						value={bail.identifiantFiscal}
-					/>
-					<SelectField
-						label="Classe énergétique (DPE)"
-						onChange={(e) => set('dpe', e.target.value)}
-						options={DPE_CLASSES}
-						value={bail.dpe}
-					/>
-				</div>
+				<h2>Garants <span className={styles.optional}>(optionnel)</span></h2>
+				{guarantorOptions.length === 0 ? (
+					<p className={styles.empty}>
+						Aucun garant enregistré. <Button onPress={() => navigate('/garants')} variant="ghost">Créer un garant</Button>
+					</p>
+				) : (
+					<div className={styles.chips}>
+						{guarantorOptions.map((g) => {
+							const selected = form.guarantorIds.includes(g.id);
+							const label =
+								g.guarantorTypeKey === 'organization'
+									? (g.organizationName ?? 'Organisation')
+									: `${g.firstName ?? ''} ${g.lastName ?? ''}`.trim();
+							return (
+								<button
+									className={`${styles.chip} ${selected ? styles.chipSelected : ''}`}
+									key={g.id}
+									onClick={() =>
+										set(
+											'guarantorIds',
+											selected
+												? form.guarantorIds.filter((id) => id !== g.id)
+												: [...form.guarantorIds, g.id],
+										)
+									}
+									type="button"
+								>
+									{label}
+								</button>
+							);
+						})}
+					</div>
+				)}
 			</section>
 
+			{/* ── Conditions ── */}
 			<section className={styles.section}>
-				<h2>Durée</h2>
+				<h2>Conditions du bail</h2>
 				<div className={styles.grid}>
+					{/* SelectField actuel accepte string[]. Pour des labels FR plus parlants
+					    on devra refactorer SelectField pour accepter {label, value}[] en M6.5. */}
+					<SelectField
+						label="Type de bail"
+						onChange={(e) => set('leaseTypeKey', e.target.value as 'empty' | 'furnished')}
+						options={['empty', 'furnished']}
+						value={form.leaseTypeKey}
+					/>
+					<SelectField
+						label="Type de charges"
+						onChange={(e) => set('chargesTypeKey', e.target.value as 'package' | 'real')}
+						options={['package', 'real']}
+						value={form.chargesTypeKey}
+					/>
 					<TextField
-						label="Date de prise d'effet"
-						onChange={(e) => set('dateEffet', e.target.value)}
+						label="Date de début"
+						onChange={(e) => set('startDate', e.target.value)}
 						type="date"
-						value={bail.dateEffet}
+						value={form.startDate}
 					/>
 					<TextField
-						label="Durée du contrat"
-						onChange={(e) => set('duree', e.target.value)}
-						value={bail.duree}
+						hint="Vide = tacite reconduction"
+						label="Date de fin (optionnel)"
+						onChange={(e) => set('endDate', e.target.value)}
+						type="date"
+						value={form.endDate}
 					/>
-				</div>
-			</section>
-
-			<section className={styles.section}>
-				<h2>Conditions financières</h2>
-				<div className={styles.grid}>
 					<TextField
-						label="Loyer mensuel hors charges (€)"
-						onChange={(e) => set('loyer', num(e.target.value))}
+						label="Loyer hors charges (€)"
+						onChange={(e) => set('monthlyRentCents', eurosToCents(e.target.value))}
+						step="0.01"
 						type="number"
-						value={bail.loyer}
+						value={euros(form.monthlyRentCents)}
 					/>
 					<TextField
-						label="Provisions sur charges (€)"
-						onChange={(e) => set('charges', num(e.target.value))}
+						label="Charges (€)"
+						onChange={(e) => set('monthlyChargesCents', eurosToCents(e.target.value))}
+						step="0.01"
 						type="number"
-						value={bail.charges}
-					/>
-					<TextField
-						label="Modalité des charges"
-						onChange={(e) => set('modaliteCharges', e.target.value)}
-						value={bail.modaliteCharges}
-					/>
-					<TextField
-						hint="Selon le bail (ex. 1, 5, 15)"
-						label="Jour d'échéance"
-						max={31}
-						min={1}
-						onChange={(e) => set('jourEcheance', num(e.target.value))}
-						type="number"
-						value={bail.jourEcheance}
-					/>
-					<TextField
-						label="Révision annuelle (IRL)"
-						onChange={(e) => set('revision', e.target.value)}
-						value={bail.revision}
-					/>
-					<TextField
-						label="Encadrement / zone tendue"
-						onChange={(e) => set('zoneTendue', e.target.value)}
-						value={bail.zoneTendue}
+						value={euros(form.monthlyChargesCents)}
 					/>
 					<TextField
 						label="Dépôt de garantie (€)"
-						onChange={(e) => set('depotGarantie', num(e.target.value))}
+						onChange={(e) => set('depositCents', eurosToCents(e.target.value))}
+						step="0.01"
 						type="number"
-						value={bail.depotGarantie}
+						value={euros(form.depositCents)}
 					/>
-					<SelectField
-						label="Mode de paiement"
-						onChange={(e) => set('modePaiement', e.target.value)}
-						options={MODES_PAIEMENT}
-						value={bail.modePaiement}
+					<TextField
+						label="Jour d'échéance (1-31)"
+						max="31"
+						min="1"
+						onChange={(e) => set('paymentDay', parseInt(e.target.value, 10) || 1)}
+						type="number"
+						value={String(form.paymentDay)}
 					/>
 				</div>
+				<label className={styles.checkbox}>
+					<input
+						checked={form.solidarity}
+						onChange={(e) => set('solidarity', e.target.checked)}
+						type="checkbox"
+					/>
+					Clause de solidarité entre colocataires
+				</label>
 			</section>
 
+			{/* ── Actions ── */}
 			<div className={styles.actions}>
-				<Button onClick={() => navigate('/biens')} variant="ghost">
-					Annuler
+				<Button disabled={createMut.isPending || patchMut.isPending} type="submit">
+					{createMut.isPending || patchMut.isPending
+						? 'Enregistrement…'
+						: isEdit
+							? 'Enregistrer les modifications'
+							: 'Créer le bail'}
 				</Button>
-				<Button
-					onClick={() => {
-						save();
-						navigate('/biens');
-					}}
-					variant="outlined"
-				>
-					Enregistrer
-				</Button>
-				<Button
-					onClick={() => {
-						const savedId = save();
-						navigate(`/biens/${savedId}/bail`);
-					}}
-				>
-					Enregistrer &amp; aperçu du bail
-				</Button>
+
+				{isEdit && lease ? (
+					<>
+						{status === 'draft' ? (
+							<Button onPress={() => onChangeStatus('active')} variant="filled">
+								Marquer comme actif (signé)
+							</Button>
+						) : null}
+						{status === 'active' ? (
+							<Button onPress={() => onChangeStatus('ended')} variant="outlined">
+								Marquer comme terminé
+							</Button>
+						) : null}
+						<Button onPress={() => navigate(`/biens/${propertyId}/baux/${leaseId}/print`)} variant="outlined">
+							Aperçu impression
+						</Button>
+						{isDraft ? (
+							<Button onPress={() => setConfirmDeleteOpen(true)} variant="danger">
+								Supprimer
+							</Button>
+						) : null}
+					</>
+				) : null}
 			</div>
-		</div>
+
+			<ConfirmDialog
+				description="Le bail (draft) et ses junctions tenants/garants seront effacés. Action irréversible."
+				isOpen={confirmDeleteOpen}
+				isPending={deleteMut.isPending}
+				onConfirm={onDelete}
+				onOpenChange={setConfirmDeleteOpen}
+				title="Supprimer ce bail ?"
+				variant="danger"
+			/>
+		</form>
 	);
 };

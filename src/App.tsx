@@ -23,9 +23,9 @@ export const App = () => (
 			<Route element={<Layout />}>
 				<Route element={<Navigate replace to="/biens" />} path="/" />
 				<Route element={<BiensPage />} path="/biens" />
-				<Route element={<BailEditPage />} path="/biens/nouveau" />
-				<Route element={<BailEditPage />} path="/biens/:id" />
-				<Route element={<BailPrintPage />} path="/biens/:id/bail" />
+				<Route element={<BailEditPage />} path="/biens/:propertyId/baux/nouveau" />
+				<Route element={<BailEditPage />} path="/biens/:propertyId/baux/:leaseId" />
+				<Route element={<BailPrintPage />} path="/biens/:propertyId/baux/:leaseId/print" />
 				<Route element={<LocatairesPage />} path="/locataires" />
 				<Route element={<GarantsPage />} path="/garants" />
 				<Route element={<QuittancesPage />} path="/quittances" />
