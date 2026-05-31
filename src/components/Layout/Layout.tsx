@@ -21,6 +21,7 @@ const NAV_LINKS: NavLinkSpec[] = [
 	{ to: '/garants', label: 'Garants', roles: ['landlord'] },
 	{ to: '/quittances', label: 'Quittances', roles: ['landlord'] },
 	{ to: '/reglages', label: 'Réglages', roles: ['landlord'] },
+	{ to: '/migration', label: 'Import V1', roles: ['landlord'] },
 	{ to: '/mon-dossier', label: 'Mon dossier', roles: ['tenant', 'guarantor'] },
 ];
 

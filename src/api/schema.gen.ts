@@ -2932,6 +2932,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/migration/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import one-shot d'un export legacy localStorage (bailleur + baux) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ImportRequest"];
+                };
+            };
+            responses: {
+                /** @description Rapport d'import (counts + warnings) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ImportReport"];
+                    };
+                };
+                /** @description Non authentifié */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Accès refusé (landlord uniquement) */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/share/{token}": {
         parameters: {
             query?: never;
@@ -3527,6 +3581,63 @@ export interface components {
             items: components["schemas"]["AuditLog"][];
             /** Format: date-time */
             nextCursor: string | null;
+        };
+        ImportReport: {
+            profile: {
+                created: boolean;
+                updated: boolean;
+            };
+            properties: {
+                created: number;
+                skipped: number;
+            };
+            tenants: {
+                created: number;
+                skipped: number;
+            };
+            guarantors: {
+                created: number;
+                skipped: number;
+            };
+            leases: {
+                created: number;
+                skipped: number;
+            };
+            warnings: string[];
+        };
+        LegacyBailleur: {
+            nom?: string;
+            adresse?: string;
+            cpVille?: string;
+            email?: string;
+            lieuSignature?: string;
+            signatureDataUrl?: string;
+        };
+        LegacyBail: {
+            id?: string;
+            civilite?: string;
+            locataire?: string;
+            locataireEmail?: string;
+            garant?: string;
+            type?: string;
+            rue?: string;
+            cpVille?: string;
+            batiment?: string;
+            surface?: string;
+            nbPieces?: string;
+            dpe?: string;
+            periodeConstruction?: string;
+            dateEffet?: string;
+            duree?: string;
+            loyer?: number;
+            charges?: number;
+            modaliteCharges?: string;
+            jourEcheance?: number;
+            depotGarantie?: number;
+        };
+        ImportRequest: {
+            bailleur: components["schemas"]["LegacyBailleur"];
+            baux: components["schemas"]["LegacyBail"][];
         };
     };
     responses: never;

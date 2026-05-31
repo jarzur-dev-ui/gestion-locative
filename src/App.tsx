@@ -28,6 +28,9 @@ const GarantsPage = lazy(() =>
 const LocatairesPage = lazy(() =>
 	import('@/pages/LocatairesPage/LocatairesPage').then((m) => ({ default: m.LocatairesPage })),
 );
+const MigrationPage = lazy(() =>
+	import('@/pages/MigrationPage/MigrationPage').then((m) => ({ default: m.MigrationPage })),
+);
 const MonDossierPage = lazy(() =>
 	import('@/pages/MonDossierPage/MonDossierPage').then((m) => ({ default: m.MonDossierPage })),
 );
@@ -63,6 +66,7 @@ export const App = () => (
 					<Route element={<GarantsPage />} path="/garants" />
 					<Route element={<QuittancesPage />} path="/quittances" />
 					<Route element={<ReglagesPage />} path="/reglages" />
+					<Route element={<MigrationPage />} path="/migration" />
 				</Route>
 			</Route>
 
