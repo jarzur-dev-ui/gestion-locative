@@ -1,19 +1,17 @@
 import classNames from 'classnames';
-import {
-	forwardRef,
-	useId,
-	type SelectHTMLAttributes,
-} from 'react';
+import { forwardRef, useId } from 'react';
 
 import styles from './SelectField.module.scss';
 
-export interface SelectFieldProps extends SelectHTMLAttributes<HTMLSelectElement> {
-	label: string;
-	options: readonly string[];
-}
+import type { SelectFieldOption, SelectFieldProps } from './SelectField.types';
+
+export type { SelectFieldOption, SelectFieldProps } from './SelectField.types';
+
+const normalizeOption = (opt: SelectFieldOption): { value: string; label: string } =>
+	typeof opt === 'string' ? { value: opt, label: opt } : opt;
 
 export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
-	({ label, options, id, className, ...otherProps }, ref) => {
+	({ label, options, hint, id, className, ...otherProps }, ref) => {
 		const generatedId = useId();
 		const selectId = id ?? generatedId;
 		return (
@@ -22,12 +20,16 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
 					{label}
 				</label>
 				<select {...otherProps} className={styles.select} id={selectId} ref={ref}>
-					{options.map((opt) => (
-						<option key={opt} value={opt}>
-							{opt}
-						</option>
-					))}
+					{options.map((opt) => {
+						const { value, label: optLabel } = normalizeOption(opt);
+						return (
+							<option key={value} value={value}>
+								{optLabel}
+							</option>
+						);
+					})}
 				</select>
+				{hint ? <span className={styles.hint}>{hint}</span> : null}
 			</div>
 		);
 	},

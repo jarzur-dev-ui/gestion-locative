@@ -1,0 +1,148 @@
+.page {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.header {
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+}
+
+.empty {
+	background: var(--surface);
+	border: 1px dashed var(--border);
+	border-radius: var(--radius);
+	color: var(--muted);
+	padding: var(--space-6);
+	text-align: center;
+}
+
+.list {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	display: flex;
+	flex-direction: column;
+	list-style: none;
+	margin: 0;
+	overflow: hidden;
+	padding: 0;
+}
+
+.item {
+	align-items: flex-start;
+	border-bottom: 1px solid var(--border);
+	display: flex;
+	gap: var(--space-3);
+	justify-content: space-between;
+	padding: var(--space-3) var(--space-4);
+
+	&:last-child {
+		border-bottom: none;
+	}
+}
+
+.itemMain {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+	min-width: 0;
+}
+
+.itemHeader {
+	align-items: baseline;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+}
+
+.email {
+	color: var(--muted);
+}
+
+.itemMeta {
+	color: var(--muted);
+	display: flex;
+	flex-wrap: wrap;
+	font-size: 13px;
+	gap: var(--space-3);
+}
+
+.status {
+	font-size: 13px;
+}
+
+.statusOk {
+	color: var(--success, #1f8a4c);
+}
+
+.statusPending {
+	color: var(--muted);
+}
+
+.itemActions {
+	display: flex;
+	flex-shrink: 0;
+	gap: var(--space-2);
+}
+
+// ─── Form modal ─────────────────────────────────────────────────────────────
+
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.grid {
+	display: grid;
+	gap: var(--space-3);
+	grid-template-columns: 1fr 1fr;
+}
+
+.fullRow {
+	grid-column: 1 / -1;
+}
+
+.subsection {
+	color: var(--ink);
+	font-size: 14px;
+	font-weight: 600;
+	margin: 0;
+}
+
+.actions {
+	display: flex;
+	gap: var(--space-2);
+	justify-content: flex-end;
+}
+
+// ─── Invite link modal ──────────────────────────────────────────────────────
+
+.inviteBody {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+}
+
+.shareUrlBox {
+	background: var(--bg, #f6f6f7);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: var(--space-3);
+	word-break: break-all;
+}
+
+.shareUrl {
+	color: var(--ink);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 13px;
+}
+
+.muted {
+	color: var(--muted);
+	font-size: 13px;
+	margin: 0;
+}

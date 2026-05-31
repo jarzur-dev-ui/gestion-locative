@@ -7,8 +7,8 @@ import {
 	type PointerEvent as ReactPointerEvent,
 } from 'react';
 
-import { Button } from '@/components/Button/Button';
-import { TextField } from '@/components/TextField/TextField';
+import { Button } from '@/components/Button';
+import { TextField } from '@/components/TextField';
 
 import styles from './SignaturePad.module.scss';
 
