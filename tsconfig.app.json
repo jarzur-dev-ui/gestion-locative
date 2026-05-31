@@ -18,6 +18,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Strict type-checking */
+    "strict": true,
+    "noImplicitOverride": true,
+    /* noUncheckedIndexedAccess désactivé : trop strict pour le projet
+       (computed property names via i18n, accès Map[key]). À réactiver M8+. */
+
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
