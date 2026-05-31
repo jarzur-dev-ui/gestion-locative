@@ -28,6 +28,9 @@ const GarantsPage = lazy(() =>
 const LocatairesPage = lazy(() =>
 	import('@/pages/LocatairesPage/LocatairesPage').then((m) => ({ default: m.LocatairesPage })),
 );
+const MonDossierPage = lazy(() =>
+	import('@/pages/MonDossierPage/MonDossierPage').then((m) => ({ default: m.MonDossierPage })),
+);
 const QuittancesPage = lazy(() =>
 	import('@/pages/QuittancesPage/QuittancesPage').then((m) => ({ default: m.QuittancesPage })),
 );
@@ -60,6 +63,13 @@ export const App = () => (
 					<Route element={<GarantsPage />} path="/garants" />
 					<Route element={<QuittancesPage />} path="/quittances" />
 					<Route element={<ReglagesPage />} path="/reglages" />
+				</Route>
+			</Route>
+
+			{/* Routes locataire/garant — vue Mon dossier */}
+			<Route element={<RequireAuth roles={['tenant', 'guarantor']} />}>
+				<Route element={<Layout />}>
+					<Route element={<MonDossierPage />} path="/mon-dossier" />
 				</Route>
 			</Route>
 
