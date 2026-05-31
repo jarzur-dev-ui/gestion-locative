@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { queryClient } from '@/api/query-client';
 import { App } from '@/App';
+import { ToastProvider } from '@/components/Toast';
 import { DataProvider } from '@/contexts/DataContext';
 
 import '@/styles/global.scss';
@@ -18,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
 					<App />
 				</DataProvider>
 			</BrowserRouter>
+			<ToastProvider />
 			{import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
 		</QueryClientProvider>
 	</StrictMode>,

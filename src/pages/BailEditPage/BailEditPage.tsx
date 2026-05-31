@@ -7,9 +7,9 @@ import {
 	useParams,
 } from 'react-router-dom';
 
-import { Button } from '@/components/Button/Button';
-import { SelectField } from '@/components/SelectField/SelectField';
-import { TextField } from '@/components/TextField/TextField';
+import { Button } from '@/components/Button';
+import { SelectField } from '@/components/SelectField';
+import { TextField } from '@/components/TextField';
 import {
 	BIEN_TYPES,
 	CIVILITES,

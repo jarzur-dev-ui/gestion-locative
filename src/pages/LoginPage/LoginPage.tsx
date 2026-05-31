@@ -2,8 +2,8 @@ import { type FormEvent, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import { defaultRouteForRole, useAuth, useLogin } from '@/api/auth';
-import { Button } from '@/components/Button/Button';
-import { TextField } from '@/components/TextField/TextField';
+import { Button } from '@/components/Button';
+import { TextField } from '@/components/TextField';
 
 import styles from './LoginPage.module.scss';
 

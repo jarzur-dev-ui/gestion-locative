@@ -1,0 +1,31 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3, 12px);
+	padding: var(--space-3, 12px) 0;
+}
+
+.line {
+	--skeleton-height: 56px;
+
+	background: linear-gradient(
+		90deg,
+		rgba(0, 0, 0, 0.06) 25%,
+		rgba(0, 0, 0, 0.12) 50%,
+		rgba(0, 0, 0, 0.06) 75%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 1.4s ease-in-out infinite;
+	border-radius: var(--radius, 8px);
+	height: var(--skeleton-height);
+	width: 100%;
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}

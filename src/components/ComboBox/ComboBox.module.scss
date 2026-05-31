@@ -1,0 +1,140 @@
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+}
+
+.label {
+	color: var(--muted);
+	font-size: 13px;
+}
+
+.inputWrapper {
+	align-items: stretch;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	display: flex;
+	position: relative;
+
+	&:focus-within {
+		border-color: var(--primary);
+	}
+}
+
+.input {
+	background: transparent;
+	border: none;
+	color: var(--ink);
+	flex: 1;
+	font-family: inherit;
+	font-size: 14px;
+	min-width: 0;
+	padding: 8px 10px;
+
+	&:focus {
+		outline: none;
+	}
+
+	&::placeholder {
+		color: var(--muted);
+	}
+
+	&:disabled {
+		color: var(--muted);
+		cursor: not-allowed;
+	}
+}
+
+.trigger {
+	align-items: center;
+	background: transparent;
+	border: none;
+	color: var(--muted);
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	padding: 0 var(--space-3);
+
+	&:hover {
+		color: var(--primary);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--primary);
+		outline-offset: -2px;
+		border-radius: var(--radius);
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+	}
+}
+
+.chevron {
+	transition: transform 0.15s ease-out;
+}
+
+.field[data-open='true'] .chevron,
+:global(.react-aria-ComboBox[data-open='true']) .chevron {
+	transform: rotate(-180deg);
+}
+
+.hint {
+	color: var(--muted);
+	font-size: 12px;
+}
+
+.error {
+	color: var(--danger);
+	font-size: 12px;
+}
+
+.popover {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+	max-height: 300px;
+	min-width: var(--trigger-width);
+	overflow-y: auto;
+}
+
+.listBox {
+	outline: none;
+	padding: var(--space-1) 0;
+}
+
+.option {
+	color: var(--ink);
+	cursor: pointer;
+	font-size: 14px;
+	outline: none;
+	padding: var(--space-2) var(--space-3);
+
+	&[data-hovered='true'],
+	&[data-focused='true'] {
+		background: var(--primary-soft);
+	}
+
+	&[data-focus-visible='true'] {
+		box-shadow: inset 0 0 0 2px var(--primary);
+	}
+
+	&[data-selected='true'] {
+		background: var(--primary);
+		color: var(--surface);
+	}
+
+	&[data-disabled='true'] {
+		color: var(--muted);
+		cursor: not-allowed;
+	}
+}
+
+.empty {
+	color: var(--muted);
+	font-size: 13px;
+	padding: var(--space-3);
+	text-align: center;
+}

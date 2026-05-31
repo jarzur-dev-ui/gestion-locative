@@ -3,8 +3,8 @@ import {
 	type ChangeEvent,
 } from 'react';
 
-import { Button } from '@/components/Button/Button';
-import { TextField } from '@/components/TextField/TextField';
+import { Button } from '@/components/Button';
+import { TextField } from '@/components/TextField';
 import { useData } from '@/contexts/DataContext';
 
 import styles from './ReglagesPage.module.scss';

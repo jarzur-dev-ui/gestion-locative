@@ -4,9 +4,9 @@ import {
 	useParams,
 } from 'react-router-dom';
 
-import { Button } from '@/components/Button/Button';
-import { SignaturePad } from '@/components/SignaturePad/SignaturePad';
-import { TextField } from '@/components/TextField/TextField';
+import { Button } from '@/components/Button';
+import { SignaturePad } from '@/components/SignaturePad';
+import { TextField } from '@/components/TextField';
 import { useData } from '@/contexts/DataContext';
 import { BailDocument } from '@/documents/BailDocument/BailDocument';
 import { todayIso } from '@/utils/format';

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-import { Button } from '@/components/Button/Button';
+import { Button } from '@/components/Button';
 import { useData } from '@/contexts/DataContext';
 import { formatAmount } from '@/utils/format';
 import { natureBien } from '@/utils/quittance';

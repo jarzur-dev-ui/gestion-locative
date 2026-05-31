@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { Layout } from '@/components/Layout/Layout';
-import { RequireAuth } from '@/components/RequireAuth/RequireAuth';
+import { Layout } from '@/components/Layout';
+import { RequireAuth } from '@/components/RequireAuth';
 import { AcceptInvitationPage } from '@/pages/AcceptInvitationPage/AcceptInvitationPage';
 import { BailEditPage } from '@/pages/BailEditPage/BailEditPage';
 import { BailPrintPage } from '@/pages/BailPrintPage/BailPrintPage';

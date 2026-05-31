@@ -1,0 +1,67 @@
+.overlay {
+	align-items: center;
+	background: rgba(0, 0, 0, 0.4);
+	display: flex;
+	inset: 0;
+	justify-content: center;
+	opacity: 0;
+	padding: var(--space-4);
+	position: fixed;
+	transition: opacity 200ms ease-out;
+	z-index: 1000;
+
+	&[data-entering] {
+		opacity: 1;
+	}
+
+	&[data-exiting] {
+		opacity: 0;
+	}
+}
+
+.modal {
+	background: var(--surface);
+	border-radius: var(--radius);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+	max-height: calc(100vh - var(--space-6));
+	max-width: 100%;
+	opacity: 0;
+	overflow: auto;
+	padding: var(--space-5);
+	transform: scale(0.95);
+	transition: opacity 200ms ease-out, transform 200ms ease-out;
+	width: 560px;
+
+	&[data-entering] {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	&[data-exiting] {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+}
+
+.sizeSm {
+	width: 400px;
+}
+
+.sizeMd {
+	width: 560px;
+}
+
+.sizeLg {
+	width: 720px;
+}
+
+.dialog {
+	outline: none;
+}
+
+.title {
+	color: var(--ink);
+	font-size: 18px;
+	font-weight: 600;
+	margin: 0 0 var(--space-3);
+}

@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 import { useAuth, useLogout } from '@/api/auth';
-import { Button } from '@/components/Button/Button';
+import { Button } from '@/components/Button';
 
 import styles from './Layout.module.scss';
 

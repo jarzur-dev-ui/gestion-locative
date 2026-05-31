@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { Button } from '@/components/Button/Button';
-import { TextField } from '@/components/TextField/TextField';
+import { Button } from '@/components/Button';
+import { TextField } from '@/components/TextField';
 import { useData } from '@/contexts/DataContext';
 import { QuittanceDocument } from '@/documents/QuittanceDocument/QuittanceDocument';
 import { todayIso } from '@/utils/format';
