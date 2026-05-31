@@ -23,12 +23,21 @@ export interface BailDocumentProps {
 	locataireMention?: string;
 }
 
-const Row = ({ k, v }: { k: string; v: string }) => (
-	<tr>
-		<td className={styles.k}>{k}</td>
-		<td className={styles.v}>{v || '—'}</td>
-	</tr>
-);
+// Row : on n'affiche pas la ligne si la valeur est vide ou cosmétiquement nulle
+// (— ou similaire). Évite de polluer le bail imprimé avec des lignes vides
+// depuis la migration localStorage → API (champs legacy non portés).
+const Row = ({ k, v }: { k: string; v: string }) => {
+	const trimmed = (v ?? '').trim();
+	if (!trimmed || trimmed === '—' || trimmed === '— —' || /^[\s—\/]+$/.test(trimmed)) {
+		return null;
+	}
+	return (
+		<tr>
+			<td className={styles.k}>{k}</td>
+			<td className={styles.v}>{trimmed}</td>
+		</tr>
+	);
+};
 
 export const BailDocument = ({
 	bail,

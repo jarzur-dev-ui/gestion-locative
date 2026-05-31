@@ -39,6 +39,18 @@
 	color: #fff;
 }
 
+.userBlock {
+	align-items: center;
+	display: flex;
+	gap: var(--space-3);
+	margin-left: auto;
+}
+
+.userEmail {
+	color: rgba(255, 255, 255, 0.7);
+	font-size: 13px;
+}
+
 .main {
 	margin: 0 auto;
 	max-width: 1000px;

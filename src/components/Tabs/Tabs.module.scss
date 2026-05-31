@@ -1,0 +1,183 @@
+.tabs {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+	width: 100%;
+}
+
+// ============================================================================
+//  Default variant
+// ============================================================================
+
+.tabList {
+	border-bottom: 1px solid var(--border);
+	display: flex;
+	gap: var(--space-2);
+}
+
+.tab {
+	border-bottom: 2px solid transparent;
+	color: var(--muted);
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+	margin-bottom: -1px; // overlap parent border-bottom so underline kisses it
+	outline: none;
+	padding: var(--space-3) var(--space-4);
+	transition: color 0.15s ease, border-color 0.15s ease;
+
+	&[data-hovered] {
+		color: var(--primary);
+	}
+
+	&[data-focus-visible] {
+		box-shadow: 0 0 0 2px var(--primary-soft);
+		border-radius: var(--radius) var(--radius) 0 0;
+	}
+
+	&[data-selected] {
+		border-bottom-color: var(--primary);
+		color: var(--primary);
+		font-weight: 600;
+	}
+
+	&[data-disabled] {
+		cursor: not-allowed;
+		opacity: 0.4;
+	}
+}
+
+// ============================================================================
+//  Wizard variant
+// ============================================================================
+
+.tabListWizard {
+	align-items: center;
+	border-bottom: none;
+	display: flex;
+	gap: 0;
+	padding: var(--space-4) 0;
+	width: 100%;
+}
+
+.stepWrapper {
+	align-items: center;
+	display: flex;
+	flex: 0 0 auto;
+
+	&:not(:last-child) {
+		flex: 1 1 auto;
+	}
+}
+
+.tabWizard {
+	align-items: center;
+	background: transparent;
+	border-radius: var(--radius);
+	cursor: pointer;
+	display: inline-flex;
+	flex: 0 0 auto;
+	gap: var(--space-3);
+	outline: none;
+	padding: var(--space-2) var(--space-3);
+	transition: background 0.15s ease;
+
+	&[data-hovered]:not([data-disabled]) {
+		background: var(--primary-soft);
+	}
+
+	&[data-focus-visible] {
+		box-shadow: 0 0 0 2px var(--primary-soft);
+	}
+
+	&[data-disabled] {
+		cursor: not-allowed;
+	}
+}
+
+.stepIndicator {
+	align-items: center;
+	border-radius: 50%;
+	display: inline-flex;
+	flex-shrink: 0;
+	font-size: 14px;
+	font-weight: 600;
+	height: 28px;
+	justify-content: center;
+	transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+	width: 28px;
+}
+
+.indicator-completed {
+	background: var(--success);
+	border: 1px solid var(--success);
+	color: #fff;
+}
+
+.indicator-current {
+	background: var(--primary);
+	border: 1px solid var(--primary);
+	color: #fff;
+	box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.indicator-future {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	color: var(--muted);
+}
+
+.stepLabel {
+	font-size: 14px;
+	white-space: nowrap;
+}
+
+.state-completed .stepLabel {
+	color: var(--ink);
+	font-weight: 500;
+}
+
+.state-current .stepLabel {
+	color: var(--primary);
+	font-weight: 700;
+}
+
+.state-future .stepLabel {
+	color: var(--muted);
+	font-weight: 500;
+}
+
+.tabWizard[data-disabled] .stepLabel {
+	opacity: 0.6;
+}
+
+.checkIcon {
+	display: block;
+}
+
+// Horizontal connector between steps. Default: gray. Active: primary blue.
+.connector {
+	background: var(--border);
+	flex: 1 1 auto;
+	height: 2px;
+	margin: 0 var(--space-2);
+	min-width: var(--space-4);
+	transition: background 0.2s ease;
+}
+
+.connectorActive {
+	background: var(--primary);
+}
+
+// ============================================================================
+//  Panels
+// ============================================================================
+
+.tabPanel {
+	outline: none;
+
+	&[data-focus-visible] {
+		box-shadow: 0 0 0 2px var(--primary-soft);
+		border-radius: var(--radius);
+	}
+}

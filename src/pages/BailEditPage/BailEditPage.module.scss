@@ -4,25 +4,172 @@
 	gap: var(--space-4);
 }
 
-.section {
+.header {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+}
+
+.subtitle {
+	color: var(--muted);
+	font-size: 13px;
+	margin: 0;
+}
+
+.step {
 	background: var(--surface);
 	border: 1px solid var(--border);
 	border-radius: var(--radius);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
 	padding: var(--space-4);
 }
 
-.grid {
+.stepHeader {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+}
+
+.stepTitle {
+	font-size: 18px;
+	font-weight: 600;
+	margin: 0;
+}
+
+.stepHint {
+	color: var(--muted);
+	font-size: 13px;
+	margin: 0;
+}
+
+.grid2 {
 	display: grid;
-	gap: var(--space-4);
+	gap: var(--space-3);
+	grid-template-columns: 1fr 1fr;
+}
+
+.grid3 {
+	display: grid;
+	gap: var(--space-3);
 	grid-template-columns: 1fr 1fr 1fr;
 }
 
-.actions {
+.propertyPreview {
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	display: flex;
+	gap: var(--space-3);
+	justify-content: space-between;
+	padding: var(--space-3);
+}
+
+.propertyPreviewInfo {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.propertyPreviewTitle {
+	font-weight: 500;
+}
+
+.propertyPreviewMeta {
+	color: var(--muted);
+	font-size: 13px;
+}
+
+.selectedList {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.selectedItem {
+	align-items: center;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	display: flex;
+	gap: var(--space-3);
+	justify-content: space-between;
+	padding: var(--space-2) var(--space-3);
+}
+
+.selectedInfo {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.selectedSub {
+	color: var(--muted);
+	font-size: 13px;
+}
+
+.addRow {
+	align-items: flex-end;
+	display: flex;
+	gap: var(--space-2);
+}
+
+.addRow > :first-child {
+	flex: 1;
+}
+
+.emptyHint {
+	color: var(--muted);
+	font-size: 13px;
+	font-style: italic;
+}
+
+.stepFooter {
+	display: flex;
+	gap: var(--space-2);
+	justify-content: space-between;
+}
+
+.stepFooterRight {
+	display: flex;
+	gap: var(--space-2);
+}
+
+.pageActions {
+	background: var(--bg);
+	bottom: 0;
 	display: flex;
 	gap: var(--space-2);
 	justify-content: flex-end;
-	position: sticky;
-	bottom: 0;
-	background: var(--bg);
 	padding: var(--space-3) 0;
+	position: sticky;
+}
+
+.modalForm {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+}
+
+.modalGrid {
+	display: grid;
+	gap: var(--space-3);
+	grid-template-columns: 1fr 1fr;
+}
+
+.modalActions {
+	display: flex;
+	gap: var(--space-2);
+	justify-content: flex-end;
+	margin-top: var(--space-2);
+}
+
+.checkboxRow {
+	align-items: center;
+	display: flex;
+	gap: var(--space-2);
 }

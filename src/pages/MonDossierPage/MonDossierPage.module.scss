@@ -1,0 +1,168 @@
+.wrap {
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: var(--space-5);
+}
+
+.title {
+	margin: 0 0 var(--space-2);
+}
+
+.subtitle {
+	margin: 0 0 var(--space-5);
+	color: var(--muted);
+}
+
+.empty {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: var(--space-6);
+	text-align: center;
+}
+
+.muted {
+	color: var(--muted);
+	font-size: 14px;
+}
+
+.leaseSection {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: var(--space-5);
+	margin-bottom: var(--space-5);
+}
+
+.leaseHeader {
+	border-bottom: 1px solid var(--border);
+	padding-bottom: var(--space-3);
+	margin-bottom: var(--space-4);
+}
+
+.leaseHeader h2 {
+	margin: 0 0 var(--space-1);
+	font-size: 18px;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+	gap: var(--space-4);
+}
+
+.card {
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: var(--space-4);
+	background: var(--bg);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+}
+
+.cardTitle {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.cardEmpty {
+	margin: 0;
+	color: var(--muted);
+	font-size: 13px;
+	font-style: italic;
+}
+
+.docList {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+}
+
+.docItem {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: var(--space-2) var(--space-3);
+}
+
+.docMeta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-2);
+}
+
+.docLink {
+	color: var(--primary);
+	text-decoration: none;
+	font-size: 13px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.docLink:hover {
+	text-decoration: underline;
+}
+
+.docSize {
+	color: var(--muted);
+	font-size: 12px;
+}
+
+.docActions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-2);
+	margin-top: var(--space-1);
+}
+
+.status {
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.statusValidated {
+	color: var(--success);
+}
+
+.statusPending {
+	color: var(--muted);
+}
+
+.statusRejected {
+	color: var(--danger);
+}
+
+.rejectionReason {
+	margin: var(--space-1) 0 0;
+	font-size: 12px;
+	color: var(--danger);
+	font-style: italic;
+}
+
+.shareBlock {
+	background: var(--bg);
+	padding: var(--space-3);
+	border-radius: var(--radius);
+	margin: var(--space-3) 0;
+	overflow-x: auto;
+}
+
+.shareUrl {
+	font-family: monospace;
+	font-size: 13px;
+	word-break: break-all;
+}
+
+.shareActions {
+	display: flex;
+	gap: var(--space-2);
+	justify-content: flex-end;
+}
