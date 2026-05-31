@@ -1,15 +1,15 @@
 import classNames from 'classnames';
 import { useMemo, useState } from 'react';
 
+import { useLease } from '@/api/leases';
+import { useProperty } from '@/api/properties';
 import {
 	type Adjustment,
 	type AdjustmentType,
 	type RentPeriod,
-	useLease,
 	useMarkPaid,
 	useMarkUnpaid,
 	usePatchRentPeriod,
-	useProperty,
 	useRentPeriods,
 	useSendNotice,
 } from '@/api/rent-periods';

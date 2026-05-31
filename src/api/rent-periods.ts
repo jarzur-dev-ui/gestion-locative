@@ -182,36 +182,4 @@ export function useMarkUnpaid() {
 	});
 }
 
-// ─── Helpers pour enrichir l'affichage (bail + adresse bien) ─────────────────
-//
-// On garde ces hooks côté rent-periods pour ne pas marcher sur les fichiers
-// des autres agents (Biens, Locataires/Garants). C'est purement de la lecture
-// secondaire pour l'affichage des cartes — pas de mutation.
-
-export function useLease(id: string | undefined) {
-	return useQuery({
-		queryKey: ['leases', id],
-		enabled: !!id,
-		queryFn: async () => {
-			const { data, response } = await api.GET('/api/leases/{id}', {
-				params: { path: { id: id! } },
-			});
-			if (!data) throw new Error(`HTTP ${response.status}`);
-			return data;
-		},
-	});
-}
-
-export function useProperty(id: string | undefined) {
-	return useQuery({
-		queryKey: ['properties', id],
-		enabled: !!id,
-		queryFn: async () => {
-			const { data, response } = await api.GET('/api/properties/{id}', {
-				params: { path: { id: id! } },
-			});
-			if (!data) throw new Error(`HTTP ${response.status}`);
-			return data;
-		},
-	});
-}
+// (helpers useLease/useProperty retirés — pointer sur leases.ts / properties.ts)

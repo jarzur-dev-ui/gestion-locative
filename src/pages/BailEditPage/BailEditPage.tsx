@@ -266,18 +266,22 @@ export const BailEditPage = () => {
 			<section className={styles.section}>
 				<h2>Conditions du bail</h2>
 				<div className={styles.grid}>
-					{/* SelectField actuel accepte string[]. Pour des labels FR plus parlants
-					    on devra refactorer SelectField pour accepter {label, value}[] en M6.5. */}
 					<SelectField
 						label="Type de bail"
 						onChange={(e) => set('leaseTypeKey', e.target.value as 'empty' | 'furnished')}
-						options={['empty', 'furnished']}
+						options={[
+							{ value: 'empty', label: 'Vide' },
+							{ value: 'furnished', label: 'Meublé' },
+						]}
 						value={form.leaseTypeKey}
 					/>
 					<SelectField
 						label="Type de charges"
 						onChange={(e) => set('chargesTypeKey', e.target.value as 'package' | 'real')}
-						options={['package', 'real']}
+						options={[
+							{ value: 'package', label: 'Forfait' },
+							{ value: 'real', label: 'Provisions sur charges réelles' },
+						]}
 						value={form.chargesTypeKey}
 					/>
 					<TextField
