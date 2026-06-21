@@ -1,5 +1,5 @@
 import { type FormEvent, useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import { defaultRouteForRole, useAuth, useLogin } from '@/api/auth';
 import { Button } from '@/components/Button';
@@ -74,6 +74,10 @@ export const LoginPage = () => {
 				<Button disabled={loginMutation.isPending} type="submit">
 					{loginMutation.isPending ? 'Connexion…' : 'Se connecter'}
 				</Button>
+
+				<p className={styles.forgotLink}>
+					<Link to="/forgot-password">Mot de passe oublié ?</Link>
+				</p>
 			</form>
 		</div>
 	);

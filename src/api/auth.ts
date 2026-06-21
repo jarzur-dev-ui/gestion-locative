@@ -79,6 +79,34 @@ export function useAcceptInvitation() {
 	});
 }
 
+export function useRequestPasswordReset() {
+	return useMutation({
+		mutationFn: async ({ email }: { email: string }) => {
+			// 204 No Content (réponse générique anti-énumération) : pas de corps à parser.
+			await api.POST('/api/auth/forgot-password', { body: { email } });
+		},
+	});
+}
+
+export function useResetPassword() {
+	return useMutation({
+		mutationFn: async ({ token, password }: { token: string; password: string }) => {
+			const { data, response } = await api.POST('/api/auth/reset-password', {
+				body: { token, password },
+			});
+			if (response.status === 410) {
+				throw new Error('Lien invalide ou expiré');
+			}
+			if (response.status === 404) {
+				throw new Error('Lien invalide ou expiré');
+			}
+			if (!data) throw new Error(`HTTP ${response.status}`);
+			return data;
+		},
+		// Aucune session ouverte : on ne touche pas au cache ME, l'utilisateur devra se reconnecter.
+	});
+}
+
 /**
  * Route par défaut selon le rôle.
  * Landlord va sur les biens, locataire/garant sur "Mon dossier" (Phase 4).

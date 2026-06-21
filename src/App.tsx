@@ -22,6 +22,11 @@ const BailPrintPage = lazy(() =>
 const BiensPage = lazy(() =>
 	import('@/pages/BiensPage/BiensPage').then((m) => ({ default: m.BiensPage })),
 );
+const ForgotPasswordPage = lazy(() =>
+	import('@/pages/ForgotPasswordPage/ForgotPasswordPage').then((m) => ({
+		default: m.ForgotPasswordPage,
+	})),
+);
 const GarantsPage = lazy(() =>
 	import('@/pages/GarantsPage/GarantsPage').then((m) => ({ default: m.GarantsPage })),
 );
@@ -40,6 +45,11 @@ const QuittancesPage = lazy(() =>
 const ReglagesPage = lazy(() =>
 	import('@/pages/ReglagesPage/ReglagesPage').then((m) => ({ default: m.ReglagesPage })),
 );
+const ResetPasswordPage = lazy(() =>
+	import('@/pages/ResetPasswordPage/ResetPasswordPage').then((m) => ({
+		default: m.ResetPasswordPage,
+	})),
+);
 
 const PageFallback = () => (
 	<div style={{ padding: '2rem' }}>
@@ -53,6 +63,8 @@ export const App = () => (
 			{/* Routes publiques */}
 			<Route element={<LoginPage />} path="/login" />
 			<Route element={<AcceptInvitationPage />} path="/accept-invitation/:token" />
+			<Route element={<ForgotPasswordPage />} path="/forgot-password" />
+			<Route element={<ResetPasswordPage />} path="/reset-password/:token" />
 
 			{/* Routes bailleur — protégées par RequireAuth + filtre rôle */}
 			<Route element={<RequireAuth roles={['landlord']} />}>
