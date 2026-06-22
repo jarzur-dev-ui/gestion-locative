@@ -20,8 +20,19 @@ export const LoginPage = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 
+	// Tant que la session se résout, on n'affiche pas le formulaire : sinon un
+	// utilisateur déjà connecté voit brièvement l'écran de login avant la
+	// redirection. Cohérent avec le gate de <RequireAuth />.
+	if (isLoading) {
+		return (
+			<div className={styles.container}>
+				<p className={styles.subtitle}>Chargement…</p>
+			</div>
+		);
+	}
+
 	// Déjà connecté → on redirige direct vers la home appropriée
-	if (!isLoading && currentUser) {
+	if (currentUser) {
 		const state = location.state as LocationState | null;
 		const target = state?.from?.pathname ?? defaultRouteForRole(currentUser.role);
 		return <Navigate replace to={target} />;

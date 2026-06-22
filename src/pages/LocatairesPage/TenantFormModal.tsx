@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 
 import { Button } from '@/components/Button';
 import { DatePickerField } from '@/components/DatePicker';
@@ -84,11 +84,17 @@ export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModa
 	const isPending = createMutation.isPending || patchMutation.isPending;
 
 	// Hydrater le form quand on ouvre la modal sur un tenant donné.
-	useEffect(() => {
-		if (isOpen) {
-			setForm(tenant ? fromTenant(tenant) : EMPTY_FORM);
-		}
-	}, [isOpen, tenant]);
+	// Pattern "ajuster l'état pendant le rendu" (cf. doc React) : une seule
+	// hydratation par ouverture, identifiée par le tenant ciblé. Évite le
+	// useEffect + setState et son rendu en cascade.
+	const hydrationKey = isOpen ? `${tenant?.id ?? 'new'}` : null;
+	const [hydratedKey, setHydratedKey] = useState<string | null>(null);
+	if (hydrationKey !== null && hydrationKey !== hydratedKey) {
+		setHydratedKey(hydrationKey);
+		setForm(tenant ? fromTenant(tenant) : EMPTY_FORM);
+	} else if (hydrationKey === null && hydratedKey !== null) {
+		setHydratedKey(null);
+	}
 
 	const setField = <K extends keyof FormState>(key: K, value: FormState[K]): void =>
 		setForm((prev) => ({ ...prev, [key]: value }));

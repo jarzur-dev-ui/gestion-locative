@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useMemo, useState, type FormEvent } from 'react';
 
 import {
 	useLandlordProfile,
@@ -75,9 +75,12 @@ export const ReglagesPage = () => {
 	const [signatureDataUrl, setSignatureDataUrl] = useState('');
 
 	// Hydrate le formulaire dès que la query résout (création ou édition).
-	useEffect(() => {
-		const profile = profileQuery.data;
-		if (!profile) return;
+	// Pattern "ajuster l'état pendant le rendu" (cf. doc React) plutôt qu'un
+	// useEffect + setState : on hydrate une fois par identité de données.
+	const profile = profileQuery.data;
+	const [hydratedFrom, setHydratedFrom] = useState<typeof profile>(undefined);
+	if (profile && profile !== hydratedFrom) {
+		setHydratedFrom(profile);
 		setForm({
 			civility: profile.civility ?? '',
 			firstName: profile.firstName,
@@ -89,7 +92,7 @@ export const ReglagesPage = () => {
 			phone: profile.phone ?? '',
 			iban: profile.iban ?? '',
 		});
-	}, [profileQuery.data]);
+	}
 
 	const valid = useMemo(() => isFormValid(form), [form]);
 

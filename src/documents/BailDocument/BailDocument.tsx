@@ -28,7 +28,7 @@ export interface BailDocumentProps {
 // depuis la migration localStorage → API (champs legacy non portés).
 const Row = ({ k, v }: { k: string; v: string }) => {
 	const trimmed = (v ?? '').trim();
-	if (!trimmed || trimmed === '—' || trimmed === '— —' || /^[\s—\/]+$/.test(trimmed)) {
+	if (!trimmed || trimmed === '—' || trimmed === '— —' || /^[\s—/]+$/.test(trimmed)) {
 		return null;
 	}
 	return (

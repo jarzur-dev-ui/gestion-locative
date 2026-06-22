@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import { useLease } from '@/api/leases';
-import { useProperty } from '@/api/properties';
+import { useLeases } from '@/api/leases';
+import { type Property, useProperties } from '@/api/properties';
 import {
 	type Adjustment,
 	type AdjustmentType,
@@ -87,13 +87,42 @@ const STATUS_LABELS: Record<RentPeriod['statusKey'], string> = {
 
 const UNPAID_WINDOW_MS = 24 * 60 * 60 * 1000;
 
+// Fenêtre d'annulation 24h : le back ne fournit pas de flag dédié, on compare
+// donc `paidAt` à l'instant courant. La comparaison reste un helper pur (on lui
+// injecte `now`) ; l'horloge est lue dans un effet, jamais pendant le rendu.
+const isWithinUndoWindow = (
+	statusKey: RentPeriod['statusKey'],
+	paidAt: string | null | undefined,
+	now: number,
+): boolean => {
+	if (statusKey !== 'paid' || !paidAt) return false;
+	const paidAtMs = new Date(paidAt).getTime();
+	if (Number.isNaN(paidAtMs)) return false;
+	return now - paidAtMs <= UNPAID_WINDOW_MS;
+};
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export const QuittancesPage = () => {
-	const monthOptions = useMemo(buildMonthOptions, []);
+	const monthOptions = useMemo(() => buildMonthOptions(), []);
 	const [periodMonth, setPeriodMonth] = useState<string>(defaultPeriodMonth());
 
 	const { data: rentPeriods, isLoading } = useRentPeriods({ periodMonth });
+
+	// Évite le N+1 : au lieu que chaque carte appelle useLease + useProperty
+	// (jusqu'à 2N requêtes), on récupère les listes complètes une fois (2 requêtes)
+	// et on les indexe par id pour les distribuer aux cartes.
+	const { data: leases } = useLeases();
+	const { data: properties } = useProperties();
+
+	const leaseById = useMemo(
+		() => new Map((leases ?? []).map((l) => [l.id, l])),
+		[leases],
+	);
+	const propertyById = useMemo(
+		() => new Map((properties ?? []).map((p) => [p.id, p])),
+		[properties],
+	);
 
 	return (
 		<div className={styles.page}>
@@ -127,9 +156,13 @@ export const QuittancesPage = () => {
 				</p>
 			) : (
 				<ul className={styles.cardList}>
-					{rentPeriods.map((rp) => (
-						<RentPeriodCard key={rp.id} rentPeriod={rp} />
-					))}
+					{rentPeriods.map((rp) => {
+						const lease = leaseById.get(rp.leaseId);
+						const property = lease ? propertyById.get(lease.propertyId) : undefined;
+						return (
+							<RentPeriodCard key={rp.id} property={property} rentPeriod={rp} />
+						);
+					})}
 				</ul>
 			)}
 		</div>
@@ -140,12 +173,14 @@ export const QuittancesPage = () => {
 
 interface RentPeriodCardProps {
 	rentPeriod: RentPeriod;
+	/**
+	 * Bien résolu côté liste (via le bail) — évite un useLease + useProperty par
+	 * carte, donc le N+1 (jusqu'à 2N requêtes).
+	 */
+	property: Property | undefined;
 }
 
-const RentPeriodCard = ({ rentPeriod }: RentPeriodCardProps) => {
-	const { data: lease } = useLease(rentPeriod.leaseId);
-	const { data: property } = useProperty(lease?.propertyId);
-
+const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 	const markPaid = useMarkPaid();
 	const markUnpaid = useMarkUnpaid();
 	const sendNotice = useSendNotice();
@@ -158,12 +193,16 @@ const RentPeriodCard = ({ rentPeriod }: RentPeriodCardProps) => {
 	const totalAdjustments = rentPeriod.adjustments.reduce((sum, a) => sum + a.amountCents, 0);
 
 	// Fenêtre d'annulation 24h : on vérifie côté front pour éviter un round-trip.
-	const canUndoUnpaid = useMemo(() => {
-		if (!isPaid || !rentPeriod.paidAt) return false;
-		const paidAtMs = new Date(rentPeriod.paidAt).getTime();
-		if (Number.isNaN(paidAtMs)) return false;
-		return Date.now() - paidAtMs <= UNPAID_WINDOW_MS;
-	}, [isPaid, rentPeriod.paidAt]);
+	// L'horloge est lue à l'init (lazy) puis rafraîchie par un intervalle — jamais
+	// pendant le rendu (pureté des composants). `now` n'avance que par tick, donc
+	// la valeur dérivée plus bas reste stable entre deux ticks.
+	const [now, setNow] = useState(() => Date.now());
+	useEffect(() => {
+		// Re-vérifie chaque minute pour faire disparaître l'action à l'expiration.
+		const interval = window.setInterval(() => setNow(Date.now()), 60_000);
+		return () => window.clearInterval(interval);
+	}, []);
+	const canUndoUnpaid = isWithinUndoWindow(rentPeriod.statusKey, rentPeriod.paidAt, now);
 
 	const tenantNames = rentPeriod.tenants
 		.map((t) => `${t.firstName} ${t.lastName}`)
@@ -397,10 +436,17 @@ const AddAdjustmentModal = ({
 			label: label.trim() || undefined,
 			amountCents,
 		};
-		await patch.mutateAsync({
-			id: rentPeriod.id,
-			body: { adjustments: [...rentPeriod.adjustments, newAdjustment] },
-		});
+		try {
+			await patch.mutateAsync({
+				id: rentPeriod.id,
+				body: { adjustments: [...rentPeriod.adjustments, newAdjustment] },
+			});
+		} catch {
+			// Le toast d'erreur est déjà affiché par le mutationCache global ;
+			// on intercepte juste le rejet pour ne pas exécuter les effets de
+			// succès (toast + fermeture) et éviter une promesse non gérée.
+			return;
+		}
 		toast.success('Régularisation ajoutée');
 		onOpenChange(false);
 	};

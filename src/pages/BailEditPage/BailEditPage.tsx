@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import type { components } from '@/api/client';
@@ -86,9 +86,14 @@ export const BailEditPage = () => {
 	const [form, setForm] = useState<FormState>(emptyForm);
 	const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
-	useEffect(() => {
-		if (isEdit && leaseQ.data) setForm(leaseToForm(leaseQ.data));
-	}, [isEdit, leaseQ.data]);
+	// Hydrate le formulaire dès que les données du bail arrivent (mode édition).
+	// Pattern "ajuster l'état pendant le rendu" recommandé par React, plutôt qu'un
+	// useEffect + setState (qui déclenche un rendu en cascade).
+	const [hydratedFrom, setHydratedFrom] = useState<Lease | null>(null);
+	if (isEdit && leaseQ.data && leaseQ.data !== hydratedFrom) {
+		setHydratedFrom(leaseQ.data);
+		setForm(leaseToForm(leaseQ.data));
+	}
 
 	const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
 		setForm((prev) => ({ ...prev, [key]: value }));

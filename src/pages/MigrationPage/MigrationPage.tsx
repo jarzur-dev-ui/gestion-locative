@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -17,13 +17,11 @@ export const MigrationPage = () => {
 	const navigate = useNavigate();
 	const importMut = useImportLegacy();
 
-	const [legacy, setLegacy] = useState<ImportRequest | null>(null);
+	// Lecture unique du localStorage legacy à l'initialisation (système externe) :
+	// un initialiseur paresseux de useState suffit, pas besoin d'un effet.
+	const [legacy, setLegacy] = useState<ImportRequest | null>(() => readLegacyLocalStorage());
 	const [report, setReport] = useState<ImportReport | null>(null);
 	const [confirmOpen, setConfirmOpen] = useState(false);
-
-	useEffect(() => {
-		setLegacy(readLegacyLocalStorage());
-	}, []);
 
 	const doImport = () => {
 		if (!legacy) return;

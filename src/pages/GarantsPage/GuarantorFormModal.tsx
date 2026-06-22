@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 
 import { Button } from '@/components/Button';
 import { DatePickerField } from '@/components/DatePicker';
@@ -132,8 +132,13 @@ export const GuarantorFormModal = ({
 	const isPending = createMutation.isPending || patchMutation.isPending;
 
 	// Re-hydrate à l'ouverture / changement de cible.
-	useEffect(() => {
-		if (!isOpen) return;
+	// Pattern "ajuster l'état pendant le rendu" (cf. doc React) : on hydrate une
+	// seule fois par ouverture, identifiée par (guarantor, initialType). Évite le
+	// useEffect + setState et son rendu en cascade.
+	const hydrationKey = isOpen ? `${guarantor?.id ?? 'new'}:${initialType}` : null;
+	const [hydratedKey, setHydratedKey] = useState<string | null>(null);
+	if (hydrationKey && hydrationKey !== hydratedKey) {
+		setHydratedKey(hydrationKey);
 		if (guarantor) {
 			setType(guarantor.guarantorTypeKey);
 			if (guarantor.guarantorTypeKey === 'person') {
@@ -148,7 +153,10 @@ export const GuarantorFormModal = ({
 			setPersonForm(EMPTY_PERSON);
 			setOrgForm(EMPTY_ORG);
 		}
-	}, [isOpen, guarantor, initialType]);
+	} else if (!isOpen && hydratedKey !== null) {
+		// Réinitialise le marqueur à la fermeture pour ré-hydrater au prochain open.
+		setHydratedKey(null);
+	}
 
 	const setPersonField = <K extends keyof PersonFormState>(
 		key: K,
