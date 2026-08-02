@@ -82,3 +82,15 @@
 	margin-top: var(--space-4);
 	justify-content: flex-end;
 }
+
+@media (max-width: 768px) {
+	.wrap {
+		padding: var(--space-4);
+	}
+
+	.preview dl,
+	.report dl {
+		grid-template-columns: 1fr;
+		gap: var(--space-1) 0;
+	}
+}

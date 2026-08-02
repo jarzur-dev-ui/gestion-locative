@@ -41,6 +41,12 @@ const PROPERTY_TYPE_LABELS: Record<string, string> = {
 	commercial: 'Local commercial',
 };
 
+// Options du sélecteur : clé i18n (value) affichée avec son libellé FR (label).
+const PROPERTY_TYPE_SELECT_OPTIONS = PROPERTY_TYPE_OPTIONS.map((key) => ({
+	value: key,
+	label: PROPERTY_TYPE_LABELS[key] ?? key,
+}));
+
 const DPE_OPTIONS = ['—', 'A', 'B', 'C', 'D', 'E', 'F', 'G'] as const;
 const FURNISHED_OPTIONS = ['Non meublé', 'Meublé'] as const;
 
@@ -334,7 +340,7 @@ export const BiensPage = () => {
 							onChange={(e) =>
 								setPropertyField('propertyTypeKey', e.target.value)
 							}
-							options={PROPERTY_TYPE_OPTIONS}
+							options={PROPERTY_TYPE_SELECT_OPTIONS}
 							value={propertyForm.propertyTypeKey}
 						/>
 						<SelectField

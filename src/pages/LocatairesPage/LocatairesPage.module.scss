@@ -146,3 +146,18 @@
 	font-size: 13px;
 	margin: 0;
 }
+
+@media (max-width: 768px) {
+	.header {
+		flex-wrap: wrap;
+		gap: var(--space-3);
+	}
+
+	.item {
+		flex-wrap: wrap;
+	}
+
+	.grid {
+		grid-template-columns: 1fr;
+	}
+}

@@ -1,32 +1,137 @@
+$rail-w: 60px;
+$rail-open: 248px;
+
 .app {
 	min-height: 100vh;
+	padding-left: $rail-w; // réserve la bande d'icônes du rail (desktop)
 }
 
-.header {
-	align-items: center;
+// ─── Rail latéral gauche (desktop) ───────────────────────────────────────────
+.rail {
 	background: var(--primary);
+	bottom: 0;
 	color: #fff;
 	display: flex;
-	gap: var(--space-6);
-	padding: var(--space-3) var(--space-5);
+	flex-direction: column;
+	left: 0;
+	overflow: hidden;
+	position: fixed;
+	top: 0;
+	transition: width 0.22s ease, box-shadow 0.22s ease;
+	width: $rail-w;
+	z-index: 900;
+
+	&:hover,
+	&.pinned {
+		box-shadow: 6px 0 24px rgba(0, 0, 0, 0.18);
+		width: $rail-open;
+	}
+
+	// Éléments repliés : le libellé n'apparaît qu'une fois le rail déplié.
+	.brandText,
+	.label,
+	.userEmail {
+		opacity: 0;
+		transition: opacity 0.15s ease;
+	}
+
+	&:hover,
+	&.pinned {
+		.brandText,
+		.label,
+		.userEmail {
+			opacity: 1;
+		}
+	}
 }
 
-.brand {
-	font-size: 16px;
-	font-weight: 700;
-	letter-spacing: 0.5px;
-}
-
-.nav {
+.railTop {
+	align-items: center;
 	display: flex;
-	gap: var(--space-4);
+	flex-shrink: 0;
+	gap: var(--space-2);
+	height: 56px;
+	padding: 0 var(--space-3);
+}
+
+.brandMark {
+	align-items: center;
+	display: flex;
+	font-weight: 700;
+	gap: var(--space-2);
+	letter-spacing: 0.5px;
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.pin {
+	background: transparent;
+	border: 0;
+	border-radius: 6px;
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	margin-left: auto;
+	opacity: 0;
+	padding: 6px;
+	transition: opacity 0.15s ease;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.12);
+	}
+
+	.rail:hover &,
+	.rail.pinned & {
+		opacity: 0.85;
+	}
+
+	svg {
+		fill: none;
+		height: 20px;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.8;
+		width: 20px;
+	}
+}
+
+.railNav {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	margin-top: var(--space-2);
+	padding: var(--space-2);
+}
+
+// Icône générique (rail, menu mobile, boutons).
+.icon {
+	align-items: center;
+	display: flex;
+	flex-shrink: 0;
+
+	svg {
+		fill: none;
+		height: 22px;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.8;
+		width: 22px;
+	}
 }
 
 .link {
+	align-items: center;
 	border-radius: var(--radius);
-	color: rgba(255, 255, 255, 0.8);
-	padding: 6px 12px;
+	color: rgba(255, 255, 255, 0.85);
+	display: flex;
+	gap: var(--space-3);
+	height: 44px;
+	padding: 0 12px;
 	text-decoration: none;
+	white-space: nowrap;
 
 	&:hover {
 		background: rgba(255, 255, 255, 0.1);
@@ -39,20 +144,191 @@
 	color: #fff;
 }
 
+.label {
+	white-space: nowrap;
+}
+
 .userBlock {
-	align-items: center;
+	border-top: 1px solid rgba(255, 255, 255, 0.15);
 	display: flex;
-	gap: var(--space-3);
-	margin-left: auto;
+	flex-direction: column;
+	gap: var(--space-2);
+	margin-top: auto;
+	padding: var(--space-3);
 }
 
 .userEmail {
 	color: rgba(255, 255, 255, 0.7);
-	font-size: 13px;
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+.logout {
+	align-items: center;
+	background: transparent;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	border-radius: var(--radius);
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	gap: var(--space-3);
+	padding: 8px 12px;
+	white-space: nowrap;
+
+	&:hover:not(:disabled) {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.7;
+	}
 }
 
 .main {
 	margin: 0 auto;
 	max-width: 1000px;
 	padding: var(--space-5);
+}
+
+// ─── Header haut (masqué en desktop, utilisé en mobile) ──────────────────────
+.header {
+	align-items: center;
+	background: var(--primary);
+	color: #fff;
+	display: none;
+	gap: var(--space-6);
+	padding: var(--space-3) var(--space-5);
+}
+
+.brand {
+	font-size: 16px;
+	font-weight: 700;
+	letter-spacing: 0.5px;
+}
+
+.menu {
+	align-items: center;
+	display: flex;
+	flex: 1;
+	gap: var(--space-6);
+}
+
+.nav {
+	display: flex;
+	gap: var(--space-4);
+}
+
+.burger {
+	background: transparent;
+	border: 0;
+	color: #fff;
+	cursor: pointer;
+	display: none;
+	margin-left: auto;
+	padding: var(--space-2);
+}
+
+.burgerIcon {
+	display: block;
+	position: relative;
+
+	&,
+	&::before,
+	&::after {
+		background: #fff;
+		border-radius: 2px;
+		height: 2px;
+		transition:
+			transform 0.2s ease,
+			opacity 0.2s ease;
+		width: 22px;
+	}
+
+	&::before,
+	&::after {
+		content: '';
+		left: 0;
+		position: absolute;
+	}
+
+	&::before {
+		top: -7px;
+	}
+
+	&::after {
+		top: 7px;
+	}
+}
+
+.burger[aria-expanded='true'] .burgerIcon {
+	background: transparent;
+
+	&::before {
+		top: 0;
+		transform: rotate(45deg);
+	}
+
+	&::after {
+		top: 0;
+		transform: rotate(-45deg);
+	}
+}
+
+// ─── Mobile ──────────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+	.app {
+		padding-left: 0;
+	}
+
+	.rail {
+		display: none;
+	}
+
+	.header {
+		display: flex;
+	}
+
+	// Logo + burger (→ X) restent au-dessus de l'overlay pour pouvoir fermer le menu.
+	.brand,
+	.burger {
+		position: relative;
+		z-index: 30;
+	}
+
+	.burger {
+		display: block;
+	}
+
+	.menu {
+		display: none;
+	}
+
+	// Menu mobile = overlay fixe plein écran.
+	.menu.menuOpen {
+		background: var(--primary);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+		inset: 0;
+		overflow-y: auto;
+		padding: calc(var(--space-6) * 2) var(--space-5) var(--space-5);
+		position: fixed;
+		z-index: 20;
+	}
+
+	.header .nav {
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+
+	.header .userBlock {
+		border-top: 1px solid rgba(255, 255, 255, 0.15);
+		margin-top: auto;
+		padding: var(--space-4) 0 0;
+	}
+
+	.main {
+		padding: var(--space-4);
+	}
 }

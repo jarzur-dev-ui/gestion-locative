@@ -47,7 +47,7 @@
 
 .grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
 	gap: var(--space-4);
 }
 
@@ -165,4 +165,10 @@
 	display: flex;
 	gap: var(--space-2);
 	justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+	.wrap {
+		padding: var(--space-4);
+	}
 }

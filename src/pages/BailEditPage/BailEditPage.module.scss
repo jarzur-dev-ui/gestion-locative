@@ -173,3 +173,11 @@
 	display: flex;
 	gap: var(--space-2);
 }
+
+@media (max-width: 768px) {
+	.grid2,
+	.grid3,
+	.modalGrid {
+		grid-template-columns: 1fr;
+	}
+}

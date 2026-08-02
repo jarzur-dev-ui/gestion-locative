@@ -157,3 +157,15 @@
 		outline-offset: 2px;
 	}
 }
+
+@media (max-width: 768px) {
+	.header,
+	.propertyHead {
+		flex-wrap: wrap;
+		gap: var(--space-3);
+	}
+
+	.modalGrid {
+		grid-template-columns: 1fr;
+	}
+}
