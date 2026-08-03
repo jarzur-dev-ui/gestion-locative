@@ -21,6 +21,8 @@ import { Skeleton } from '@/components/Skeleton';
 import { TextField } from '@/components/TextField';
 import { toast } from '@/components/Toast';
 
+import { GuarantorFormModal } from '../GarantsPage/GuarantorFormModal';
+import { TenantFormModal } from '../LocatairesPage/TenantFormModal';
 import styles from './BailEditPage.module.scss';
 
 type Lease = components['schemas']['Lease'];
@@ -88,6 +90,10 @@ export const BailEditPage = () => {
 
 	const [form, setForm] = useState<FormState>(emptyForm);
 	const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+	// Création inline d'un locataire/garant sans quitter le formulaire de bail
+	// (les mutations invalident leur query → la nouvelle entité apparaît dans les chips).
+	const [tenantModalOpen, setTenantModalOpen] = useState(false);
+	const [guarantorModalOpen, setGuarantorModalOpen] = useState(false);
 
 	// Hydrate le formulaire dès que les données du bail arrivent (mode édition).
 	// Pattern "ajuster l'état pendant le rendu" recommandé par React, plutôt qu'un
@@ -213,7 +219,7 @@ export const BailEditPage = () => {
 				{tenantOptions.length === 0 ? (
 					<p className={styles.empty}>
 						{t('leases.edit.noTenants')}{' '}
-						<Button onPress={() => navigate(paths.locataires())} variant="ghost">
+						<Button onPress={() => setTenantModalOpen(true)} variant="ghost">
 							{t('leases.edit.createTenant')}
 						</Button>
 					</p>
@@ -239,6 +245,9 @@ export const BailEditPage = () => {
 								</button>
 							);
 						})}
+						<Button onPress={() => setTenantModalOpen(true)} variant="ghost">
+							+ {t('leases.edit.createTenant')}
+						</Button>
 					</div>
 				)}
 			</section>
@@ -252,7 +261,7 @@ export const BailEditPage = () => {
 				{guarantorOptions.length === 0 ? (
 					<p className={styles.empty}>
 						{t('leases.edit.noGuarantors')}{' '}
-						<Button onPress={() => navigate(paths.garants())} variant="ghost">
+						<Button onPress={() => setGuarantorModalOpen(true)} variant="ghost">
 							{t('leases.edit.createGuarantor')}
 						</Button>
 					</p>
@@ -282,6 +291,9 @@ export const BailEditPage = () => {
 								</button>
 							);
 						})}
+						<Button onPress={() => setGuarantorModalOpen(true)} variant="ghost">
+							+ {t('leases.edit.createGuarantor')}
+						</Button>
 					</div>
 				)}
 			</section>
@@ -403,6 +415,12 @@ export const BailEditPage = () => {
 				onOpenChange={setConfirmDeleteOpen}
 				title={t('leases.edit.deleteTitle')}
 				variant="danger"
+			/>
+
+			<TenantFormModal isOpen={tenantModalOpen} onOpenChange={setTenantModalOpen} />
+			<GuarantorFormModal
+				isOpen={guarantorModalOpen}
+				onOpenChange={setGuarantorModalOpen}
 			/>
 		</form>
 	);

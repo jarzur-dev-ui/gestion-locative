@@ -1,183 +1,120 @@
-.page {
+.wrap {
 	display: flex;
 	flex-direction: column;
 	gap: var(--space-4);
 }
 
 .header {
+	align-items: flex-start;
 	display: flex;
-	flex-direction: column;
-	gap: var(--space-1);
+	gap: var(--space-3);
+	justify-content: space-between;
+}
+
+.header h1 {
+	font-size: 22px;
+	margin: 0;
 }
 
 .subtitle {
 	color: var(--muted);
 	font-size: 13px;
-	margin: 0;
+	margin: var(--space-1) 0 0;
 }
 
-.step {
+.section {
 	background: var(--surface);
 	border: 1px solid var(--border);
 	border-radius: var(--radius);
 	display: flex;
 	flex-direction: column;
-	gap: var(--space-4);
+	gap: var(--space-3);
 	padding: var(--space-4);
 }
 
-.stepHeader {
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-1);
-}
-
-.stepTitle {
-	font-size: 18px;
+.section h2 {
+	font-size: 16px;
 	font-weight: 600;
 	margin: 0;
 }
 
-.stepHint {
+.hint {
 	color: var(--muted);
 	font-size: 13px;
 	margin: 0;
 }
 
-.grid2 {
-	display: grid;
-	gap: var(--space-3);
-	grid-template-columns: 1fr 1fr;
-}
-
-.grid3 {
-	display: grid;
-	gap: var(--space-3);
-	grid-template-columns: 1fr 1fr 1fr;
-}
-
-.propertyPreview {
-	background: var(--bg);
-	border: 1px solid var(--border);
-	border-radius: var(--radius);
-	display: flex;
-	gap: var(--space-3);
-	justify-content: space-between;
-	padding: var(--space-3);
-}
-
-.propertyPreviewInfo {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-}
-
-.propertyPreviewTitle {
-	font-weight: 500;
-}
-
-.propertyPreviewMeta {
+.optional {
 	color: var(--muted);
 	font-size: 13px;
+	font-weight: 400;
 }
 
-.selectedList {
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-2);
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-
-.selectedItem {
+.empty {
 	align-items: center;
-	background: var(--bg);
-	border: 1px solid var(--border);
-	border-radius: var(--radius);
+	color: var(--muted);
 	display: flex;
-	gap: var(--space-3);
-	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+	margin: 0;
+}
+
+.chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+}
+
+.chip {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	color: var(--ink);
+	cursor: pointer;
+	font-size: 14px;
 	padding: var(--space-2) var(--space-3);
+	transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
 
-.selectedInfo {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
+.chip:hover {
+	border-color: var(--primary);
 }
 
-.selectedSub {
-	color: var(--muted);
-	font-size: 13px;
+.chipSelected {
+	background: var(--primary);
+	border-color: var(--primary);
+	color: #fff;
 }
 
-.addRow {
-	align-items: flex-end;
-	display: flex;
-	gap: var(--space-2);
+.chipSelected:hover {
+	border-color: var(--primary);
 }
 
-.addRow > :first-child {
-	flex: 1;
-}
-
-.emptyHint {
-	color: var(--muted);
-	font-size: 13px;
-	font-style: italic;
-}
-
-.stepFooter {
-	display: flex;
-	gap: var(--space-2);
-	justify-content: space-between;
-}
-
-.stepFooterRight {
-	display: flex;
-	gap: var(--space-2);
-}
-
-.pageActions {
-	background: var(--bg);
-	bottom: 0;
-	display: flex;
-	gap: var(--space-2);
-	justify-content: flex-end;
-	padding: var(--space-3) 0;
-	position: sticky;
-}
-
-.modalForm {
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-3);
-}
-
-.modalGrid {
+.grid {
 	display: grid;
 	gap: var(--space-3);
 	grid-template-columns: 1fr 1fr;
 }
 
-.modalActions {
+.checkbox {
+	align-items: center;
+	cursor: pointer;
 	display: flex;
 	gap: var(--space-2);
-	justify-content: flex-end;
-	margin-top: var(--space-2);
 }
 
-.checkboxRow {
-	align-items: center;
+.actions {
 	display: flex;
+	flex-wrap: wrap;
 	gap: var(--space-2);
 }
 
 @media (max-width: 768px) {
-	.grid2,
-	.grid3,
-	.modalGrid {
+	.header {
+		flex-direction: column;
+	}
+
+	.grid {
 		grid-template-columns: 1fr;
 	}
 }

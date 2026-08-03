@@ -7,8 +7,10 @@ import { paths } from '@/config/routes';
 import {
 	useCreateProperty,
 	useDeleteProperty,
+	usePatchProperty,
 	useProperties,
 	type CreateProperty,
+	type PatchProperty,
 	type Property,
 } from '@/api/properties';
 import { useLeases, type Lease } from '@/api/leases';
@@ -87,6 +89,38 @@ function toCreateProperty(form: PropertyFormState): CreateProperty {
 	return payload;
 }
 
+function propertyToForm(p: Property): PropertyFormState {
+	return {
+		addressLine: p.addressLine,
+		postalCode: p.postalCode,
+		city: p.city,
+		propertyTypeKey: p.propertyTypeKey,
+		surfaceM2: p.surfaceM2 != null ? String(p.surfaceM2) : '',
+		roomCount: p.roomCount != null ? String(p.roomCount) : '',
+		dpeGrade: p.dpeGrade ?? '—',
+		furnished: p.furnished ? 'furnished' : 'unfurnished',
+	};
+}
+
+// Merge Patch : les champs optionnels vidés sont renvoyés à `null` pour les effacer.
+function toPatchProperty(form: PropertyFormState): PatchProperty {
+	const surface = parseFloat(form.surfaceM2);
+	const rooms = parseInt(form.roomCount, 10);
+	return {
+		addressLine: form.addressLine.trim(),
+		postalCode: form.postalCode.trim(),
+		city: form.city.trim(),
+		propertyTypeKey: form.propertyTypeKey,
+		furnished: form.furnished === 'furnished',
+		surfaceM2: Number.isFinite(surface) && surface > 0 ? surface : null,
+		roomCount: Number.isFinite(rooms) && rooms > 0 ? rooms : null,
+		dpeGrade:
+			form.dpeGrade !== '—' && /^[A-G]$/.test(form.dpeGrade)
+				? (form.dpeGrade as PatchProperty['dpeGrade'])
+				: null,
+	};
+}
+
 function formatPropertyTitle(p: Property): string {
 	return `${p.addressLine}, ${p.postalCode} ${p.city}`;
 }
@@ -139,9 +173,12 @@ export const BiensPage = () => {
 	const propertiesQuery = useProperties();
 	const leasesQuery = useLeases();
 	const createProperty = useCreateProperty();
+	const patchProperty = usePatchProperty();
 	const deleteProperty = useDeleteProperty();
 
-	const [isCreateOpen, setCreateOpen] = useState(false);
+	const [isFormOpen, setFormOpen] = useState(false);
+	// null = création ; sinon id du bien en cours d'édition.
+	const [editingId, setEditingId] = useState<string | null>(null);
 	const [propertyForm, setPropertyForm] = useState<PropertyFormState>(
 		EMPTY_PROPERTY_FORM,
 	);
@@ -196,18 +233,35 @@ export const BiensPage = () => {
 
 	const resetPropertyForm = (): void => {
 		setPropertyForm(EMPTY_PROPERTY_FORM);
+		setEditingId(null);
 	};
+
+	const openCreate = (): void => {
+		resetPropertyForm();
+		setFormOpen(true);
+	};
+
+	const openEdit = (property: Property): void => {
+		setPropertyForm(propertyToForm(property));
+		setEditingId(property.id);
+		setFormOpen(true);
+	};
+
+	const isSubmitting = createProperty.isPending || patchProperty.isPending;
 
 	const onSubmitProperty = (event: FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
-		if (!isPropertyFormValid(propertyForm) || createProperty.isPending) return;
-		createProperty.mutate(toCreateProperty(propertyForm), {
-			onSuccess: () => {
-				toast.success(t('properties.toast.created'));
-				setCreateOpen(false);
-				resetPropertyForm();
-			},
-		});
+		if (!isPropertyFormValid(propertyForm) || isSubmitting) return;
+		const onSuccess = (): void => {
+			toast.success(editingId ? t('properties.toast.updated') : t('properties.toast.created'));
+			setFormOpen(false);
+			resetPropertyForm();
+		};
+		if (editingId) {
+			patchProperty.mutate({ id: editingId, body: toPatchProperty(propertyForm) }, { onSuccess });
+		} else {
+			createProperty.mutate(toCreateProperty(propertyForm), { onSuccess });
+		}
 	};
 
 	const confirmDelete = async (): Promise<void> => {
@@ -232,7 +286,7 @@ export const BiensPage = () => {
 		<div className={styles.page}>
 			<header className={styles.header}>
 				<h1>{t('properties.title')}</h1>
-				<Button onPress={() => setCreateOpen(true)}>
+				<Button onPress={openCreate}>
 					{'+ '}
 					{t('properties.addButton')}
 				</Button>
@@ -255,6 +309,12 @@ export const BiensPage = () => {
 									</p>
 								</div>
 								<div className={styles.propertyActions}>
+									<Button
+										onPress={() => openEdit(property)}
+										variant="outlined"
+									>
+										{t('common.actions.edit')}
+									</Button>
 									<Button
 										onPress={() => setConfirmDeleteId(property.id)}
 										variant="ghost"
@@ -323,13 +383,13 @@ export const BiensPage = () => {
 			)}
 
 			<Modal
-				isOpen={isCreateOpen}
+				isOpen={isFormOpen}
 				onOpenChange={(open) => {
-					setCreateOpen(open);
+					setFormOpen(open);
 					if (!open) resetPropertyForm();
 				}}
 				size="md"
-				title={t('properties.modalTitle')}
+				title={editingId ? t('properties.editModalTitle') : t('properties.modalTitle')}
 			>
 				<form className={styles.modalForm} onSubmit={onSubmitProperty}>
 					<TextField
@@ -393,20 +453,20 @@ export const BiensPage = () => {
 
 					<div className={styles.modalActions}>
 						<Button
-							onPress={() => setCreateOpen(false)}
+							onPress={() => setFormOpen(false)}
 							variant="ghost"
 						>
 							{t('common.actions.cancel')}
 						</Button>
 						<Button
-							isDisabled={
-								!isPropertyFormValid(propertyForm) || createProperty.isPending
-							}
+							isDisabled={!isPropertyFormValid(propertyForm) || isSubmitting}
 							type="submit"
 						>
-							{createProperty.isPending
+							{isSubmitting
 								? t('properties.form.submitting')
-								: t('properties.form.submit')}
+								: editingId
+									? t('common.actions.save')
+									: t('properties.form.submit')}
 						</Button>
 					</div>
 				</form>

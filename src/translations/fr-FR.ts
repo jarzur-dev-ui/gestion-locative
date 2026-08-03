@@ -108,6 +108,7 @@ export const frFR = {
 		noTenants: 'Aucun locataire',
 		newLeaseButton: 'Nouveau bail',
 		modalTitle: 'Ajouter un bien',
+		editModalTitle: 'Modifier le bien',
 		surfaceValue: '{{value}} m²',
 		roomCount_one: '{{count}} pièce',
 		roomCount_other: '{{count}} pièces',
@@ -134,6 +135,7 @@ export const frFR = {
 		},
 		toast: {
 			created: 'Bien créé ✓',
+			updated: 'Bien mis à jour ✓',
 			deleted: 'Bien supprimé',
 		},
 	},

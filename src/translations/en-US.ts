@@ -111,6 +111,7 @@ export const enUS: Translation = {
 		noTenants: 'No tenant',
 		newLeaseButton: 'New lease',
 		modalTitle: 'Add a property',
+		editModalTitle: 'Edit property',
 		surfaceValue: '{{value}} m²',
 		roomCount_one: '{{count}} room',
 		roomCount_other: '{{count}} rooms',
@@ -137,6 +138,7 @@ export const enUS: Translation = {
 		},
 		toast: {
 			created: 'Property created ✓',
+			updated: 'Property updated ✓',
 			deleted: 'Property deleted',
 		},
 	},
