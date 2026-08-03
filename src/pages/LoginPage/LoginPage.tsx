@@ -1,5 +1,7 @@
 import { type FormEvent, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { paths } from '@/config/routes';
 
 import { defaultRouteForRole, useAuth, useLogin } from '@/api/auth';
 import { Button } from '@/components/Button';
@@ -12,6 +14,7 @@ interface LocationState {
 }
 
 export const LoginPage = () => {
+	const { t } = useTranslation();
 	const { data: currentUser, isLoading } = useAuth();
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -26,7 +29,7 @@ export const LoginPage = () => {
 	if (isLoading) {
 		return (
 			<div className={styles.container}>
-				<p className={styles.subtitle}>Chargement…</p>
+				<p className={styles.subtitle}>{t('auth.login.loading')}</p>
 			</div>
 		);
 	}
@@ -55,13 +58,13 @@ export const LoginPage = () => {
 	return (
 		<div className={styles.container}>
 			<form className={styles.card} onSubmit={onSubmit}>
-				<h1 className={styles.title}>Connexion</h1>
-				<p className={styles.subtitle}>gestion-locative</p>
+				<h1 className={styles.title}>{t('auth.login.title')}</h1>
+				<p className={styles.subtitle}>{t('auth.login.subtitle')}</p>
 
 				<TextField
 					autoComplete="email"
 					autoFocus
-					label="Email"
+					label={t('auth.login.email')}
 					name="email"
 					onChange={(e) => setEmail(e.target.value)}
 					required
@@ -70,7 +73,7 @@ export const LoginPage = () => {
 				/>
 				<TextField
 					autoComplete="current-password"
-					label="Mot de passe"
+					label={t('auth.login.password')}
 					name="password"
 					onChange={(e) => setPassword(e.target.value)}
 					required
@@ -83,11 +86,11 @@ export const LoginPage = () => {
 				) : null}
 
 				<Button disabled={loginMutation.isPending} type="submit">
-					{loginMutation.isPending ? 'Connexion…' : 'Se connecter'}
+					{loginMutation.isPending ? t('auth.login.submitting') : t('auth.login.submit')}
 				</Button>
 
 				<p className={styles.forgotLink}>
-					<Link to="/forgot-password">Mot de passe oublié ?</Link>
+					<Link to={paths.forgotPassword()}>{t('auth.login.forgot')}</Link>
 				</p>
 			</form>
 		</div>

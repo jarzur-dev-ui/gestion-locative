@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/Button';
 import { ConfirmDialog } from '@/components/Modal';
@@ -25,6 +26,7 @@ const fullName = (t: Tenant): string =>
 	`${t.civility ? `${t.civility} ` : ''}${t.firstName} ${t.lastName}`.trim();
 
 export const LocatairesPage = () => {
+	const { t } = useTranslation();
 	const tenantsQuery = useTenants();
 	const deleteMutation = useDeleteTenant();
 	const inviteMutation = useCreateInvitation();
@@ -57,7 +59,7 @@ export const LocatairesPage = () => {
 				onSuccess: (data) => {
 					setInvitePayload({ shareUrl: data.shareUrl, expiresAt: data.expiresAt });
 					setInviteModalOpen(true);
-					toast.success("Lien d'invitation généré (valide 7 jours)");
+					toast.success(t('locataires.toast.inviteLinkGenerated'));
 				},
 			},
 		);
@@ -66,15 +68,15 @@ export const LocatairesPage = () => {
 	return (
 		<div className={styles.page}>
 			<header className={styles.header}>
-				<h1>Mes locataires</h1>
-				<Button onPress={openCreate}>+ Ajouter un locataire</Button>
+				<h1>{t('locataires.title')}</h1>
+				<Button onPress={openCreate}>{t('locataires.addButton')}</Button>
 			</header>
 
 			{tenantsQuery.isLoading ? <Skeleton lines={8} /> : null}
 
 			{tenantsQuery.isSuccess && tenantsQuery.data.length === 0 ? (
 				<p className={styles.empty}>
-					Aucun locataire. Ajoute-en un pour pouvoir créer un bail.
+					{t('locataires.empty')}
 				</p>
 			) : null}
 
@@ -92,34 +94,46 @@ export const LocatairesPage = () => {
 										<span className={styles.email}>({tenant.email})</span>
 									</div>
 									<div className={styles.itemMeta}>
-										{tenant.phone ? <span>Tel : {tenant.phone}</span> : null}
+										{tenant.phone ? (
+											<span>{t('locataires.phoneLabel', { phone: tenant.phone })}</span>
+										) : null}
 										{tenant.birthDate ? (
-											<span>Né(e) : {formatBirthDate(tenant.birthDate)}</span>
+											<span>
+												{t('locataires.birthDateLabel', {
+													date: formatBirthDate(tenant.birthDate),
+												})}
+											</span>
 										) : null}
 									</div>
 									<div className={styles.status}>
 										{hasAccount ? (
-											<span className={styles.statusOk}>✓ Compte créé</span>
+											<span className={styles.statusOk}>
+												{t('locataires.status.accountCreated')}
+											</span>
 										) : (
 											<span className={styles.statusPending}>
-												⏳ Pas encore invité(e)
+												{t('locataires.status.notInvited')}
 											</span>
 										)}
 									</div>
 								</div>
 								<div className={styles.itemActions}>
 									<Button onPress={() => openEdit(tenant)} variant="outlined">
-										Modifier
+										{t('common.actions.edit')}
 									</Button>
 									<Button
 										isDisabled={hasAccount || isInviting}
 										onPress={() => handleInvite(tenant)}
 										variant="outlined"
 									>
-										{hasAccount ? 'Compte créé' : isInviting ? '…' : 'Inviter'}
+										{hasAccount
+											? t('locataires.invite.buttonDone')
+											: isInviting
+												? t('locataires.invite.buttonPending')
+												: t('locataires.invite.button')}
 									</Button>
 									<Button
-										aria-label={`Supprimer ${fullName(tenant)}`}
+										aria-label={t('locataires.deleteAriaLabel', { name: fullName(tenant) })}
 										onPress={() => setConfirmDelete(tenant)}
 										variant="danger"
 									>
@@ -139,19 +153,19 @@ export const LocatairesPage = () => {
 			/>
 
 			<ConfirmDialog
-				description="Supprimer ce locataire ? Action irréversible."
+				description={t('locataires.confirmDelete.description')}
 				isOpen={confirmDelete !== null}
 				isPending={deleteMutation.isPending}
 				onConfirm={async () => {
 					if (!confirmDelete) return;
 					await deleteMutation.mutateAsync(confirmDelete.id);
-					toast.success('Locataire supprimé');
+					toast.success(t('locataires.toast.tenantDeleted'));
 					setConfirmDelete(null);
 				}}
 				onOpenChange={(open) => {
 					if (!open) setConfirmDelete(null);
 				}}
-				title="Supprimer ce locataire ?"
+				title={t('locataires.confirmDelete.title')}
 				variant="danger"
 			/>
 

@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/Button';
 import { DatePickerField } from '@/components/DatePicker';
@@ -20,10 +21,7 @@ import styles from './GarantsPage.module.scss';
 
 const CIVILITIES = ['', 'M.', 'Mme', 'Mlle'] as const;
 
-const TYPE_OPTIONS = [
-	{ key: 'person' as const, label: 'Personne physique' },
-	{ key: 'organization' as const, label: 'Organisation' },
-];
+const TYPE_OPTIONS = ['person', 'organization'] as const satisfies readonly GuarantorType[];
 
 interface PersonFormState {
 	civility: string;
@@ -119,6 +117,7 @@ export const GuarantorFormModal = ({
 	guarantor,
 	initialType = 'person',
 }: GuarantorFormModalProps) => {
+	const { t } = useTranslation();
 	const isEdit = Boolean(guarantor);
 
 	// Le type est immutable côté back : en édition on le verrouille à la
@@ -170,7 +169,7 @@ export const GuarantorFormModal = ({
 		let body: CreateGuarantorBody;
 		if (type === 'person') {
 			if (!personForm.firstName.trim() || !personForm.lastName.trim()) {
-				toast.error('Prénom et nom sont obligatoires.');
+				toast.error(t('garants.form.errors.personRequired'));
 				return;
 			}
 			body = {
@@ -188,7 +187,7 @@ export const GuarantorFormModal = ({
 			};
 		} else {
 			if (!orgForm.organizationName.trim()) {
-				toast.error("Le nom de l'organisation est obligatoire.");
+				toast.error(t('garants.form.errors.organizationNameRequired'));
 				return;
 			}
 			body = {
@@ -204,7 +203,7 @@ export const GuarantorFormModal = ({
 		}
 		createMutation.mutate(body, {
 			onSuccess: () => {
-				toast.success('Garant créé');
+				toast.success(t('garants.toasts.created'));
 				onOpenChange(false);
 			},
 		});
@@ -243,7 +242,7 @@ export const GuarantorFormModal = ({
 			{ id: guarantor.id, body },
 			{
 				onSuccess: () => {
-					toast.success('Garant mis à jour');
+					toast.success(t('garants.toasts.updated'));
 					onOpenChange(false);
 				},
 			},
@@ -261,20 +260,20 @@ export const GuarantorFormModal = ({
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
 			size="lg"
-			title={isEdit ? 'Modifier le garant' : 'Ajouter un garant'}
+			title={isEdit ? t('garants.form.editTitle') : t('garants.form.createTitle')}
 		>
 			<form className={styles.form} onSubmit={onSubmit}>
 				{/* Type : éditable uniquement en création. */}
 				<div className={styles.typeRow}>
 					<label className={styles.typeLabel} htmlFor="guarantor-type">
-						Type de garant
+						{t('garants.form.typeLabel')}
 					</label>
 					{isEdit ? (
 						<span className={styles.typeReadonly}>
-							{type === 'person' ? 'Personne physique' : 'Organisation'}
+							{t(`garants.form.type.${type}` as never)}
 							<span className={styles.muted}>
 								{' '}
-								— le type est figé après création
+								{t('garants.form.typeLockedHint')}
 							</span>
 						</span>
 					) : (
@@ -284,9 +283,9 @@ export const GuarantorFormModal = ({
 							onChange={(e) => setType(e.target.value as GuarantorType)}
 							value={type}
 						>
-							{TYPE_OPTIONS.map((o) => (
-								<option key={o.key} value={o.key}>
-									{o.label}
+							{TYPE_OPTIONS.map((key) => (
+								<option key={key} value={key}>
+									{t(`garants.form.type.${key}` as never)}
 								</option>
 							))}
 						</select>
@@ -297,61 +296,61 @@ export const GuarantorFormModal = ({
 					<>
 						<div className={styles.grid}>
 							<SelectField
-								label="Civilité"
+								label={t('garants.form.civility')}
 								onChange={(e) => setPersonField('civility', e.target.value)}
 								options={CIVILITIES}
 								value={personForm.civility}
 							/>
 							<TextField
-								label="Prénom"
+								label={t('garants.form.firstName')}
 								onChange={(e) => setPersonField('firstName', e.target.value)}
 								required
 								value={personForm.firstName}
 							/>
 							<TextField
-								label="Nom"
+								label={t('garants.form.lastName')}
 								onChange={(e) => setPersonField('lastName', e.target.value)}
 								required
 								value={personForm.lastName}
 							/>
 							<TextField
-								label="Email"
+								label={t('garants.form.email')}
 								onChange={(e) => setPersonField('email', e.target.value)}
 								type="email"
 								value={personForm.email}
 							/>
 							<TextField
-								label="Téléphone"
+								label={t('garants.form.phone')}
 								onChange={(e) => setPersonField('phone', e.target.value)}
 								value={personForm.phone}
 							/>
 							<DatePickerField
-								label="Date de naissance"
+								label={t('garants.form.birthDate')}
 								onChange={(v) => setPersonField('birthDate', v)}
 								value={personForm.birthDate}
 							/>
 							<TextField
-								label="Lieu de naissance"
+								label={t('garants.form.birthPlace')}
 								onChange={(e) => setPersonField('birthPlace', e.target.value)}
 								value={personForm.birthPlace}
 							/>
 						</div>
 
-						<h3 className={styles.subsection}>Adresse</h3>
+						<h3 className={styles.subsection}>{t('garants.form.addressSection')}</h3>
 						<div className={styles.grid}>
 							<TextField
 								className={styles.fullRow}
-								label="Adresse"
+								label={t('garants.form.address')}
 								onChange={(e) => setPersonField('addressLine', e.target.value)}
 								value={personForm.addressLine}
 							/>
 							<TextField
-								label="Code postal"
+								label={t('garants.form.postalCode')}
 								onChange={(e) => setPersonField('postalCode', e.target.value)}
 								value={personForm.postalCode}
 							/>
 							<TextField
-								label="Ville"
+								label={t('garants.form.city')}
 								onChange={(e) => setPersonField('city', e.target.value)}
 								value={personForm.city}
 							/>
@@ -362,47 +361,47 @@ export const GuarantorFormModal = ({
 						<div className={styles.grid}>
 							<TextField
 								className={styles.fullRow}
-								label="Nom de l'organisation"
+								label={t('garants.form.organizationName')}
 								onChange={(e) => setOrgField('organizationName', e.target.value)}
 								required
 								value={orgForm.organizationName}
 							/>
 							<TextField
-								hint="SIREN, n° interne, etc."
-								label="Référence organisation"
+								hint={t('garants.form.organizationReferenceHint')}
+								label={t('garants.form.organizationReference')}
 								onChange={(e) =>
 									setOrgField('organizationReference', e.target.value)
 								}
 								value={orgForm.organizationReference}
 							/>
 							<TextField
-								label="Email (optionnel)"
+								label={t('garants.form.emailOptional')}
 								onChange={(e) => setOrgField('email', e.target.value)}
 								type="email"
 								value={orgForm.email}
 							/>
 							<TextField
-								label="Téléphone"
+								label={t('garants.form.phone')}
 								onChange={(e) => setOrgField('phone', e.target.value)}
 								value={orgForm.phone}
 							/>
 						</div>
 
-						<h3 className={styles.subsection}>Adresse</h3>
+						<h3 className={styles.subsection}>{t('garants.form.addressSection')}</h3>
 						<div className={styles.grid}>
 							<TextField
 								className={styles.fullRow}
-								label="Adresse"
+								label={t('garants.form.address')}
 								onChange={(e) => setOrgField('addressLine', e.target.value)}
 								value={orgForm.addressLine}
 							/>
 							<TextField
-								label="Code postal"
+								label={t('garants.form.postalCode')}
 								onChange={(e) => setOrgField('postalCode', e.target.value)}
 								value={orgForm.postalCode}
 							/>
 							<TextField
-								label="Ville"
+								label={t('garants.form.city')}
 								onChange={(e) => setOrgField('city', e.target.value)}
 								value={orgForm.city}
 							/>
@@ -416,10 +415,14 @@ export const GuarantorFormModal = ({
 						onPress={() => onOpenChange(false)}
 						variant="ghost"
 					>
-						Annuler
+						{t('common.actions.cancel')}
 					</Button>
 					<Button disabled={isPending} type="submit">
-						{isPending ? '…en cours' : isEdit ? 'Enregistrer' : 'Créer'}
+						{isPending
+							? t('common.pending')
+							: isEdit
+								? t('common.actions.save')
+								: t('common.actions.create')}
 					</Button>
 				</div>
 			</form>

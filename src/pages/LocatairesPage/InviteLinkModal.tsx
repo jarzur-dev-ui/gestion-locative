@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
@@ -27,6 +28,7 @@ export const InviteLinkModal = ({
 	shareUrl,
 	expiresAt,
 }: InviteLinkModalProps) => {
+	const { t } = useTranslation();
 	const [copied, setCopied] = useState(false);
 
 	const onCopy = async (): Promise<void> => {
@@ -34,31 +36,30 @@ export const InviteLinkModal = ({
 		try {
 			await navigator.clipboard.writeText(shareUrl);
 			setCopied(true);
-			toast.success('Lien copié dans le presse-papier');
+			toast.success(t('locataires.toast.linkCopied'));
 			window.setTimeout(() => setCopied(false), 2000);
 		} catch {
-			toast.error('Impossible de copier le lien — copie-le manuellement.');
+			toast.error(t('locataires.toast.copyFailed'));
 		}
 	};
 
 	return (
-		<Modal isOpen={isOpen} onOpenChange={onOpenChange} title="Lien d'invitation">
+		<Modal isOpen={isOpen} onOpenChange={onOpenChange} title={t('locataires.invite.modalTitle')}>
 			<div className={styles.inviteBody}>
-				<p>
-					Partage ce lien avec la personne concernée pour qu'elle active son compte
-					et accède à son dossier.
-				</p>
+				<p>{t('locataires.invite.description')}</p>
 				{shareUrl ? (
 					<div className={styles.shareUrlBox}>
 						<code className={styles.shareUrl}>{shareUrl}</code>
 					</div>
 				) : null}
 				{expiresAt ? (
-					<p className={styles.muted}>Valide jusqu'au {formatExpiry(expiresAt)}.</p>
+					<p className={styles.muted}>
+						{t('locataires.invite.expiresUntil', { date: formatExpiry(expiresAt) })}
+					</p>
 				) : null}
 				<div className={styles.actions}>
 					<Button onPress={() => onOpenChange(false)} variant="ghost">
-						Fermer
+						{t('common.actions.close')}
 					</Button>
 					<Button
 						isDisabled={!shareUrl}
@@ -66,7 +67,7 @@ export const InviteLinkModal = ({
 							void onCopy();
 						}}
 					>
-						{copied ? 'Copié ✓' : 'Copier le lien'}
+						{copied ? t('locataires.invite.copyButtonDone') : t('locataires.invite.copyButton')}
 					</Button>
 				</div>
 			</div>

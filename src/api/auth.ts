@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { paths } from '@/config/routes';
+
 import { api, type components } from './client';
 
 export type CurrentUser = components['schemas']['UserPublic'];
@@ -112,6 +114,6 @@ export function useResetPassword() {
  * Landlord va sur les biens, locataire/garant sur "Mon dossier" (Phase 4).
  */
 export function defaultRouteForRole(role: UserRole): string {
-	if (role === 'landlord') return '/biens';
-	return '/mon-dossier';
+	if (role === 'landlord') return paths.biens();
+	return paths.monDossier();
 }

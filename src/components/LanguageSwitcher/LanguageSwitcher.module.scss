@@ -1,0 +1,32 @@
+// Contrôle segmenté compact, pensé pour un fond sombre (rail / menu mobile).
+.switcher {
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	border-radius: var(--radius);
+	display: inline-flex;
+	overflow: hidden;
+}
+
+.option {
+	background: transparent;
+	border: 0;
+	color: rgba(255, 255, 255, 0.75);
+	cursor: pointer;
+	font: inherit;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	padding: 4px 10px;
+
+	&:not(:last-child) {
+		border-right: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	&:hover {
+		color: #fff;
+	}
+}
+
+.active {
+	background: rgba(255, 255, 255, 0.18);
+	color: #fff;
+}

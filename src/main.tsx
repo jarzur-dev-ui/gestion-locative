@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { queryClient } from '@/api/query-client';
 import { App } from '@/App';
 import { ToastProvider } from '@/components/Toast';
+import '@/config/i18n';
 
 import '@/styles/global.scss';
 

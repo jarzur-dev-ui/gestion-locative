@@ -1,4 +1,6 @@
+import type { TFunction } from 'i18next';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/Button';
 import { ConfirmDialog } from '@/components/Modal';
@@ -23,14 +25,14 @@ const formatBirthDate = (iso: string): string => {
 	return `${d}/${m}/${y}`;
 };
 
-const guarantorDisplayName = (g: Guarantor): string => {
+const guarantorDisplayName = (g: Guarantor, t: TFunction): string => {
 	if (g.guarantorTypeKey === 'organization') {
-		return g.organizationName ?? 'Organisation sans nom';
+		return g.organizationName ?? t('garants.list.organizationNoName');
 	}
 	const civ = g.civility ? `${g.civility} ` : '';
 	const first = g.firstName ?? '';
 	const last = g.lastName ?? '';
-	return `${civ}${first} ${last}`.trim() || 'Garant';
+	return `${civ}${first} ${last}`.trim() || t('garants.list.fallbackName');
 };
 
 interface GuarantorListProps {
@@ -48,6 +50,7 @@ const GuarantorList = ({
 	onInvite,
 	invitingId,
 }: GuarantorListProps) => {
+	const { t } = useTranslation();
 	const query = useGuarantors(typeFilter);
 
 	if (query.isLoading) {
@@ -58,8 +61,8 @@ const GuarantorList = ({
 		return (
 			<p className={styles.empty}>
 				{typeFilter === 'person'
-					? "Aucune personne physique. Ajoute un garant pour qu'il puisse être rattaché à un bail."
-					: 'Aucune organisation. Ajoute un garant moral (caution solidaire, Visale, etc.).'}
+					? t('garants.list.emptyPerson')
+					: t('garants.list.emptyOrganization')}
 			</p>
 		);
 	}
@@ -76,25 +79,37 @@ const GuarantorList = ({
 					<li className={styles.item} key={g.id}>
 						<div className={styles.itemMain}>
 							<div className={styles.itemHeader}>
-								<strong>{guarantorDisplayName(g)}</strong>
+								<strong>{guarantorDisplayName(g, t)}</strong>
 								{g.email ? <span className={styles.email}>({g.email})</span> : null}
 							</div>
 							<div className={styles.itemMeta}>
-								{g.phone ? <span>Tel : {g.phone}</span> : null}
+								{g.phone ? (
+									<span>{t('garants.list.phone', { phone: g.phone })}</span>
+								) : null}
 								{isPerson && g.birthDate ? (
-									<span>Né(e) : {formatBirthDate(g.birthDate)}</span>
+									<span>
+										{t('garants.list.birthDate', {
+											date: formatBirthDate(g.birthDate),
+										})}
+									</span>
 								) : null}
 								{!isPerson && g.organizationReference ? (
-									<span>Réf : {g.organizationReference}</span>
+									<span>
+										{t('garants.list.reference', {
+											reference: g.organizationReference,
+										})}
+									</span>
 								) : null}
 							</div>
 							{isPerson ? (
 								<div className={styles.status}>
 									{hasAccount ? (
-										<span className={styles.statusOk}>✓ Compte créé</span>
+										<span className={styles.statusOk}>
+											✓ {t('garants.list.accountCreated')}
+										</span>
 									) : (
 										<span className={styles.statusPending}>
-											⏳ Pas encore invité(e)
+											⏳ {t('garants.list.notInvited')}
 										</span>
 									)}
 								</div>
@@ -102,7 +117,7 @@ const GuarantorList = ({
 						</div>
 						<div className={styles.itemActions}>
 							<Button onPress={() => onEdit(g)} variant="outlined">
-								Modifier
+								{t('common.actions.edit')}
 							</Button>
 							{isPerson ? (
 								<Button
@@ -110,11 +125,17 @@ const GuarantorList = ({
 									onPress={() => onInvite(g)}
 									variant="outlined"
 								>
-									{hasAccount ? 'Compte créé' : isInviting ? '…' : 'Inviter'}
+									{hasAccount
+										? t('garants.list.accountCreated')
+										: isInviting
+											? t('garants.actions.inviting')
+											: t('garants.actions.invite')}
 								</Button>
 							) : null}
 							<Button
-								aria-label={`Supprimer ${guarantorDisplayName(g)}`}
+								aria-label={t('garants.actions.deleteAria', {
+									name: guarantorDisplayName(g, t),
+								})}
 								onPress={() => onDelete(g)}
 								variant="danger"
 							>
@@ -129,6 +150,7 @@ const GuarantorList = ({
 };
 
 export const GarantsPage = () => {
+	const { t } = useTranslation();
 	// On précharge le compte des deux types pour les libellés de tabs.
 	const personsQuery = useGuarantors('person');
 	const orgsQuery = useGuarantors('organization');
@@ -168,7 +190,7 @@ export const GarantsPage = () => {
 				onSuccess: (data) => {
 					setInvitePayload({ shareUrl: data.shareUrl, expiresAt: data.expiresAt });
 					setInviteModalOpen(true);
-					toast.success("Lien d'invitation généré (valide 7 jours)");
+					toast.success(t('garants.toasts.inviteLinkGenerated'));
 				},
 			},
 		);
@@ -185,8 +207,8 @@ export const GarantsPage = () => {
 	return (
 		<div className={styles.page}>
 			<header className={styles.header}>
-				<h1>Mes garants</h1>
-				<Button onPress={openCreate}>+ Ajouter un garant</Button>
+				<h1>{t('garants.title')}</h1>
+				<Button onPress={openCreate}>+ {t('garants.actions.add')}</Button>
 			</header>
 
 			<Tabs
@@ -195,7 +217,7 @@ export const GarantsPage = () => {
 				tabs={[
 					{
 						key: 'person',
-						label: `Personnes physiques (${personsCount})`,
+						label: t('garants.tabs.persons', { count: personsCount }),
 						panel: (
 							<GuarantorList
 								invitingId={invitingId}
@@ -208,7 +230,7 @@ export const GarantsPage = () => {
 					},
 					{
 						key: 'organization',
-						label: `Organisations (${orgsCount})`,
+						label: t('garants.tabs.organizations', { count: orgsCount }),
 						panel: (
 							<GuarantorList
 								invitingId={invitingId}
@@ -230,19 +252,19 @@ export const GarantsPage = () => {
 			/>
 
 			<ConfirmDialog
-				description="Supprimer ce garant ? Action irréversible."
+				description={t('garants.deleteConfirm.description')}
 				isOpen={confirmDelete !== null}
 				isPending={deleteMutation.isPending}
 				onConfirm={async () => {
 					if (!confirmDelete) return;
 					await deleteMutation.mutateAsync(confirmDelete.id);
-					toast.success('Garant supprimé');
+					toast.success(t('garants.toasts.deleted'));
 					setConfirmDelete(null);
 				}}
 				onOpenChange={(open) => {
 					if (!open) setConfirmDelete(null);
 				}}
-				title="Supprimer ce garant ?"
+				title={t('garants.deleteConfirm.title')}
 				variant="danger"
 			/>
 

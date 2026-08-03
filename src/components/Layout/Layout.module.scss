@@ -185,6 +185,15 @@ $rail-open: 248px;
 	}
 }
 
+// Sélecteur de langue : caché quand le rail est replié (icônes seules).
+.railLang {
+	margin-bottom: var(--space-1);
+}
+
+.rail:not(:hover):not(.pinned) .railLang {
+	display: none;
+}
+
 .main {
 	margin: 0 auto;
 	max-width: 1000px;

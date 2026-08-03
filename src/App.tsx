@@ -1,6 +1,8 @@
-import { lazy, Suspense } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 
+import i18n, { SUPPORTED_LANGUAGES, type AppLanguage } from '@/config/i18n';
+import { paths, SEGMENTS } from '@/config/routes';
 import { Layout } from '@/components/Layout';
 import { RequireAuth } from '@/components/RequireAuth';
 import { Skeleton } from '@/components/Skeleton';
@@ -57,40 +59,70 @@ const PageFallback = () => (
 	</div>
 );
 
+// Aligne la langue i18next sur le préfixe de l'URL (/fr-FR/…, /en-US/…).
+const LangGate = ({ lang }: { lang: AppLanguage }) => {
+	useEffect(() => {
+		if (i18n.resolvedLanguage !== lang) void i18n.changeLanguage(lang);
+	}, [lang]);
+	return <Outlet />;
+};
+
+// Racine / chemins inconnus → home localisée dans la langue détectée.
+const RootRedirect = () => <Navigate replace to={paths.biens()} />;
+
+const langRoutes = (lng: AppLanguage) => (
+	<Route element={<LangGate lang={lng} />} key={lng} path={lng}>
+		{/* Routes publiques */}
+		<Route element={<LoginPage />} path={SEGMENTS.login[lng]} />
+		<Route
+			element={<AcceptInvitationPage />}
+			path={`${SEGMENTS.acceptInvitation[lng]}/:token`}
+		/>
+		<Route element={<ForgotPasswordPage />} path={SEGMENTS.forgotPassword[lng]} />
+		<Route element={<ResetPasswordPage />} path={`${SEGMENTS.resetPassword[lng]}/:token`} />
+
+		{/* Routes bailleur — protégées par RequireAuth + filtre rôle */}
+		<Route element={<RequireAuth roles={['landlord']} />}>
+			<Route element={<Layout />}>
+				<Route element={<BiensPage />} path={SEGMENTS.biens[lng]} />
+				<Route
+					element={<BailEditPage />}
+					path={`${SEGMENTS.biens[lng]}/:propertyId/${SEGMENTS.baux[lng]}/${SEGMENTS.nouveau[lng]}`}
+				/>
+				<Route
+					element={<BailEditPage />}
+					path={`${SEGMENTS.biens[lng]}/:propertyId/${SEGMENTS.baux[lng]}/:leaseId`}
+				/>
+				<Route
+					element={<BailPrintPage />}
+					path={`${SEGMENTS.biens[lng]}/:propertyId/${SEGMENTS.baux[lng]}/:leaseId/${SEGMENTS.print[lng]}`}
+				/>
+				<Route element={<LocatairesPage />} path={SEGMENTS.locataires[lng]} />
+				<Route element={<GarantsPage />} path={SEGMENTS.garants[lng]} />
+				<Route element={<QuittancesPage />} path={SEGMENTS.quittances[lng]} />
+				<Route element={<ReglagesPage />} path={SEGMENTS.reglages[lng]} />
+				<Route element={<MigrationPage />} path={SEGMENTS.migration[lng]} />
+			</Route>
+		</Route>
+
+		{/* Routes locataire/garant — vue Mon dossier */}
+		<Route element={<RequireAuth roles={['tenant', 'guarantor']} />}>
+			<Route element={<Layout />}>
+				<Route element={<MonDossierPage />} path={SEGMENTS.monDossier[lng]} />
+			</Route>
+		</Route>
+
+		{/* /:lang → home bailleur */}
+		<Route element={<Navigate replace to={SEGMENTS.biens[lng]} />} index />
+	</Route>
+);
+
 export const App = () => (
 	<Suspense fallback={<PageFallback />}>
 		<Routes>
-			{/* Routes publiques */}
-			<Route element={<LoginPage />} path="/login" />
-			<Route element={<AcceptInvitationPage />} path="/accept-invitation/:token" />
-			<Route element={<ForgotPasswordPage />} path="/forgot-password" />
-			<Route element={<ResetPasswordPage />} path="/reset-password/:token" />
-
-			{/* Routes bailleur — protégées par RequireAuth + filtre rôle */}
-			<Route element={<RequireAuth roles={['landlord']} />}>
-				<Route element={<Layout />}>
-					<Route element={<Navigate replace to="/biens" />} path="/" />
-					<Route element={<BiensPage />} path="/biens" />
-					<Route element={<BailEditPage />} path="/biens/:propertyId/baux/nouveau" />
-					<Route element={<BailEditPage />} path="/biens/:propertyId/baux/:leaseId" />
-					<Route element={<BailPrintPage />} path="/biens/:propertyId/baux/:leaseId/print" />
-					<Route element={<LocatairesPage />} path="/locataires" />
-					<Route element={<GarantsPage />} path="/garants" />
-					<Route element={<QuittancesPage />} path="/quittances" />
-					<Route element={<ReglagesPage />} path="/reglages" />
-					<Route element={<MigrationPage />} path="/migration" />
-				</Route>
-			</Route>
-
-			{/* Routes locataire/garant — vue Mon dossier */}
-			<Route element={<RequireAuth roles={['tenant', 'guarantor']} />}>
-				<Route element={<Layout />}>
-					<Route element={<MonDossierPage />} path="/mon-dossier" />
-				</Route>
-			</Route>
-
-			{/* Fallback : 404 → login (qui redirige ensuite vers la home selon le rôle si auth) */}
-			<Route element={<Navigate replace to="/login" />} path="*" />
+			{SUPPORTED_LANGUAGES.map((lng) => langRoutes(lng))}
+			<Route element={<RootRedirect />} path="/" />
+			<Route element={<RootRedirect />} path="*" />
 		</Routes>
 	</Suspense>
 );

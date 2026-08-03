@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useLeases } from '@/api/leases';
 import { type Property, useProperties } from '@/api/properties';
@@ -79,10 +80,10 @@ const defaultPeriodMonth = (): string => {
 	return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 };
 
-const STATUS_LABELS: Record<RentPeriod['statusKey'], string> = {
-	draft: 'Brouillon',
-	notice_sent: 'Avis envoyé',
-	paid: 'Payé',
+const STATUS_I18N_KEY: Record<RentPeriod['statusKey'], string> = {
+	draft: 'draft',
+	notice_sent: 'noticeSent',
+	paid: 'paid',
 };
 
 const UNPAID_WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -104,6 +105,7 @@ const isWithinUndoWindow = (
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export const QuittancesPage = () => {
+	const { t } = useTranslation();
 	const monthOptions = useMemo(() => buildMonthOptions(), []);
 	const [periodMonth, setPeriodMonth] = useState<string>(defaultPeriodMonth());
 
@@ -127,10 +129,10 @@ export const QuittancesPage = () => {
 	return (
 		<div className={styles.page}>
 			<header className={styles.header}>
-				<h1>Quittances</h1>
+				<h1>{t('quittances.title')}</h1>
 				<div className={styles.headerControl}>
 					<label className={styles.headerLabel} htmlFor="period-month">
-						Mois affiché
+						{t('quittances.monthLabel')}
 					</label>
 					<select
 						className={styles.headerSelect}
@@ -150,10 +152,7 @@ export const QuittancesPage = () => {
 			{isLoading ? (
 				<Skeleton lines={6} />
 			) : !rentPeriods || rentPeriods.length === 0 ? (
-				<p className={styles.empty}>
-					Aucune quittance pour ce mois. Si tu as des baux actifs, elles seront créées
-					automatiquement par le scheduler 15 jours avant le jour d'échéance.
-				</p>
+				<p className={styles.empty}>{t('quittances.empty')}</p>
 			) : (
 				<ul className={styles.cardList}>
 					{rentPeriods.map((rp) => {
@@ -181,6 +180,7 @@ interface RentPeriodCardProps {
 }
 
 const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
+	const { t } = useTranslation();
 	const markPaid = useMarkPaid();
 	const markUnpaid = useMarkUnpaid();
 	const sendNotice = useSendNotice();
@@ -205,7 +205,7 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 	const canUndoUnpaid = isWithinUndoWindow(rentPeriod.statusKey, rentPeriod.paidAt, now);
 
 	const tenantNames = rentPeriod.tenants
-		.map((t) => `${t.firstName} ${t.lastName}`)
+		.map((tenant) => `${tenant.firstName} ${tenant.lastName}`)
 		.join(' & ');
 	const propertyAddress = property
 		? `${property.addressLine}, ${property.postalCode} ${property.city}`
@@ -215,7 +215,7 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 	const handleMarkPaid = (): void => {
 		markPaid.mutate(rentPeriod.id, {
 			onSuccess: () => {
-				toast.success('Paiement enregistré, quittance générée');
+				toast.success(t('quittances.toast.paidSuccess'));
 			},
 		});
 	};
@@ -223,7 +223,7 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 	// Action : tentative d'annulation depuis "Non".
 	const handleRequestUnpaid = (): void => {
 		if (!canUndoUnpaid) {
-			toast.error("Fenêtre d'annulation dépassée (24h)");
+			toast.error(t('quittances.toast.undoWindowExpired'));
 			return;
 		}
 		setConfirmUnpaidOpen(true);
@@ -231,13 +231,13 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 
 	const handleConfirmUnpaid = async (): Promise<void> => {
 		await markUnpaid.mutateAsync(rentPeriod.id);
-		toast.success('Paiement annulé');
+		toast.success(t('quittances.toast.unpaidSuccess'));
 	};
 
 	const handleSendNotice = (): void => {
 		sendNotice.mutate(rentPeriod.id, {
 			onSuccess: () => {
-				toast.success("Avis d'échéance envoyé");
+				toast.success(t('quittances.toast.noticeSentSuccess'));
 			},
 		});
 	};
@@ -247,42 +247,42 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 			<div className={styles.cardHeader}>
 				<div>
 					<div className={styles.cardTitle}>
-						{tenantNames || 'Bail'}
+						{tenantNames || t('quittances.card.defaultTitle')}
 					</div>
 					{propertyAddress ? (
 						<div className={styles.cardSubtitle}>{propertyAddress}</div>
 					) : null}
 				</div>
 				<span className={classNames(styles.statusBadge, styles[`status_${rentPeriod.statusKey}`])}>
-					{STATUS_LABELS[rentPeriod.statusKey]}
+					{t(`quittances.status.${STATUS_I18N_KEY[rentPeriod.statusKey]}` as never)}
 				</span>
 			</div>
 
 			<dl className={styles.cardFacts}>
 				<div className={styles.fact}>
-					<dt>Période</dt>
+					<dt>{t('quittances.card.facts.period')}</dt>
 					<dd>{formatPeriodMonth(rentPeriod.periodMonth)}</dd>
 				</div>
 				<div className={styles.fact}>
-					<dt>Échéance</dt>
+					<dt>{t('quittances.card.facts.dueDate')}</dt>
 					<dd>{formatDateFr(rentPeriod.dueDate)}</dd>
 				</div>
 				<div className={styles.fact}>
-					<dt>Loyer</dt>
+					<dt>{t('quittances.card.facts.rent')}</dt>
 					<dd>{formatCents(rentPeriod.baseRentCents)}</dd>
 				</div>
 				<div className={styles.fact}>
-					<dt>Charges</dt>
+					<dt>{t('quittances.card.facts.charges')}</dt>
 					<dd>{formatCents(rentPeriod.baseChargesCents)}</dd>
 				</div>
 				{rentPeriod.adjustments.length > 0 ? (
 					<div className={styles.fact}>
-						<dt>Régularisations</dt>
+						<dt>{t('quittances.card.facts.adjustments')}</dt>
 						<dd>{formatCents(totalAdjustments)}</dd>
 					</div>
 				) : null}
 				<div className={classNames(styles.fact, styles.factTotal)}>
-					<dt>Total dû</dt>
+					<dt>{t('quittances.card.facts.totalDue')}</dt>
 					<dd>{formatCents(rentPeriod.totalDueCents)}</dd>
 				</div>
 			</dl>
@@ -291,7 +291,9 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 				<ul className={styles.adjustmentList}>
 					{rentPeriod.adjustments.map((adj, i) => (
 						<li className={styles.adjustment} key={`${adj.type}-${i}`}>
-							<span>{adj.label || ADJUSTMENT_TYPE_LABELS[adj.type]}</span>
+							<span>
+								{adj.label || t(`quittances.adjustmentType.${ADJUSTMENT_TYPE_I18N_KEY[adj.type]}` as never)}
+							</span>
 							<span>{formatCents(adj.amountCents)}</span>
 						</li>
 					))}
@@ -300,15 +302,15 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 
 			{rentPeriod.noticeSentAt ? (
 				<p className={styles.cardNote}>
-					Avis envoyé le {formatDateFr(rentPeriod.noticeSentAt)}
+					{t('quittances.card.noticeSentOn', { date: formatDateFr(rentPeriod.noticeSentAt) })}
 				</p>
 			) : null}
 
 			{/* Toggle Oui/Non : feature centrale */}
 			<div className={styles.toggleRow}>
-				<span className={styles.toggleLabel}>Paiement reçu ?</span>
+				<span className={styles.toggleLabel}>{t('quittances.card.toggleLabel')}</span>
 				<div
-					aria-label="Paiement reçu"
+					aria-label={t('quittances.card.toggleAriaLabel')}
 					className={styles.toggle}
 					role="group"
 				>
@@ -319,7 +321,7 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 						onClick={handleMarkPaid}
 						type="button"
 					>
-						Oui
+						{t('quittances.card.yes')}
 					</button>
 					<button
 						aria-pressed={!isPaid}
@@ -328,14 +330,14 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 						onClick={handleRequestUnpaid}
 						type="button"
 					>
-						Non
+						{t('quittances.card.no')}
 					</button>
 				</div>
 			</div>
 
 			{isPaid && rentPeriod.paidAt ? (
 				<p className={styles.cardNote}>
-					Quittance générée le {formatDateFr(rentPeriod.paidAt)}
+					{t('quittances.card.receiptGeneratedOn', { date: formatDateFr(rentPeriod.paidAt) })}
 				</p>
 			) : null}
 
@@ -347,7 +349,7 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 						onPress={handleRequestUnpaid}
 						variant="danger"
 					>
-						↩ Annuler le paiement
+						{t('quittances.card.cancelPayment')}
 					</Button>
 				</div>
 			) : null}
@@ -360,21 +362,21 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 						onPress={handleSendNotice}
 						variant="outlined"
 					>
-						Envoyer l'avis maintenant
+						{t('quittances.card.sendNoticeNow')}
 					</Button>
 					<Button onPress={() => setAdjustModalOpen(true)} variant="outlined">
-						Ajouter une régularisation
+						{t('quittances.card.addAdjustment')}
 					</Button>
 				</div>
 			) : null}
 
 			<ConfirmDialog
-				description="La quittance sera marquée comme annulée."
+				description={t('quittances.confirmUnpaid.description')}
 				isOpen={confirmUnpaidOpen}
 				isPending={markUnpaid.isPending}
 				onConfirm={handleConfirmUnpaid}
 				onOpenChange={setConfirmUnpaidOpen}
-				title="Annuler le paiement ?"
+				title={t('quittances.confirmUnpaid.title')}
 				variant="danger"
 			/>
 
@@ -396,11 +398,11 @@ const ADJUSTMENT_TYPES: AdjustmentType[] = [
 	'other',
 ];
 
-const ADJUSTMENT_TYPE_LABELS: Record<AdjustmentType, string> = {
-	teom: 'TEOM',
-	previous_balance: 'Solde antérieur',
-	charges_regularization: 'Régularisation de charges',
-	other: 'Autre',
+const ADJUSTMENT_TYPE_I18N_KEY: Record<AdjustmentType, string> = {
+	teom: 'teom',
+	previous_balance: 'previousBalance',
+	charges_regularization: 'chargesRegularization',
+	other: 'other',
 };
 
 interface AddAdjustmentModalProps {
@@ -414,6 +416,7 @@ const AddAdjustmentModal = ({
 	onOpenChange,
 	rentPeriod,
 }: AddAdjustmentModalProps) => {
+	const { t } = useTranslation();
 	const [type, setType] = useState<AdjustmentType>('teom');
 	const [label, setLabel] = useState('');
 	const [amountCents, setAmountCents] = useState<number>(0);
@@ -447,7 +450,7 @@ const AddAdjustmentModal = ({
 			// succès (toast + fermeture) et éviter une promesse non gérée.
 			return;
 		}
-		toast.success('Régularisation ajoutée');
+		toast.success(t('quittances.toast.adjustmentAdded'));
 		onOpenChange(false);
 	};
 
@@ -456,25 +459,25 @@ const AddAdjustmentModal = ({
 			isOpen={isOpen}
 			onOpenChange={handleOpenChange}
 			size="sm"
-			title="Ajouter une régularisation"
+			title={t('quittances.adjustmentModal.title')}
 		>
 			<form className={styles.adjustmentForm} onSubmit={handleSubmit}>
 				<SelectField
-					label="Type"
+					label={t('quittances.adjustmentModal.typeLabel')}
 					onChange={(e) => setType(e.target.value as AdjustmentType)}
 					options={ADJUSTMENT_TYPES}
 					value={type}
 				/>
 				<TextField
-					label="Libellé (optionnel)"
+					label={t('quittances.adjustmentModal.labelFieldLabel')}
 					onChange={(e) => setLabel(e.target.value)}
-					placeholder={ADJUSTMENT_TYPE_LABELS[type]}
+					placeholder={t(`quittances.adjustmentType.${ADJUSTMENT_TYPE_I18N_KEY[type]}` as never)}
 					type="text"
 					value={label}
 				/>
 				<TextField
-					hint="Montant en centimes (ex: 1234 = 12,34 €)"
-					label="Montant (centimes)"
+					hint={t('quittances.adjustmentModal.amountHint')}
+					label={t('quittances.adjustmentModal.amountLabel')}
 					onChange={(e) => setAmountCents(Number(e.target.value) || 0)}
 					step={1}
 					type="number"
@@ -486,10 +489,10 @@ const AddAdjustmentModal = ({
 						onPress={() => onOpenChange(false)}
 						variant="outlined"
 					>
-						Annuler
+						{t('common.actions.cancel')}
 					</Button>
 					<Button isDisabled={patch.isPending} type="submit">
-						{patch.isPending ? '…en cours' : 'Ajouter'}
+						{patch.isPending ? t('quittances.adjustmentModal.submitting') : t('common.actions.add')}
 					</Button>
 				</div>
 			</form>

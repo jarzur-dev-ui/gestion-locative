@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { paths } from '@/config/routes';
 
 import {
 	type ImportReport,
@@ -14,6 +16,7 @@ import { toast } from '@/components/Toast';
 import styles from './MigrationPage.module.scss';
 
 export const MigrationPage = () => {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const importMut = useImportLegacy();
 
@@ -28,7 +31,7 @@ export const MigrationPage = () => {
 		importMut.mutate(legacy, {
 			onSuccess: (rep) => {
 				setReport(rep);
-				toast.success('Import terminé');
+				toast.success(t('migration.toast.importDone'));
 			},
 		});
 	};
@@ -36,64 +39,65 @@ export const MigrationPage = () => {
 	const clearLegacyStorage = () => {
 		window.localStorage.removeItem('gl.bailleur');
 		window.localStorage.removeItem('gl.baux');
-		toast.success('LocalStorage legacy supprimé');
+		toast.success(t('migration.toast.storageCleared'));
 		setLegacy(null);
 	};
 
 	return (
 		<div className={styles.wrap}>
 			<header>
-				<h1>Importer mes données depuis l'ancienne version</h1>
+				<h1>{t('migration.title')}</h1>
 				<p className={styles.subtitle}>
-					Cette page lit les données stockées dans le navigateur par la V1 de gestion-locative
-					(clés <code>gl.bailleur</code> et <code>gl.baux</code> du localStorage) et les transfère
-					dans la base de données.
+					{t('migration.subtitlePart1')}
+					<code>gl.bailleur</code>
+					{t('migration.subtitlePart2')}
+					<code>gl.baux</code>
+					{t('migration.subtitlePart3')}
 				</p>
 				<p className={styles.warning}>
-					⚠ L'import est idempotent (sûr à re-lancer), mais effectue ces actions :
+					{t('migration.warningIntro')}
 					<br />
-					— Met à jour ton profil bailleur (si déjà rempli, écrasement des valeurs)
+					{t('migration.warningBullet1')}
 					<br />
-					— Crée les biens manquants par adresse (skip si déjà créés)
+					{t('migration.warningBullet2')}
 					<br />
-					— Crée les locataires manquants par email (skip si déjà existants)
+					{t('migration.warningBullet3')}
 					<br />
-					— Crée les baux manquants par (bien + locataire + date début)
+					{t('migration.warningBullet4')}
 				</p>
 			</header>
 
 			{legacy === null ? (
 				<div className={styles.empty}>
-					<p>Aucune donnée legacy détectée dans ce navigateur.</p>
+					<p>{t('migration.empty.title')}</p>
 					<p className={styles.muted}>
-						Pour importer, ouvre cette page <strong>dans le même navigateur</strong> que celui où
-						tu utilisais la V1 de gestion-locative. Les données sont dans le localStorage du
-						domaine d'origine — si tu changes de navigateur, elles ne sont pas disponibles.
+						{t('migration.empty.hintPart1')}
+						<strong>{t('migration.empty.hintStrong')}</strong>
+						{t('migration.empty.hintPart2')}
 					</p>
-					<Button onPress={() => navigate('/biens')}>Retour</Button>
+					<Button onPress={() => navigate(paths.biens())}>{t('migration.back')}</Button>
 				</div>
 			) : (
 				<>
 					<section className={styles.preview}>
-						<h2>Aperçu des données à importer</h2>
+						<h2>{t('migration.preview.title')}</h2>
 						<dl>
-							<dt>Bailleur</dt>
+							<dt>{t('migration.preview.bailleur')}</dt>
 							<dd>
-								{legacy.bailleur.nom ?? '(sans nom)'} —{' '}
-								{legacy.bailleur.email ?? '(sans email)'}
+								{legacy.bailleur.nom ?? t('migration.preview.noName')} —{' '}
+								{legacy.bailleur.email ?? t('migration.preview.noEmail')}
 							</dd>
-							<dt>Nombre de baux</dt>
+							<dt>{t('migration.preview.leaseCount')}</dt>
 							<dd>{legacy.baux.length}</dd>
-							<dt>Locataires (estimation)</dt>
+							<dt>{t('migration.preview.tenantsEstimate')}</dt>
 							<dd>
-								{
-									new Set(
+								{t('migration.preview.distinctCount', {
+									count: new Set(
 										legacy.baux
 											.map((b) => b.locataireEmail ?? b.locataire ?? '')
 											.filter(Boolean),
-									).size
-								}{' '}
-								distincts
+									).size,
+								})}
 							</dd>
 						</dl>
 					</section>
@@ -101,45 +105,61 @@ export const MigrationPage = () => {
 					{report === null ? (
 						<div className={styles.actions}>
 							<Button isDisabled={importMut.isPending} onPress={doImport}>
-								{importMut.isPending ? 'Import en cours…' : `Lancer l'import (${legacy.baux.length} baux)`}
+								{importMut.isPending
+									? t('migration.importing')
+									: t('migration.startImport', { count: legacy.baux.length })}
 							</Button>
-							<Button onPress={() => navigate('/biens')} variant="ghost">
-								Annuler
+							<Button onPress={() => navigate(paths.biens())} variant="ghost">
+								{t('common.actions.cancel')}
 							</Button>
 						</div>
 					) : (
 						<section className={styles.report}>
-							<h2>Résultat de l'import</h2>
+							<h2>{t('migration.report.title')}</h2>
 							<dl>
-								<dt>Profil bailleur</dt>
+								<dt>{t('migration.report.profile')}</dt>
 								<dd>
 									{report.profile.created
-										? '✓ Créé'
+										? t('migration.report.created')
 										: report.profile.updated
-											? '✓ Mis à jour'
-											: '— inchangé'}
+											? t('migration.report.updated')
+											: t('migration.report.unchanged')}
 								</dd>
-								<dt>Biens</dt>
+								<dt>{t('migration.report.properties')}</dt>
 								<dd>
-									{report.properties.created} créés, {report.properties.skipped} déjà présents
+									{t('migration.report.createdSkipped', {
+										created: report.properties.created,
+										skipped: report.properties.skipped,
+									})}
 								</dd>
-								<dt>Locataires</dt>
+								<dt>{t('migration.report.tenants')}</dt>
 								<dd>
-									{report.tenants.created} créés, {report.tenants.skipped} déjà présents
+									{t('migration.report.createdSkipped', {
+										created: report.tenants.created,
+										skipped: report.tenants.skipped,
+									})}
 								</dd>
-								<dt>Garants</dt>
+								<dt>{t('migration.report.guarantors')}</dt>
 								<dd>
-									{report.guarantors.created} créés, {report.guarantors.skipped} déjà présents
+									{t('migration.report.createdSkipped', {
+										created: report.guarantors.created,
+										skipped: report.guarantors.skipped,
+									})}
 								</dd>
-								<dt>Baux</dt>
+								<dt>{t('migration.report.leases')}</dt>
 								<dd>
-									{report.leases.created} créés, {report.leases.skipped} déjà présents
+									{t('migration.report.createdSkipped', {
+										created: report.leases.created,
+										skipped: report.leases.skipped,
+									})}
 								</dd>
 							</dl>
 
 							{report.warnings.length > 0 ? (
 								<>
-									<h3>Avertissements ({report.warnings.length})</h3>
+									<h3>
+										{t('migration.report.warningsTitle', { count: report.warnings.length })}
+									</h3>
 									<ul>
 										{report.warnings.map((w, i) => (
 											<li key={i}>{w}</li>
@@ -149,9 +169,9 @@ export const MigrationPage = () => {
 							) : null}
 
 							<div className={styles.actions}>
-								<Button onPress={() => navigate('/biens')}>Voir mes biens</Button>
+								<Button onPress={() => navigate(paths.biens())}>{t('migration.viewProperties')}</Button>
 								<Button onPress={() => setConfirmOpen(true)} variant="danger">
-									Vider le localStorage legacy
+									{t('migration.clearStorage')}
 								</Button>
 							</div>
 						</section>
@@ -160,11 +180,11 @@ export const MigrationPage = () => {
 			)}
 
 			<ConfirmDialog
-				description="Une fois supprimées, les données legacy du localStorage seront perdues. Confirme uniquement si l'import s'est bien passé et que tu n'auras plus besoin de relancer cet écran."
+				description={t('migration.confirmClear.description')}
 				isOpen={confirmOpen}
 				onConfirm={clearLegacyStorage}
 				onOpenChange={setConfirmOpen}
-				title="Vider le localStorage legacy ?"
+				title={t('migration.confirmClear.title')}
 				variant="danger"
 			/>
 		</div>

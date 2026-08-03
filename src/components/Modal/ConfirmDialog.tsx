@@ -16,6 +16,7 @@
 
 import classNames from 'classnames';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/Button';
 
@@ -30,15 +31,18 @@ export const ConfirmDialog = ({
 	onOpenChange,
 	title,
 	description,
-	confirmLabel = 'Confirmer',
-	cancelLabel = 'Annuler',
+	confirmLabel,
+	cancelLabel,
 	variant = 'default',
 	onConfirm,
 	isPending = false,
 }: ConfirmDialogProps) => {
+	const { t } = useTranslation();
 	const [internalPending, setInternalPending] = useState(false);
 	const busy = isPending || internalPending;
 	const isDanger = variant === 'danger';
+	const resolvedConfirmLabel = confirmLabel ?? t('common.actions.confirm');
+	const resolvedCancelLabel = cancelLabel ?? t('common.actions.cancel');
 
 	const handleConfirm = async (): Promise<void> => {
 		if (busy) {
@@ -71,7 +75,7 @@ export const ConfirmDialog = ({
 						onClick={handleCancel}
 						variant="outlined"
 					>
-						{cancelLabel}
+						{resolvedCancelLabel}
 					</Button>
 					<Button
 						autoFocus={!isDanger}
@@ -82,7 +86,7 @@ export const ConfirmDialog = ({
 						}}
 						variant="filled"
 					>
-						{busy ? '…en cours' : confirmLabel}
+						{busy ? t('common.pending') : resolvedConfirmLabel}
 					</Button>
 				</div>
 			</div>

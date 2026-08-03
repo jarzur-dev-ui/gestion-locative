@@ -1,5 +1,8 @@
+import type { TFunction } from 'i18next';
 import { useMemo, useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { paths } from '@/config/routes';
 
 import {
 	useCreateProperty,
@@ -32,29 +35,8 @@ const PROPERTY_TYPE_OPTIONS = [
 	'commercial',
 ] as const;
 
-const PROPERTY_TYPE_LABELS: Record<string, string> = {
-	apartment: 'Appartement',
-	house: 'Maison',
-	studio: 'Studio',
-	parking: 'Parking',
-	storage: 'Cave / Box',
-	commercial: 'Local commercial',
-};
-
-// Options du sélecteur : clé i18n (value) affichée avec son libellé FR (label).
-const PROPERTY_TYPE_SELECT_OPTIONS = PROPERTY_TYPE_OPTIONS.map((key) => ({
-	value: key,
-	label: PROPERTY_TYPE_LABELS[key] ?? key,
-}));
-
 const DPE_OPTIONS = ['—', 'A', 'B', 'C', 'D', 'E', 'F', 'G'] as const;
-const FURNISHED_OPTIONS = ['Non meublé', 'Meublé'] as const;
-
-const LEASE_STATUS_LABEL: Record<Lease['statusKey'], string> = {
-	draft: 'Brouillon',
-	active: 'Actif',
-	ended: 'Terminé',
-};
+const FURNISHED_VALUES = ['unfurnished', 'furnished'] as const;
 
 interface PropertyFormState {
 	addressLine: string;
@@ -75,7 +57,7 @@ const EMPTY_PROPERTY_FORM: PropertyFormState = {
 	surfaceM2: '',
 	roomCount: '',
 	dpeGrade: '—',
-	furnished: 'Non meublé',
+	furnished: 'unfurnished',
 };
 
 function isPropertyFormValid(form: PropertyFormState): boolean {
@@ -93,7 +75,7 @@ function toCreateProperty(form: PropertyFormState): CreateProperty {
 		postalCode: form.postalCode.trim(),
 		city: form.city.trim(),
 		propertyTypeKey: form.propertyTypeKey,
-		furnished: form.furnished === 'Meublé',
+		furnished: form.furnished === 'furnished',
 	};
 	const surface = parseFloat(form.surfaceM2);
 	if (Number.isFinite(surface) && surface > 0) payload.surfaceM2 = surface;
@@ -109,31 +91,39 @@ function formatPropertyTitle(p: Property): string {
 	return `${p.addressLine}, ${p.postalCode} ${p.city}`;
 }
 
-function formatPropertyMeta(p: Property): string {
-	const parts: string[] = [
-		PROPERTY_TYPE_LABELS[p.propertyTypeKey] ?? p.propertyTypeKey,
-	];
-	if (p.surfaceM2 != null) parts.push(`${p.surfaceM2} m²`);
-	if (p.roomCount != null) {
-		parts.push(`${p.roomCount} pièce${p.roomCount > 1 ? 's' : ''}`);
+function formatPropertyMeta(p: Property, t: TFunction): string {
+	// propertyTypeKey is an untyped string from the back, not a literal union — cast needed for t().
+	const parts: string[] = [t(`domain.propertyType.${p.propertyTypeKey}` as never)];
+	if (p.surfaceM2 != null) {
+		parts.push(t('biens.surfaceValue', { value: p.surfaceM2 }));
 	}
-	if (p.dpeGrade) parts.push(`DPE ${p.dpeGrade}`);
-	if (p.furnished) parts.push('Meublé');
+	if (p.roomCount != null) {
+		parts.push(t('biens.roomCount', { count: p.roomCount }));
+	}
+	if (p.dpeGrade) parts.push(t('biens.dpeLabel', { grade: p.dpeGrade }));
+	if (p.furnished) parts.push(t('domain.furnished.furnished'));
 	return parts.join(' · ');
 }
 
-function formatTenants(lease: Lease): string {
-	if (lease.tenants.length === 0) return 'Aucun locataire';
+function formatTenants(lease: Lease, t: TFunction): string {
+	if (lease.tenants.length === 0) return t('biens.noTenants');
 	return lease.tenants
-		.map((t) => `${t.firstName} ${t.lastName}`.trim() || t.email)
+		.map((tenant) => `${tenant.firstName} ${tenant.lastName}`.trim() || tenant.email)
 		.join(', ');
 }
 
-function formatLeaseRange(lease: Lease): string {
+function formatLeaseRange(lease: Lease, t: TFunction): string {
 	const start = lease.startDate;
 	const end = lease.endDate;
-	if (start && end) return `du ${formatIsoDateFr(start)} au ${formatIsoDateFr(end)}`;
-	if (start) return `depuis le ${formatIsoDateFr(start)}`;
+	if (start && end) {
+		return t('biens.leaseRange.fromTo', {
+			start: formatIsoDateFr(start),
+			end: formatIsoDateFr(end),
+		});
+	}
+	if (start) {
+		return t('biens.leaseRange.since', { start: formatIsoDateFr(start) });
+	}
 	return '';
 }
 
@@ -144,6 +134,7 @@ function formatIsoDateFr(iso: string): string {
 }
 
 export const BiensPage = () => {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const propertiesQuery = useProperties();
 	const leasesQuery = useLeases();
@@ -171,6 +162,31 @@ export const BiensPage = () => {
 	const isLoading = propertiesQuery.isLoading || leasesQuery.isLoading;
 	const properties = propertiesQuery.data ?? [];
 
+	const propertyTypeSelectOptions = useMemo(
+		() =>
+			PROPERTY_TYPE_OPTIONS.map((key) => ({
+				value: key,
+				label: t(`domain.propertyType.${key}` as never),
+			})),
+		[t],
+	);
+	const furnishedSelectOptions = useMemo(
+		() =>
+			FURNISHED_VALUES.map((key) => ({
+				value: key,
+				label: t(`domain.furnished.${key}` as never),
+			})),
+		[t],
+	);
+	const dpeSelectOptions = useMemo(
+		() =>
+			DPE_OPTIONS.map((grade) => ({
+				value: grade,
+				label: grade === '—' ? t('domain.dpe.none') : grade,
+			})),
+		[t],
+	);
+
 	const setPropertyField = <K extends keyof PropertyFormState>(
 		key: K,
 		value: PropertyFormState[K],
@@ -187,7 +203,7 @@ export const BiensPage = () => {
 		if (!isPropertyFormValid(propertyForm) || createProperty.isPending) return;
 		createProperty.mutate(toCreateProperty(propertyForm), {
 			onSuccess: () => {
-				toast.success('Bien créé ✓');
+				toast.success(t('biens.toast.created'));
 				setCreateOpen(false);
 				resetPropertyForm();
 			},
@@ -199,14 +215,14 @@ export const BiensPage = () => {
 		// mutateAsync rethrow l'erreur → ConfirmDialog garde la modal ouverte.
 		// Le toast d'erreur est piloté par le global handler dans query-client.ts.
 		await deleteProperty.mutateAsync(confirmDeleteId);
-		toast.success('Bien supprimé');
+		toast.success(t('biens.toast.deleted'));
 		setConfirmDeleteId(null);
 	};
 
 	if (isLoading) {
 		return (
 			<div className={styles.page}>
-				<h1>Mes biens</h1>
+				<h1>{t('biens.title')}</h1>
 				<Skeleton lines={8} />
 			</div>
 		);
@@ -215,14 +231,15 @@ export const BiensPage = () => {
 	return (
 		<div className={styles.page}>
 			<header className={styles.header}>
-				<h1>Mes biens</h1>
-				<Button onPress={() => setCreateOpen(true)}>+ Ajouter un bien</Button>
+				<h1>{t('biens.title')}</h1>
+				<Button onPress={() => setCreateOpen(true)}>
+					{'+ '}
+					{t('biens.addButton')}
+				</Button>
 			</header>
 
 			{properties.length === 0 ? (
-				<p className={styles.empty}>
-					Aucun bien. Commence par en créer un.
-				</p>
+				<p className={styles.empty}>{t('biens.empty')}</p>
 			) : (
 				properties.map((property) => {
 					const leases = leasesByProperty.get(property.id) ?? [];
@@ -234,7 +251,7 @@ export const BiensPage = () => {
 										{formatPropertyTitle(property)}
 									</h2>
 									<p className={styles.propertyMeta}>
-										{formatPropertyMeta(property)}
+										{formatPropertyMeta(property, t)}
 									</p>
 								</div>
 								<div className={styles.propertyActions}>
@@ -242,15 +259,13 @@ export const BiensPage = () => {
 										onPress={() => setConfirmDeleteId(property.id)}
 										variant="ghost"
 									>
-										Supprimer
+										{t('common.actions.delete')}
 									</Button>
 								</div>
 							</div>
 
 							{leases.length === 0 ? (
-								<p className={styles.leaseEmpty}>
-									Aucun bail pour ce bien.
-								</p>
+								<p className={styles.leaseEmpty}>{t('biens.leaseEmpty')}</p>
 							) : (
 								<ul className={styles.leaseList}>
 									{leases.map((lease) => (
@@ -259,17 +274,19 @@ export const BiensPage = () => {
 												className={styles.leaseButton}
 												onClick={() =>
 													navigate(
-														`/biens/${property.id}/baux/${lease.id}`,
+														paths.leaseEdit(property.id, lease.id),
 													)
 												}
 												type="button"
 											>
 												<div className={styles.leaseInfo}>
 													<span className={styles.leaseTenants}>
-														Bail — {formatTenants(lease)}
+														{t('biens.leaseLabel', {
+															tenants: formatTenants(lease, t),
+														})}
 													</span>
 													<span className={styles.leaseSub}>
-														{formatLeaseRange(lease)}
+														{formatLeaseRange(lease, t)}
 													</span>
 												</div>
 											</button>
@@ -282,7 +299,7 @@ export const BiensPage = () => {
 															: styles.statusDraft
 												}`}
 											>
-												{LEASE_STATUS_LABEL[lease.statusKey]}
+												{t(`domain.leaseStatus.${lease.statusKey}` as never)}
 											</span>
 										</li>
 									))}
@@ -292,11 +309,12 @@ export const BiensPage = () => {
 							<div className={styles.leaseFooter}>
 								<Button
 									onPress={() =>
-										navigate(`/biens/${property.id}/baux/nouveau`)
+										navigate(paths.leaseNew(property.id))
 									}
 									variant="outlined"
 								>
-									+ Nouveau bail
+									{'+ '}
+									{t('biens.newLeaseButton')}
 								</Button>
 							</div>
 						</article>
@@ -311,24 +329,24 @@ export const BiensPage = () => {
 					if (!open) resetPropertyForm();
 				}}
 				size="md"
-				title="Ajouter un bien"
+				title={t('biens.modalTitle')}
 			>
 				<form className={styles.modalForm} onSubmit={onSubmitProperty}>
 					<TextField
-						label="Adresse"
+						label={t('biens.form.address')}
 						onChange={(e) => setPropertyField('addressLine', e.target.value)}
 						required
 						value={propertyForm.addressLine}
 					/>
 					<div className={styles.modalGrid}>
 						<TextField
-							label="Code postal"
+							label={t('biens.form.postalCode')}
 							onChange={(e) => setPropertyField('postalCode', e.target.value)}
 							required
 							value={propertyForm.postalCode}
 						/>
 						<TextField
-							label="Ville"
+							label={t('biens.form.city')}
 							onChange={(e) => setPropertyField('city', e.target.value)}
 							required
 							value={propertyForm.city}
@@ -336,30 +354,30 @@ export const BiensPage = () => {
 					</div>
 					<div className={styles.modalGrid}>
 						<SelectField
-							label="Type de bien"
+							label={t('biens.form.propertyType')}
 							onChange={(e) =>
 								setPropertyField('propertyTypeKey', e.target.value)
 							}
-							options={PROPERTY_TYPE_SELECT_OPTIONS}
+							options={propertyTypeSelectOptions}
 							value={propertyForm.propertyTypeKey}
 						/>
 						<SelectField
-							label="Meublé"
+							label={t('biens.form.furnished')}
 							onChange={(e) => setPropertyField('furnished', e.target.value)}
-							options={FURNISHED_OPTIONS}
+							options={furnishedSelectOptions}
 							value={propertyForm.furnished}
 						/>
 					</div>
 					<div className={styles.modalGrid}>
 						<TextField
-							label="Surface (m²)"
+							label={t('biens.form.surface')}
 							min={0}
 							onChange={(e) => setPropertyField('surfaceM2', e.target.value)}
 							type="number"
 							value={propertyForm.surfaceM2}
 						/>
 						<TextField
-							label="Nombre de pièces"
+							label={t('biens.form.roomCount')}
 							min={0}
 							onChange={(e) => setPropertyField('roomCount', e.target.value)}
 							type="number"
@@ -367,9 +385,9 @@ export const BiensPage = () => {
 						/>
 					</div>
 					<SelectField
-						label="DPE"
+						label={t('biens.form.dpe')}
 						onChange={(e) => setPropertyField('dpeGrade', e.target.value)}
-						options={DPE_OPTIONS}
+						options={dpeSelectOptions}
 						value={propertyForm.dpeGrade}
 					/>
 
@@ -378,7 +396,7 @@ export const BiensPage = () => {
 							onPress={() => setCreateOpen(false)}
 							variant="ghost"
 						>
-							Annuler
+							{t('common.actions.cancel')}
 						</Button>
 						<Button
 							isDisabled={
@@ -386,21 +404,23 @@ export const BiensPage = () => {
 							}
 							type="submit"
 						>
-							{createProperty.isPending ? 'Création…' : 'Créer le bien'}
+							{createProperty.isPending
+								? t('biens.form.submitting')
+								: t('biens.form.submit')}
 						</Button>
 					</div>
 				</form>
 			</Modal>
 
 			<ConfirmDialog
-				description="Cette action est définitive. Si un bail actif est rattaché, la suppression sera refusée par le serveur."
+				description={t('biens.deleteConfirm.description')}
 				isOpen={confirmDeleteId !== null}
 				isPending={deleteProperty.isPending}
 				onConfirm={confirmDelete}
 				onOpenChange={(open) => {
 					if (!open) setConfirmDeleteId(null);
 				}}
-				title="Supprimer ce bien ?"
+				title={t('biens.deleteConfirm.title')}
 				variant="danger"
 			/>
 		</div>

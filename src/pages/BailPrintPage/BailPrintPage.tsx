@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
+import { paths } from '@/config/routes';
 
 import { useLandlordProfile } from '@/api/landlord-profiles';
 import { useLease } from '@/api/leases';
@@ -15,6 +17,7 @@ import { todayIso } from '@/utils/format';
 import styles from './PrintPage.module.scss';
 
 export const BailPrintPage = () => {
+	const { t } = useTranslation();
 	const { propertyId, leaseId } = useParams<{ propertyId: string; leaseId: string }>();
 	const navigate = useNavigate();
 
@@ -26,8 +29,8 @@ export const BailPrintPage = () => {
 	const [dateSignature, setDateSignature] = useState(todayIso());
 	const [bailleurSig, setBailleurSig] = useState('');
 	const [locataireSig, setLocataireSig] = useState('');
-	const [bailleurMention, setBailleurMention] = useState('Lu et approuvé');
-	const [locataireMention, setLocataireMention] = useState('Lu et approuvé');
+	const [bailleurMention, setBailleurMention] = useState(t('baux.print.defaultMention'));
+	const [locataireMention, setLocataireMention] = useState(t('baux.print.defaultMention'));
 
 	if (leaseQ.isLoading || propertyQ.isLoading || landlordQ.isLoading) {
 		return (
@@ -40,8 +43,8 @@ export const BailPrintPage = () => {
 	if (!leaseQ.data || !propertyQ.data) {
 		return (
 			<div className={styles.toolbar}>
-				<p>Bail introuvable.</p>
-				<Button onPress={() => navigate('/biens')}>Retour</Button>
+				<p>{t('baux.print.leaseNotFound')}</p>
+				<Button onPress={() => navigate(paths.biens())}>{t('baux.actions.backPlain')}</Button>
 			</div>
 		);
 	}
@@ -49,8 +52,8 @@ export const BailPrintPage = () => {
 	if (!landlordQ.data) {
 		return (
 			<div className={styles.toolbar}>
-				<p>Profil bailleur incomplet. Renseigne tes coordonnées dans Réglages avant d'imprimer un bail.</p>
-				<Button onPress={() => navigate('/reglages')}>Aller aux réglages</Button>
+				<p>{t('baux.print.landlordProfileIncomplete')}</p>
+				<Button onPress={() => navigate(paths.reglages())}>{t('baux.print.goToSettings')}</Button>
 			</div>
 		);
 	}
@@ -63,46 +66,46 @@ export const BailPrintPage = () => {
 	return (
 		<div className={styles.wrap}>
 			<div className={`${styles.toolbar} no-print`}>
-				<Button onPress={() => navigate(`/biens/${propertyId}/baux/${leaseId}`)} variant="ghost">
-					← Retour
+				<Button onPress={() => navigate(paths.leaseEdit(propertyId, leaseId))} variant="ghost">
+					{t('baux.actions.back')}
 				</Button>
 				<TextField
-					label="Lieu de signature"
+					label={t('baux.print.placeLabel')}
 					onChange={(e) => setLieu(e.target.value)}
 					value={effectiveLieu}
 				/>
 				<TextField
-					label="Date de signature"
+					label={t('baux.print.dateLabel')}
 					onChange={(e) => setDateSignature(e.target.value)}
 					type="date"
 					value={dateSignature}
 				/>
-				<Button onPress={() => window.print()}>Imprimer / PDF</Button>
+				<Button onPress={() => window.print()}>{t('baux.print.printButton')}</Button>
 			</div>
 
 			<div className={`${styles.sigs} no-print`}>
 				<div className={styles.sigCol}>
 					<TextField
-						hint="Affiché en cursive au-dessus de la signature. Vider pour signer à la main."
-						label="Mention « Lu et approuvé » — bailleur"
+						hint={t('baux.print.mentionHint')}
+						label={t('baux.print.bailleurMentionLabel')}
 						onChange={(e) => setBailleurMention(e.target.value)}
 						value={bailleurMention}
 					/>
 					<SignaturePad
-						label="Signature du bailleur"
+						label={t('baux.print.bailleurSignatureLabel')}
 						onChange={setBailleurSig}
 						value={bailleurSig}
 					/>
 				</div>
 				<div className={styles.sigCol}>
 					<TextField
-						hint="Affiché en cursive au-dessus de la signature. Vider pour signer à la main."
-						label="Mention « Lu et approuvé » — locataire"
+						hint={t('baux.print.mentionHint')}
+						label={t('baux.print.locataireMentionLabel')}
 						onChange={(e) => setLocataireMention(e.target.value)}
 						value={locataireMention}
 					/>
 					<SignaturePad
-						label="Signature du locataire"
+						label={t('baux.print.locataireSignatureLabel')}
 						onChange={setLocataireSig}
 						value={locataireSig}
 					/>

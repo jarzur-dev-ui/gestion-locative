@@ -1,9 +1,13 @@
 import classNames from 'classnames';
+import type { ParseKeys } from 'i18next';
 import { useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 import { useAuth, useLogout, type UserRole } from '@/api/auth';
+import { paths } from '@/config/routes';
 import { Button } from '@/components/Button';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 import styles from './Layout.module.scss';
 
@@ -59,23 +63,29 @@ const ICONS: Record<string, ReactNode> = {
 };
 
 interface NavLinkSpec {
-	to: string;
-	label: string;
+	to: () => string;
+	labelKey: ParseKeys;
 	icon: ReactNode;
 	roles: UserRole[];
 }
 
 const NAV_LINKS: NavLinkSpec[] = [
-	{ to: '/biens', label: 'Biens & baux', icon: ICONS.biens, roles: ['landlord'] },
-	{ to: '/locataires', label: 'Locataires', icon: ICONS.locataires, roles: ['landlord'] },
-	{ to: '/garants', label: 'Garants', icon: ICONS.garants, roles: ['landlord'] },
-	{ to: '/quittances', label: 'Quittances', icon: ICONS.quittances, roles: ['landlord'] },
-	{ to: '/reglages', label: 'Réglages', icon: ICONS.reglages, roles: ['landlord'] },
-	{ to: '/migration', label: 'Import V1', icon: ICONS.migration, roles: ['landlord'] },
-	{ to: '/mon-dossier', label: 'Mon dossier', icon: ICONS.dossier, roles: ['tenant', 'guarantor'] },
+	{ to: paths.biens, labelKey: 'layout.nav.biens', icon: ICONS.biens, roles: ['landlord'] },
+	{ to: paths.locataires, labelKey: 'layout.nav.locataires', icon: ICONS.locataires, roles: ['landlord'] },
+	{ to: paths.garants, labelKey: 'layout.nav.garants', icon: ICONS.garants, roles: ['landlord'] },
+	{ to: paths.quittances, labelKey: 'layout.nav.quittances', icon: ICONS.quittances, roles: ['landlord'] },
+	{ to: paths.reglages, labelKey: 'layout.nav.reglages', icon: ICONS.reglages, roles: ['landlord'] },
+	{ to: paths.migration, labelKey: 'layout.nav.migration', icon: ICONS.migration, roles: ['landlord'] },
+	{
+		to: paths.monDossier,
+		labelKey: 'layout.nav.monDossier',
+		icon: ICONS.dossier,
+		roles: ['tenant', 'guarantor'],
+	},
 ];
 
 export const Layout = () => {
+	const { t } = useTranslation();
 	const { data: user } = useAuth();
 	const navigate = useNavigate();
 	const logoutMutation = useLogout();
@@ -84,16 +94,21 @@ export const Layout = () => {
 
 	const onLogout = (): void => {
 		logoutMutation.mutate(undefined, {
-			onSettled: () => navigate('/login', { replace: true }),
+			onSettled: () => navigate(paths.login(), { replace: true }),
 		});
 	};
 
 	const visibleLinks = user ? NAV_LINKS.filter((l) => l.roles.includes(user.role)) : [];
 
 	const navLinks = visibleLinks.map((link) => (
-		<NavLink className={navClass} key={link.to} onClick={() => setMenuOpen(false)} to={link.to}>
+		<NavLink
+			className={navClass}
+			key={link.labelKey}
+			onClick={() => setMenuOpen(false)}
+			to={link.to()}
+		>
 			<span className={styles.icon}>{link.icon}</span>
-			<span className={styles.label}>{link.label}</span>
+			<span className={styles.label}>{t(link.labelKey)}</span>
 		</NavLink>
 	));
 
@@ -104,10 +119,10 @@ export const Layout = () => {
 				<div className={styles.railTop}>
 					<span className={styles.brandMark}>
 						<span className={styles.icon}>{ICONS.biens}</span>
-						<span className={styles.brandText}>gestion-locative</span>
+						<span className={styles.brandText}>{t('layout.brand')}</span>
 					</span>
 					<button
-						aria-label={railPinned ? 'Détacher le menu' : 'Épingler le menu'}
+						aria-label={railPinned ? t('layout.unpinMenu') : t('layout.pinMenu')}
 						aria-pressed={railPinned}
 						className={styles.pin}
 						onClick={() => setRailPinned((v) => !v)}
@@ -121,6 +136,7 @@ export const Layout = () => {
 				<nav className={styles.railNav}>{navLinks}</nav>
 				<div className={styles.userBlock}>
 					{user ? <span className={styles.userEmail}>{user.email}</span> : null}
+					<LanguageSwitcher className={styles.railLang} />
 					<button
 						className={styles.logout}
 						disabled={logoutMutation.isPending}
@@ -135,7 +151,7 @@ export const Layout = () => {
 							</svg>
 						</span>
 						<span className={styles.label}>
-							{logoutMutation.isPending ? '…' : 'Déconnexion'}
+							{logoutMutation.isPending ? '…' : t('layout.logout')}
 						</span>
 					</button>
 				</div>
@@ -143,11 +159,11 @@ export const Layout = () => {
 
 			{/* Header haut + menu plein écran (mobile). */}
 			<header className={classNames(styles.header, 'no-print')}>
-				<div className={styles.brand}>gestion-locative</div>
+				<div className={styles.brand}>{t('layout.brand')}</div>
 				<button
 					aria-controls="main-menu"
 					aria-expanded={menuOpen}
-					aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+					aria-label={menuOpen ? t('layout.closeMenu') : t('layout.openMenu')}
 					className={styles.burger}
 					onClick={() => setMenuOpen((open) => !open)}
 					type="button"
@@ -161,8 +177,9 @@ export const Layout = () => {
 					<nav className={styles.nav}>{navLinks}</nav>
 					<div className={styles.userBlock}>
 						{user ? <span className={styles.userEmail}>{user.email}</span> : null}
+						<LanguageSwitcher />
 						<Button disabled={logoutMutation.isPending} onClick={onLogout} variant="ghost">
-							{logoutMutation.isPending ? '…' : 'Déconnexion'}
+							{logoutMutation.isPending ? '…' : t('layout.logout')}
 						</Button>
 					</div>
 				</div>

@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/Button';
 import { DatePickerField } from '@/components/DatePicker';
@@ -76,6 +77,7 @@ interface TenantFormModalProps {
 }
 
 export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModalProps) => {
+	const { t } = useTranslation();
 	const isEdit = Boolean(tenant);
 	const [form, setForm] = useState<FormState>(EMPTY_FORM);
 
@@ -103,7 +105,7 @@ export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModa
 		e.preventDefault();
 
 		if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
-			toast.error('Prénom, nom et email sont obligatoires.');
+			toast.error(t('locataires.toast.missingRequiredFields'));
 			return;
 		}
 
@@ -124,7 +126,7 @@ export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModa
 				{ id: tenant.id, body },
 				{
 					onSuccess: () => {
-						toast.success('Locataire mis à jour');
+						toast.success(t('locataires.toast.tenantUpdated'));
 						onOpenChange(false);
 					},
 				},
@@ -144,7 +146,7 @@ export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModa
 			};
 			createMutation.mutate(body, {
 				onSuccess: () => {
-					toast.success('Locataire créé');
+					toast.success(t('locataires.toast.tenantCreated'));
 					onOpenChange(false);
 				},
 			});
@@ -156,67 +158,67 @@ export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModa
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
 			size="lg"
-			title={isEdit ? 'Modifier le locataire' : 'Ajouter un locataire'}
+			title={isEdit ? t('locataires.form.editTitle') : t('locataires.form.createTitle')}
 		>
 			<form className={styles.form} onSubmit={onSubmit}>
 				<div className={styles.grid}>
 					<SelectField
-						label="Civilité"
+						label={t('locataires.form.civility')}
 						onChange={(e) => setField('civility', e.target.value)}
 						options={CIVILITIES}
 						value={form.civility}
 					/>
 					<TextField
-						label="Prénom"
+						label={t('locataires.form.firstName')}
 						onChange={(e) => setField('firstName', e.target.value)}
 						required
 						value={form.firstName}
 					/>
 					<TextField
-						label="Nom"
+						label={t('locataires.form.lastName')}
 						onChange={(e) => setField('lastName', e.target.value)}
 						required
 						value={form.lastName}
 					/>
 					<TextField
-						label="Email"
+						label={t('locataires.form.email')}
 						onChange={(e) => setField('email', e.target.value)}
 						required
 						type="email"
 						value={form.email}
 					/>
 					<TextField
-						label="Téléphone"
+						label={t('locataires.form.phone')}
 						onChange={(e) => setField('phone', e.target.value)}
 						value={form.phone}
 					/>
 					<DatePickerField
-						label="Date de naissance"
+						label={t('locataires.form.birthDate')}
 						onChange={(v) => setField('birthDate', v)}
 						value={form.birthDate}
 					/>
 					<TextField
-						label="Lieu de naissance"
+						label={t('locataires.form.birthPlace')}
 						onChange={(e) => setField('birthPlace', e.target.value)}
 						value={form.birthPlace}
 					/>
 				</div>
 
-				<h3 className={styles.subsection}>Adresse actuelle</h3>
+				<h3 className={styles.subsection}>{t('locataires.form.currentAddressSection')}</h3>
 				<div className={styles.grid}>
 					<TextField
 						className={styles.fullRow}
-						label="Adresse"
+						label={t('locataires.form.addressLine')}
 						onChange={(e) => setField('currentAddressLine', e.target.value)}
 						value={form.currentAddressLine}
 					/>
 					<TextField
-						label="Code postal"
+						label={t('locataires.form.postalCode')}
 						onChange={(e) => setField('currentPostalCode', e.target.value)}
 						value={form.currentPostalCode}
 					/>
 					<TextField
-						label="Ville"
+						label={t('locataires.form.city')}
 						onChange={(e) => setField('currentCity', e.target.value)}
 						value={form.currentCity}
 					/>
@@ -228,10 +230,14 @@ export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModa
 						onPress={() => onOpenChange(false)}
 						variant="ghost"
 					>
-						Annuler
+						{t('common.actions.cancel')}
 					</Button>
 					<Button disabled={isPending} type="submit">
-						{isPending ? '…en cours' : isEdit ? 'Enregistrer' : 'Créer'}
+						{isPending
+							? t('locataires.form.submitting')
+							: isEdit
+								? t('common.actions.save')
+								: t('common.actions.create')}
 					</Button>
 				</div>
 			</form>

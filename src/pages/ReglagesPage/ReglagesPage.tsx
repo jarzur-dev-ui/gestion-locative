@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	useLandlordProfile,
@@ -66,6 +67,7 @@ function toUpsertPayload(form: FormState): UpsertLandlordProfile {
 }
 
 export const ReglagesPage = () => {
+	const { t } = useTranslation();
 	const profileQuery = useLandlordProfile();
 	const upsertMutation = useUpsertLandlordProfile();
 
@@ -105,7 +107,7 @@ export const ReglagesPage = () => {
 		if (!valid || upsertMutation.isPending) return;
 		upsertMutation.mutate(toUpsertPayload(form), {
 			onSuccess: () => {
-				toast.success('Profil enregistré ✓');
+				toast.success(t('reglages.toast.saved'));
 			},
 		});
 	};
@@ -113,7 +115,7 @@ export const ReglagesPage = () => {
 	if (profileQuery.isLoading) {
 		return (
 			<div className={styles.page}>
-				<h1>Réglages</h1>
+				<h1>{t('reglages.title')}</h1>
 				<Skeleton lines={6} />
 			</div>
 		);
@@ -121,75 +123,72 @@ export const ReglagesPage = () => {
 
 	return (
 		<form className={styles.page} onSubmit={onSubmit}>
-			<h1>Réglages</h1>
-			<p className={styles.intro}>
-				Tes coordonnées de bailleur et ta signature, utilisées sur les baux et les
-				quittances.
-			</p>
+			<h1>{t('reglages.title')}</h1>
+			<p className={styles.intro}>{t('reglages.intro')}</p>
 
 			<section className={styles.grid}>
 				<SelectField
-					label="Civilité"
+					label={t('reglages.form.civility')}
 					onChange={(e) => set('civility', e.target.value)}
 					options={CIVILITY_OPTIONS}
 					value={form.civility}
 				/>
 				<div /> {/* spacer pour aligner la grille */}
 				<TextField
-					label="Prénom"
+					label={t('reglages.form.firstName')}
 					onChange={(e) => set('firstName', e.target.value)}
 					required
 					value={form.firstName}
 				/>
 				<TextField
-					label="Nom"
+					label={t('reglages.form.lastName')}
 					onChange={(e) => set('lastName', e.target.value)}
 					required
 					value={form.lastName}
 				/>
 				<TextField
-					label="Adresse"
+					label={t('reglages.form.addressLine')}
 					onChange={(e) => set('addressLine', e.target.value)}
 					required
 					value={form.addressLine}
 				/>
 				<TextField
-					label="Code postal"
+					label={t('reglages.form.postalCode')}
 					onChange={(e) => set('postalCode', e.target.value)}
 					required
 					value={form.postalCode}
 				/>
 				<TextField
-					label="Ville"
+					label={t('reglages.form.city')}
 					onChange={(e) => set('city', e.target.value)}
 					required
 					value={form.city}
 				/>
 				<TextField
-					label="Email (optionnel)"
+					label={t('reglages.form.email')}
 					onChange={(e) => set('email', e.target.value)}
 					type="email"
 					value={form.email}
 				/>
 				<TextField
-					label="Téléphone (optionnel)"
+					label={t('reglages.form.phone')}
 					onChange={(e) => set('phone', e.target.value)}
 					value={form.phone}
 				/>
 				<TextField
-					label="IBAN (optionnel)"
+					label={t('reglages.form.iban')}
 					onChange={(e) => set('iban', e.target.value)}
 					value={form.iban}
 				/>
 			</section>
 
 			<section className={styles.signature}>
-				<h2>Signature</h2>
+				<h2>{t('reglages.signature.title')}</h2>
 				{/* TODO M6+ : brancher l'upload signature via POST /api/landlord-profile/signature
 				    (endpoint à créer côté back, pas encore en place). Pour l'instant la signature
 				    est temporaire et ne persiste pas. */}
 				<SignaturePad
-					label="Ta signature"
+					label={t('reglages.signature.padLabel')}
 					onChange={setSignatureDataUrl}
 					value={signatureDataUrl}
 				/>
@@ -200,7 +199,7 @@ export const ReglagesPage = () => {
 					isDisabled={!valid || upsertMutation.isPending}
 					type="submit"
 				>
-					{upsertMutation.isPending ? 'Enregistrement…' : 'Enregistrer'}
+					{upsertMutation.isPending ? t('reglages.form.saving') : t('common.actions.save')}
 				</Button>
 			</div>
 		</form>

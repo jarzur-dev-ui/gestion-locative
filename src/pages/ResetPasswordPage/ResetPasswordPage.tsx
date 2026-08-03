@@ -1,5 +1,7 @@
 import { type FormEvent, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { paths } from '@/config/routes';
 
 import { useResetPassword } from '@/api/auth';
 import { Button } from '@/components/Button';
@@ -10,6 +12,7 @@ import styles from './ResetPasswordPage.module.scss';
 const MIN_PASSWORD_LENGTH = 8;
 
 export const ResetPasswordPage = () => {
+	const { t } = useTranslation();
 	const { token } = useParams<{ token: string }>();
 	const navigate = useNavigate();
 	const resetMutation = useResetPassword();
@@ -19,18 +22,18 @@ export const ResetPasswordPage = () => {
 	const [localError, setLocalError] = useState<string | null>(null);
 
 	if (!token) {
-		return <Navigate replace to="/login" />;
+		return <Navigate replace to={paths.login()} />;
 	}
 
 	const onSubmit = (e: FormEvent) => {
 		e.preventDefault();
 		setLocalError(null);
 		if (password.length < MIN_PASSWORD_LENGTH) {
-			setLocalError(`Le mot de passe doit faire au moins ${MIN_PASSWORD_LENGTH} caractères.`);
+			setLocalError(t('auth.reset.passwordTooShort', { count: MIN_PASSWORD_LENGTH }));
 			return;
 		}
 		if (password !== confirm) {
-			setLocalError('Les deux mots de passe ne correspondent pas.');
+			setLocalError(t('auth.reset.passwordMismatch'));
 			return;
 		}
 		resetMutation.mutate(
@@ -38,7 +41,7 @@ export const ResetPasswordPage = () => {
 			{
 				onSuccess: () => {
 					// Aucune session ouverte : l'utilisateur doit se reconnecter.
-					navigate('/login', { replace: true });
+					navigate(paths.login(), { replace: true });
 				},
 			},
 		);
@@ -49,15 +52,13 @@ export const ResetPasswordPage = () => {
 	return (
 		<div className={styles.container}>
 			<form className={styles.card} onSubmit={onSubmit}>
-				<h1 className={styles.title}>Réinitialiser votre mot de passe</h1>
-				<p className={styles.subtitle}>
-					Choisissez un nouveau mot de passe sécurisé (8 caractères minimum).
-				</p>
+				<h1 className={styles.title}>{t('auth.reset.title')}</h1>
+				<p className={styles.subtitle}>{t('auth.reset.subtitle')}</p>
 
 				<TextField
 					autoComplete="new-password"
 					autoFocus
-					label="Mot de passe"
+					label={t('auth.reset.password')}
 					name="password"
 					onChange={(e) => setPassword(e.target.value)}
 					required
@@ -66,7 +67,7 @@ export const ResetPasswordPage = () => {
 				/>
 				<TextField
 					autoComplete="new-password"
-					label="Confirmer le mot de passe"
+					label={t('auth.reset.confirmPassword')}
 					name="confirm"
 					onChange={(e) => setConfirm(e.target.value)}
 					required
@@ -77,7 +78,7 @@ export const ResetPasswordPage = () => {
 				{errorMessage ? <p className={styles.error}>{errorMessage}</p> : null}
 
 				<Button disabled={resetMutation.isPending} type="submit">
-					{resetMutation.isPending ? 'Réinitialisation…' : 'Réinitialiser mon mot de passe'}
+					{resetMutation.isPending ? t('auth.reset.submitting') : t('auth.reset.submit')}
 				</Button>
 			</form>
 		</div>
