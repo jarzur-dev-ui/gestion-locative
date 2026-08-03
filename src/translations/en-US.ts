@@ -72,13 +72,11 @@ export const enUS: Translation = {
 		},
 		forgot: {
 			title: 'Forgot password',
-			subtitle:
-				"Enter your email address. If an account is associated with it, you'll receive a link to reset your password.",
+			subtitle: "Enter your email address. If an account is associated with it, you'll receive a link to reset your password.",
 			email: 'Email',
 			submit: 'Send reset link',
 			submitting: 'Sending…',
-			successMessage:
-				'If an account exists for this address, a reset email has just been sent. Check your inbox.',
+			successMessage: 'If an account exists for this address, a reset email has just been sent. Check your inbox.',
 			backToLogin: 'Back to sign in',
 		},
 		reset: {
@@ -94,8 +92,7 @@ export const enUS: Translation = {
 		},
 		acceptInvitation: {
 			title: 'Set your password',
-			subtitle:
-				'Activate your gestion-locative account by choosing a secure password (minimum 8 characters).',
+			subtitle: 'Activate your gestion-locative account by choosing a secure password (minimum 8 characters).',
 			password: 'Password',
 			confirmPassword: 'Confirm password',
 			submit: 'Activate my account',
@@ -136,8 +133,7 @@ export const enUS: Translation = {
 		},
 		deleteConfirm: {
 			title: 'Delete this property?',
-			description:
-				'This action is permanent. If an active lease is attached, the server will reject the deletion.',
+			description: 'This action is permanent. If an active lease is attached, the server will reject the deletion.',
 		},
 		toast: {
 			created: 'Property created ✓',
@@ -164,8 +160,7 @@ export const enUS: Translation = {
 			buttonPending: '…',
 			buttonDone: 'Account created',
 			modalTitle: 'Invitation link',
-			description:
-				'Share this link with the person concerned so they can activate their account and access their file.',
+			description: 'Share this link with the person concerned so they can activate their account and access their file.',
 			expiresUntil: 'Valid until {{date}}.',
 			copyButton: 'Copy link',
 			copyButtonDone: 'Copied ✓',
@@ -210,8 +205,7 @@ export const enUS: Translation = {
 		},
 		list: {
 			emptyPerson: 'No individuals yet. Add a guarantor to attach them to a lease.',
-			emptyOrganization:
-				'No organizations yet. Add a corporate guarantor (joint surety, Visale, etc.).',
+			emptyOrganization: 'No organizations yet. Add a corporate guarantor (joint surety, Visale, etc.).',
 			phone: 'Phone: {{phone}}',
 			birthDate: 'Born: {{date}}',
 			reference: 'Ref: {{reference}}',
@@ -263,8 +257,7 @@ export const enUS: Translation = {
 	rentReceipts: {
 		title: 'Rent receipts',
 		monthLabel: 'Displayed month',
-		empty:
-			"No rent receipt for this month. If you have active leases, they'll be created automatically by the scheduler 15 days before the due date.",
+		empty: "No rent receipt for this month. If you have active leases, they'll be created automatically by the scheduler 15 days before the due date.",
 		status: {
 			draft: 'Draft',
 			noticeSent: 'Notice sent',
@@ -341,8 +334,7 @@ export const enUS: Translation = {
 	},
 	migration: {
 		title: 'Import my data from the old version',
-		subtitlePart1:
-			'This page reads the data stored in the browser by V1 of gestion-locative (keys ',
+		subtitlePart1: 'This page reads the data stored in the browser by V1 of gestion-locative (keys ',
 		subtitlePart2: ' and ',
 		subtitlePart3: ' in localStorage) and transfers it to the database.',
 		warningIntro: '⚠ The import is idempotent (safe to re-run), but performs these actions:',
@@ -354,8 +346,7 @@ export const enUS: Translation = {
 			title: 'No legacy data detected in this browser.',
 			hintPart1: 'To import, open this page ',
 			hintStrong: 'in the same browser',
-			hintPart2:
-				" you used for V1 of gestion-locative. The data lives in the localStorage of the original domain — if you switch browsers, it won't be available.",
+			hintPart2: " you used for V1 of gestion-locative. The data lives in the localStorage of the original domain — if you switch browsers, it won't be available.",
 		},
 		back: 'Back',
 		preview: {
@@ -386,8 +377,7 @@ export const enUS: Translation = {
 		clearStorage: 'Clear legacy localStorage',
 		confirmClear: {
 			title: 'Clear legacy localStorage?',
-			description:
-				"Once deleted, the legacy localStorage data will be lost. Confirm only if the import went well and you won't need to re-run this screen.",
+			description: "Once deleted, the legacy localStorage data will be lost. Confirm only if the import went well and you won't need to re-run this screen.",
 		},
 		toast: {
 			importDone: 'Import complete',
@@ -396,12 +386,10 @@ export const enUS: Translation = {
 	},
 	myFile: {
 		title: 'My file',
-		subtitle:
-			'Upload the documents requested by your landlord. Drag your files into each card or click to browse.',
+		subtitle: 'Upload the documents requested by your landlord. Drag your files into each card or click to browse.',
 		empty: {
 			title: 'No lease linked to your account yet.',
-			hint:
-				'If you just accepted an invitation, ask your landlord to attach you to an existing lease.',
+			hint: 'If you just accepted an invitation, ask your landlord to attach you to an existing lease.',
 		},
 		lease: {
 			heading: 'Lease #{{id}}',
@@ -439,8 +427,7 @@ export const enUS: Translation = {
 		},
 		shareModal: {
 			title: 'Share link generated',
-			description:
-				'This link is valid for 7 days and lets the recipient download the document without needing an account.',
+			description: 'This link is valid for 7 days and lets the recipient download the document without needing an account.',
 			copyButton: 'Copy link',
 		},
 		toast: {
@@ -490,8 +477,7 @@ export const enUS: Translation = {
 			markEnded: 'Mark as ended',
 			printPreview: 'Print preview',
 			deleteTitle: 'Delete this lease?',
-			deleteDescription:
-				'The lease (draft) and its tenant/guarantor links will be erased. This action is irreversible.',
+			deleteDescription: 'The lease (draft) and its tenant/guarantor links will be erased. This action is irreversible.',
 			selectTenantError: 'Select at least one tenant before creating the lease.',
 			updatedToast: 'Lease updated',
 			createdToast: 'Lease created as draft',
@@ -500,8 +486,7 @@ export const enUS: Translation = {
 		},
 		print: {
 			leaseNotFound: 'Lease not found.',
-			landlordProfileIncomplete:
-				'Incomplete landlord profile. Fill in your details in Settings before printing a lease.',
+			landlordProfileIncomplete: 'Incomplete landlord profile. Fill in your details in Settings before printing a lease.',
 			goToSettings: 'Go to settings',
 			placeLabel: 'Place of signature',
 			dateLabel: 'Date of signature',

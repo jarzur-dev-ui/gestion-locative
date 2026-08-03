@@ -69,13 +69,11 @@ export const frFR = {
 		},
 		forgot: {
 			title: 'Mot de passe oublié',
-			subtitle:
-				'Saisissez votre adresse email. Si un compte y est associé, vous recevrez un lien pour réinitialiser votre mot de passe.',
+			subtitle: 'Saisissez votre adresse email. Si un compte y est associé, vous recevrez un lien pour réinitialiser votre mot de passe.',
 			email: 'Email',
 			submit: 'Envoyer le lien',
 			submitting: 'Envoi…',
-			successMessage:
-				"Si un compte existe pour cette adresse, un email de réinitialisation vient d'être envoyé. Vérifiez votre boîte de réception.",
+			successMessage: "Si un compte existe pour cette adresse, un email de réinitialisation vient d'être envoyé. Vérifiez votre boîte de réception.",
 			backToLogin: 'Retour à la connexion',
 		},
 		reset: {
@@ -91,8 +89,7 @@ export const frFR = {
 		},
 		acceptInvitation: {
 			title: 'Définir votre mot de passe',
-			subtitle:
-				'Activez votre compte gestion-locative en choisissant un mot de passe sécurisé (8 caractères minimum).',
+			subtitle: 'Activez votre compte gestion-locative en choisissant un mot de passe sécurisé (8 caractères minimum).',
 			password: 'Mot de passe',
 			confirmPassword: 'Confirmer le mot de passe',
 			submit: 'Activer mon compte',
@@ -133,8 +130,7 @@ export const frFR = {
 		},
 		deleteConfirm: {
 			title: 'Supprimer ce bien ?',
-			description:
-				'Cette action est définitive. Si un bail actif est rattaché, la suppression sera refusée par le serveur.',
+			description: 'Cette action est définitive. Si un bail actif est rattaché, la suppression sera refusée par le serveur.',
 		},
 		toast: {
 			created: 'Bien créé ✓',
@@ -161,8 +157,7 @@ export const frFR = {
 			buttonPending: '…',
 			buttonDone: 'Compte créé',
 			modalTitle: "Lien d'invitation",
-			description:
-				'Partage ce lien avec la personne concernée pour qu\'elle active son compte et accède à son dossier.',
+			description: 'Partage ce lien avec la personne concernée pour qu\'elle active son compte et accède à son dossier.',
 			expiresUntil: 'Valide jusqu\'au {{date}}.',
 			copyButton: 'Copier le lien',
 			copyButtonDone: 'Copié ✓',
@@ -206,10 +201,8 @@ export const frFR = {
 			organizations: 'Organisations ({{count}})',
 		},
 		list: {
-			emptyPerson:
-				'Aucune personne physique. Ajoute un garant pour qu\'il puisse être rattaché à un bail.',
-			emptyOrganization:
-				'Aucune organisation. Ajoute un garant moral (caution solidaire, Visale, etc.).',
+			emptyPerson: 'Aucune personne physique. Ajoute un garant pour qu\'il puisse être rattaché à un bail.',
+			emptyOrganization: 'Aucune organisation. Ajoute un garant moral (caution solidaire, Visale, etc.).',
 			phone: 'Tel : {{phone}}',
 			birthDate: 'Né(e) : {{date}}',
 			reference: 'Réf : {{reference}}',
@@ -261,8 +254,7 @@ export const frFR = {
 	rentReceipts: {
 		title: 'Quittances',
 		monthLabel: 'Mois affiché',
-		empty:
-			"Aucune quittance pour ce mois. Si tu as des baux actifs, elles seront créées automatiquement par le scheduler 15 jours avant le jour d'échéance.",
+		empty: "Aucune quittance pour ce mois. Si tu as des baux actifs, elles seront créées automatiquement par le scheduler 15 jours avant le jour d'échéance.",
 		status: {
 			draft: 'Brouillon',
 			noticeSent: 'Avis envoyé',
@@ -316,8 +308,7 @@ export const frFR = {
 	},
 	settings: {
 		title: 'Réglages',
-		intro:
-			'Tes coordonnées de bailleur et ta signature, utilisées sur les baux et les quittances.',
+		intro: 'Tes coordonnées de bailleur et ta signature, utilisées sur les baux et les quittances.',
 		form: {
 			civility: 'Civilité',
 			firstName: 'Prénom',
@@ -340,13 +331,11 @@ export const frFR = {
 	},
 	migration: {
 		title: "Importer mes données depuis l'ancienne version",
-		subtitlePart1:
-			'Cette page lit les données stockées dans le navigateur par la V1 de gestion-locative (clés ',
+		subtitlePart1: 'Cette page lit les données stockées dans le navigateur par la V1 de gestion-locative (clés ',
 		subtitlePart2: ' et ',
 		subtitlePart3: ' du localStorage) et les transfère dans la base de données.',
 		warningIntro: "⚠ L'import est idempotent (sûr à re-lancer), mais effectue ces actions :",
-		warningBullet1:
-			'— Met à jour ton profil bailleur (si déjà rempli, écrasement des valeurs)',
+		warningBullet1: '— Met à jour ton profil bailleur (si déjà rempli, écrasement des valeurs)',
 		warningBullet2: '— Crée les biens manquants par adresse (skip si déjà créés)',
 		warningBullet3: '— Crée les locataires manquants par email (skip si déjà existants)',
 		warningBullet4: '— Crée les baux manquants par (bien + locataire + date début)',
@@ -354,8 +343,7 @@ export const frFR = {
 			title: 'Aucune donnée legacy détectée dans ce navigateur.',
 			hintPart1: 'Pour importer, ouvre cette page ',
 			hintStrong: 'dans le même navigateur',
-			hintPart2:
-				" que celui où tu utilisais la V1 de gestion-locative. Les données sont dans le localStorage du domaine d'origine — si tu changes de navigateur, elles ne sont pas disponibles.",
+			hintPart2: " que celui où tu utilisais la V1 de gestion-locative. Les données sont dans le localStorage du domaine d'origine — si tu changes de navigateur, elles ne sont pas disponibles.",
 		},
 		back: 'Retour',
 		preview: {
@@ -386,8 +374,7 @@ export const frFR = {
 		clearStorage: 'Vider le localStorage legacy',
 		confirmClear: {
 			title: 'Vider le localStorage legacy ?',
-			description:
-				"Une fois supprimées, les données legacy du localStorage seront perdues. Confirme uniquement si l'import s'est bien passé et que tu n'auras plus besoin de relancer cet écran.",
+			description: "Une fois supprimées, les données legacy du localStorage seront perdues. Confirme uniquement si l'import s'est bien passé et que tu n'auras plus besoin de relancer cet écran.",
 		},
 		toast: {
 			importDone: 'Import terminé',
@@ -396,12 +383,10 @@ export const frFR = {
 	},
 	myFile: {
 		title: 'Mon dossier',
-		subtitle:
-			'Déposez les documents demandés par votre bailleur. Glissez vos fichiers dans chaque carte ou cliquez pour parcourir.',
+		subtitle: 'Déposez les documents demandés par votre bailleur. Glissez vos fichiers dans chaque carte ou cliquez pour parcourir.',
 		empty: {
 			title: 'Aucun bail associé à ton compte pour l\'instant.',
-			hint:
-				'Si tu viens d\'accepter une invitation, demande à ton bailleur de te rattacher à un bail existant.',
+			hint: 'Si tu viens d\'accepter une invitation, demande à ton bailleur de te rattacher à un bail existant.',
 		},
 		lease: {
 			heading: 'Bail #{{id}}',
@@ -439,8 +424,7 @@ export const frFR = {
 		},
 		shareModal: {
 			title: 'Lien de partage généré',
-			description:
-				"Ce lien est valide pendant 7 jours et permet au destinataire de télécharger le document sans avoir besoin d'un compte.",
+			description: "Ce lien est valide pendant 7 jours et permet au destinataire de télécharger le document sans avoir besoin d'un compte.",
 			copyButton: 'Copier le lien',
 		},
 		toast: {
@@ -461,8 +445,7 @@ export const frFR = {
 			propertyNotFound: 'Bien introuvable.',
 			backButton: 'Retour',
 			tenantsTitle: 'Locataires',
-			tenantsHint:
-				'Sélectionne 1 ou plusieurs locataires existants (créés depuis la page Locataires).',
+			tenantsHint: 'Sélectionne 1 ou plusieurs locataires existants (créés depuis la page Locataires).',
 			noTenants: 'Aucun locataire enregistré.',
 			createTenant: 'Créer un locataire',
 			guarantorsTitle: 'Garants',
@@ -491,8 +474,7 @@ export const frFR = {
 			markEnded: 'Marquer comme terminé',
 			printPreview: 'Aperçu impression',
 			deleteTitle: 'Supprimer ce bail ?',
-			deleteDescription:
-				'Le bail (draft) et ses junctions tenants/garants seront effacés. Action irréversible.',
+			deleteDescription: 'Le bail (draft) et ses junctions tenants/garants seront effacés. Action irréversible.',
 			selectTenantError: 'Sélectionne au moins un locataire avant de créer le bail.',
 			updatedToast: 'Bail mis à jour',
 			createdToast: 'Bail créé en draft',
@@ -501,8 +483,7 @@ export const frFR = {
 		},
 		print: {
 			leaseNotFound: 'Bail introuvable.',
-			landlordProfileIncomplete:
-				"Profil bailleur incomplet. Renseigne tes coordonnées dans Réglages avant d'imprimer un bail.",
+			landlordProfileIncomplete: "Profil bailleur incomplet. Renseigne tes coordonnées dans Réglages avant d'imprimer un bail.",
 			goToSettings: 'Aller aux réglages',
 			placeLabel: 'Lieu de signature',
 			dateLabel: 'Date de signature',
