@@ -22,13 +22,13 @@ export const enUS: Translation = {
 	layout: {
 		brand: 'gestion-locative',
 		nav: {
-			biens: 'Properties & leases',
-			locataires: 'Tenants',
-			garants: 'Guarantors',
-			quittances: 'Rent receipts',
-			reglages: 'Settings',
+			properties: 'Properties & leases',
+			tenants: 'Tenants',
+			guarantors: 'Guarantors',
+			rentReceipts: 'Rent receipts',
+			settings: 'Settings',
 			migration: 'Import V1',
-			monDossier: 'My file',
+			myFile: 'My file',
 		},
 		logout: 'Log out',
 		openMenu: 'Open menu',
@@ -105,7 +105,7 @@ export const enUS: Translation = {
 			passwordMismatch: 'The two passwords do not match.',
 		},
 	},
-	biens: {
+	properties: {
 		title: 'My properties',
 		addButton: 'Add a property',
 		empty: 'No properties yet. Start by creating one.',
@@ -144,7 +144,7 @@ export const enUS: Translation = {
 			deleted: 'Property deleted',
 		},
 	},
-	locataires: {
+	tenants: {
 		title: 'My tenants',
 		addButton: '+ Add a tenant',
 		empty: 'No tenants yet. Add one to be able to create a lease.',
@@ -196,7 +196,7 @@ export const enUS: Translation = {
 			copyFailed: 'Could not copy the link — copy it manually.',
 		},
 	},
-	garants: {
+	guarantors: {
 		title: 'My guarantors',
 		actions: {
 			add: 'Add a guarantor',
@@ -260,7 +260,7 @@ export const enUS: Translation = {
 			},
 		},
 	},
-	quittances: {
+	rentReceipts: {
 		title: 'Rent receipts',
 		monthLabel: 'Displayed month',
 		empty:
@@ -316,7 +316,7 @@ export const enUS: Translation = {
 			adjustmentAdded: 'Adjustment added',
 		},
 	},
-	reglages: {
+	settings: {
 		title: 'Settings',
 		intro: 'Your landlord details and signature, used on leases and rent receipts.',
 		form: {
@@ -360,7 +360,7 @@ export const enUS: Translation = {
 		back: 'Back',
 		preview: {
 			title: 'Preview of data to import',
-			bailleur: 'Landlord',
+			landlord: 'Landlord',
 			noName: '(no name)',
 			noEmail: '(no email)',
 			leaseCount: 'Number of leases',
@@ -394,7 +394,7 @@ export const enUS: Translation = {
 			storageCleared: 'Legacy localStorage cleared',
 		},
 	},
-	monDossier: {
+	myFile: {
 		title: 'My file',
 		subtitle:
 			'Upload the documents requested by your landlord. Drag your files into each card or click to browse.',
@@ -449,7 +449,7 @@ export const enUS: Translation = {
 			linkCopied: 'Link copied ✓',
 		},
 	},
-	baux: {
+	leases: {
 		actions: {
 			back: '← Back',
 			backPlain: 'Back',
@@ -507,10 +507,10 @@ export const enUS: Translation = {
 			dateLabel: 'Date of signature',
 			printButton: 'Print / PDF',
 			mentionHint: 'Displayed in cursive above the signature. Clear to sign by hand.',
-			bailleurMentionLabel: 'Mention "Read and approved" — landlord',
-			locataireMentionLabel: 'Mention "Read and approved" — tenant',
-			bailleurSignatureLabel: 'Landlord signature',
-			locataireSignatureLabel: 'Tenant signature',
+			landlordMentionLabel: 'Mention "Read and approved" — landlord',
+			tenantMentionLabel: 'Mention "Read and approved" — tenant',
+			landlordSignatureLabel: 'Landlord signature',
+			tenantSignatureLabel: 'Tenant signature',
 			defaultMention: 'Read and approved',
 		},
 	},

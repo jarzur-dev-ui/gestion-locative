@@ -70,15 +70,15 @@ interface NavLinkSpec {
 }
 
 const NAV_LINKS: NavLinkSpec[] = [
-	{ to: paths.biens, labelKey: 'layout.nav.biens', icon: ICONS.biens, roles: ['landlord'] },
-	{ to: paths.locataires, labelKey: 'layout.nav.locataires', icon: ICONS.locataires, roles: ['landlord'] },
-	{ to: paths.garants, labelKey: 'layout.nav.garants', icon: ICONS.garants, roles: ['landlord'] },
-	{ to: paths.quittances, labelKey: 'layout.nav.quittances', icon: ICONS.quittances, roles: ['landlord'] },
-	{ to: paths.reglages, labelKey: 'layout.nav.reglages', icon: ICONS.reglages, roles: ['landlord'] },
+	{ to: paths.biens, labelKey: 'layout.nav.properties', icon: ICONS.biens, roles: ['landlord'] },
+	{ to: paths.locataires, labelKey: 'layout.nav.tenants', icon: ICONS.locataires, roles: ['landlord'] },
+	{ to: paths.garants, labelKey: 'layout.nav.guarantors', icon: ICONS.garants, roles: ['landlord'] },
+	{ to: paths.quittances, labelKey: 'layout.nav.rentReceipts', icon: ICONS.quittances, roles: ['landlord'] },
+	{ to: paths.reglages, labelKey: 'layout.nav.settings', icon: ICONS.reglages, roles: ['landlord'] },
 	{ to: paths.migration, labelKey: 'layout.nav.migration', icon: ICONS.migration, roles: ['landlord'] },
 	{
 		to: paths.monDossier,
-		labelKey: 'layout.nav.monDossier',
+		labelKey: 'layout.nav.myFile',
 		icon: ICONS.dossier,
 		roles: ['tenant', 'guarantor'],
 	},

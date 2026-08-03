@@ -19,13 +19,13 @@ export const frFR = {
 	layout: {
 		brand: 'gestion-locative',
 		nav: {
-			biens: 'Biens & baux',
-			locataires: 'Locataires',
-			garants: 'Garants',
-			quittances: 'Quittances',
-			reglages: 'Réglages',
+			properties: 'Biens & baux',
+			tenants: 'Locataires',
+			guarantors: 'Garants',
+			rentReceipts: 'Quittances',
+			settings: 'Réglages',
 			migration: 'Import V1',
-			monDossier: 'Mon dossier',
+			myFile: 'Mon dossier',
 		},
 		logout: 'Déconnexion',
 		openMenu: 'Ouvrir le menu',
@@ -102,7 +102,7 @@ export const frFR = {
 			passwordMismatch: 'Les deux mots de passe ne correspondent pas.',
 		},
 	},
-	biens: {
+	properties: {
 		title: 'Mes biens',
 		addButton: 'Ajouter un bien',
 		empty: 'Aucun bien. Commence par en créer un.',
@@ -141,7 +141,7 @@ export const frFR = {
 			deleted: 'Bien supprimé',
 		},
 	},
-	locataires: {
+	tenants: {
 		title: 'Mes locataires',
 		addButton: '+ Ajouter un locataire',
 		empty: 'Aucun locataire. Ajoute-en un pour pouvoir créer un bail.',
@@ -193,7 +193,7 @@ export const frFR = {
 			copyFailed: 'Impossible de copier le lien — copie-le manuellement.',
 		},
 	},
-	garants: {
+	guarantors: {
 		title: 'Mes garants',
 		actions: {
 			add: 'Ajouter un garant',
@@ -258,7 +258,7 @@ export const frFR = {
 			},
 		},
 	},
-	quittances: {
+	rentReceipts: {
 		title: 'Quittances',
 		monthLabel: 'Mois affiché',
 		empty:
@@ -314,7 +314,7 @@ export const frFR = {
 			adjustmentAdded: 'Régularisation ajoutée',
 		},
 	},
-	reglages: {
+	settings: {
 		title: 'Réglages',
 		intro:
 			'Tes coordonnées de bailleur et ta signature, utilisées sur les baux et les quittances.',
@@ -360,7 +360,7 @@ export const frFR = {
 		back: 'Retour',
 		preview: {
 			title: 'Aperçu des données à importer',
-			bailleur: 'Bailleur',
+			landlord: 'Bailleur',
 			noName: '(sans nom)',
 			noEmail: '(sans email)',
 			leaseCount: 'Nombre de baux',
@@ -394,7 +394,7 @@ export const frFR = {
 			storageCleared: 'LocalStorage legacy supprimé',
 		},
 	},
-	monDossier: {
+	myFile: {
 		title: 'Mon dossier',
 		subtitle:
 			'Déposez les documents demandés par votre bailleur. Glissez vos fichiers dans chaque carte ou cliquez pour parcourir.',
@@ -449,7 +449,7 @@ export const frFR = {
 			linkCopied: 'Lien copié ✓',
 		},
 	},
-	baux: {
+	leases: {
 		actions: {
 			back: '← Retour',
 			backPlain: 'Retour',
@@ -508,10 +508,10 @@ export const frFR = {
 			dateLabel: 'Date de signature',
 			printButton: 'Imprimer / PDF',
 			mentionHint: 'Affiché en cursive au-dessus de la signature. Vider pour signer à la main.',
-			bailleurMentionLabel: 'Mention « Lu et approuvé » — bailleur',
-			locataireMentionLabel: 'Mention « Lu et approuvé » — locataire',
-			bailleurSignatureLabel: 'Signature du bailleur',
-			locataireSignatureLabel: 'Signature du locataire',
+			landlordMentionLabel: 'Mention « Lu et approuvé » — bailleur',
+			tenantMentionLabel: 'Mention « Lu et approuvé » — locataire',
+			landlordSignatureLabel: 'Signature du bailleur',
+			tenantSignatureLabel: 'Signature du locataire',
 			defaultMention: 'Lu et approuvé',
 		},
 	},

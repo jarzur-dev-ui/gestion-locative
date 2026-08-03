@@ -82,7 +82,7 @@ export const MigrationPage = () => {
 					<section className={styles.preview}>
 						<h2>{t('migration.preview.title')}</h2>
 						<dl>
-							<dt>{t('migration.preview.bailleur')}</dt>
+							<dt>{t('migration.preview.landlord')}</dt>
 							<dd>
 								{legacy.bailleur.nom ?? t('migration.preview.noName')} —{' '}
 								{legacy.bailleur.email ?? t('migration.preview.noEmail')}

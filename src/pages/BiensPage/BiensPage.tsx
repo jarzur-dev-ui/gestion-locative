@@ -95,18 +95,18 @@ function formatPropertyMeta(p: Property, t: TFunction): string {
 	// propertyTypeKey is an untyped string from the back, not a literal union — cast needed for t().
 	const parts: string[] = [t(`domain.propertyType.${p.propertyTypeKey}` as never)];
 	if (p.surfaceM2 != null) {
-		parts.push(t('biens.surfaceValue', { value: p.surfaceM2 }));
+		parts.push(t('properties.surfaceValue', { value: p.surfaceM2 }));
 	}
 	if (p.roomCount != null) {
-		parts.push(t('biens.roomCount', { count: p.roomCount }));
+		parts.push(t('properties.roomCount', { count: p.roomCount }));
 	}
-	if (p.dpeGrade) parts.push(t('biens.dpeLabel', { grade: p.dpeGrade }));
+	if (p.dpeGrade) parts.push(t('properties.dpeLabel', { grade: p.dpeGrade }));
 	if (p.furnished) parts.push(t('domain.furnished.furnished'));
 	return parts.join(' · ');
 }
 
 function formatTenants(lease: Lease, t: TFunction): string {
-	if (lease.tenants.length === 0) return t('biens.noTenants');
+	if (lease.tenants.length === 0) return t('properties.noTenants');
 	return lease.tenants
 		.map((tenant) => `${tenant.firstName} ${tenant.lastName}`.trim() || tenant.email)
 		.join(', ');
@@ -116,13 +116,13 @@ function formatLeaseRange(lease: Lease, t: TFunction): string {
 	const start = lease.startDate;
 	const end = lease.endDate;
 	if (start && end) {
-		return t('biens.leaseRange.fromTo', {
+		return t('properties.leaseRange.fromTo', {
 			start: formatIsoDateFr(start),
 			end: formatIsoDateFr(end),
 		});
 	}
 	if (start) {
-		return t('biens.leaseRange.since', { start: formatIsoDateFr(start) });
+		return t('properties.leaseRange.since', { start: formatIsoDateFr(start) });
 	}
 	return '';
 }
@@ -203,7 +203,7 @@ export const BiensPage = () => {
 		if (!isPropertyFormValid(propertyForm) || createProperty.isPending) return;
 		createProperty.mutate(toCreateProperty(propertyForm), {
 			onSuccess: () => {
-				toast.success(t('biens.toast.created'));
+				toast.success(t('properties.toast.created'));
 				setCreateOpen(false);
 				resetPropertyForm();
 			},
@@ -215,14 +215,14 @@ export const BiensPage = () => {
 		// mutateAsync rethrow l'erreur → ConfirmDialog garde la modal ouverte.
 		// Le toast d'erreur est piloté par le global handler dans query-client.ts.
 		await deleteProperty.mutateAsync(confirmDeleteId);
-		toast.success(t('biens.toast.deleted'));
+		toast.success(t('properties.toast.deleted'));
 		setConfirmDeleteId(null);
 	};
 
 	if (isLoading) {
 		return (
 			<div className={styles.page}>
-				<h1>{t('biens.title')}</h1>
+				<h1>{t('properties.title')}</h1>
 				<Skeleton lines={8} />
 			</div>
 		);
@@ -231,15 +231,15 @@ export const BiensPage = () => {
 	return (
 		<div className={styles.page}>
 			<header className={styles.header}>
-				<h1>{t('biens.title')}</h1>
+				<h1>{t('properties.title')}</h1>
 				<Button onPress={() => setCreateOpen(true)}>
 					{'+ '}
-					{t('biens.addButton')}
+					{t('properties.addButton')}
 				</Button>
 			</header>
 
 			{properties.length === 0 ? (
-				<p className={styles.empty}>{t('biens.empty')}</p>
+				<p className={styles.empty}>{t('properties.empty')}</p>
 			) : (
 				properties.map((property) => {
 					const leases = leasesByProperty.get(property.id) ?? [];
@@ -265,7 +265,7 @@ export const BiensPage = () => {
 							</div>
 
 							{leases.length === 0 ? (
-								<p className={styles.leaseEmpty}>{t('biens.leaseEmpty')}</p>
+								<p className={styles.leaseEmpty}>{t('properties.leaseEmpty')}</p>
 							) : (
 								<ul className={styles.leaseList}>
 									{leases.map((lease) => (
@@ -281,7 +281,7 @@ export const BiensPage = () => {
 											>
 												<div className={styles.leaseInfo}>
 													<span className={styles.leaseTenants}>
-														{t('biens.leaseLabel', {
+														{t('properties.leaseLabel', {
 															tenants: formatTenants(lease, t),
 														})}
 													</span>
@@ -314,7 +314,7 @@ export const BiensPage = () => {
 									variant="outlined"
 								>
 									{'+ '}
-									{t('biens.newLeaseButton')}
+									{t('properties.newLeaseButton')}
 								</Button>
 							</div>
 						</article>
@@ -329,24 +329,24 @@ export const BiensPage = () => {
 					if (!open) resetPropertyForm();
 				}}
 				size="md"
-				title={t('biens.modalTitle')}
+				title={t('properties.modalTitle')}
 			>
 				<form className={styles.modalForm} onSubmit={onSubmitProperty}>
 					<TextField
-						label={t('biens.form.address')}
+						label={t('properties.form.address')}
 						onChange={(e) => setPropertyField('addressLine', e.target.value)}
 						required
 						value={propertyForm.addressLine}
 					/>
 					<div className={styles.modalGrid}>
 						<TextField
-							label={t('biens.form.postalCode')}
+							label={t('properties.form.postalCode')}
 							onChange={(e) => setPropertyField('postalCode', e.target.value)}
 							required
 							value={propertyForm.postalCode}
 						/>
 						<TextField
-							label={t('biens.form.city')}
+							label={t('properties.form.city')}
 							onChange={(e) => setPropertyField('city', e.target.value)}
 							required
 							value={propertyForm.city}
@@ -354,7 +354,7 @@ export const BiensPage = () => {
 					</div>
 					<div className={styles.modalGrid}>
 						<SelectField
-							label={t('biens.form.propertyType')}
+							label={t('properties.form.propertyType')}
 							onChange={(e) =>
 								setPropertyField('propertyTypeKey', e.target.value)
 							}
@@ -362,7 +362,7 @@ export const BiensPage = () => {
 							value={propertyForm.propertyTypeKey}
 						/>
 						<SelectField
-							label={t('biens.form.furnished')}
+							label={t('properties.form.furnished')}
 							onChange={(e) => setPropertyField('furnished', e.target.value)}
 							options={furnishedSelectOptions}
 							value={propertyForm.furnished}
@@ -370,14 +370,14 @@ export const BiensPage = () => {
 					</div>
 					<div className={styles.modalGrid}>
 						<TextField
-							label={t('biens.form.surface')}
+							label={t('properties.form.surface')}
 							min={0}
 							onChange={(e) => setPropertyField('surfaceM2', e.target.value)}
 							type="number"
 							value={propertyForm.surfaceM2}
 						/>
 						<TextField
-							label={t('biens.form.roomCount')}
+							label={t('properties.form.roomCount')}
 							min={0}
 							onChange={(e) => setPropertyField('roomCount', e.target.value)}
 							type="number"
@@ -385,7 +385,7 @@ export const BiensPage = () => {
 						/>
 					</div>
 					<SelectField
-						label={t('biens.form.dpe')}
+						label={t('properties.form.dpe')}
 						onChange={(e) => setPropertyField('dpeGrade', e.target.value)}
 						options={dpeSelectOptions}
 						value={propertyForm.dpeGrade}
@@ -405,22 +405,22 @@ export const BiensPage = () => {
 							type="submit"
 						>
 							{createProperty.isPending
-								? t('biens.form.submitting')
-								: t('biens.form.submit')}
+								? t('properties.form.submitting')
+								: t('properties.form.submit')}
 						</Button>
 					</div>
 				</form>
 			</Modal>
 
 			<ConfirmDialog
-				description={t('biens.deleteConfirm.description')}
+				description={t('properties.deleteConfirm.description')}
 				isOpen={confirmDeleteId !== null}
 				isPending={deleteProperty.isPending}
 				onConfirm={confirmDelete}
 				onOpenChange={(open) => {
 					if (!open) setConfirmDeleteId(null);
 				}}
-				title={t('biens.deleteConfirm.title')}
+				title={t('properties.deleteConfirm.title')}
 				variant="danger"
 			/>
 		</div>

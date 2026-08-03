@@ -59,7 +59,7 @@ export const LocatairesPage = () => {
 				onSuccess: (data) => {
 					setInvitePayload({ shareUrl: data.shareUrl, expiresAt: data.expiresAt });
 					setInviteModalOpen(true);
-					toast.success(t('locataires.toast.inviteLinkGenerated'));
+					toast.success(t('tenants.toast.inviteLinkGenerated'));
 				},
 			},
 		);
@@ -68,15 +68,15 @@ export const LocatairesPage = () => {
 	return (
 		<div className={styles.page}>
 			<header className={styles.header}>
-				<h1>{t('locataires.title')}</h1>
-				<Button onPress={openCreate}>{t('locataires.addButton')}</Button>
+				<h1>{t('tenants.title')}</h1>
+				<Button onPress={openCreate}>{t('tenants.addButton')}</Button>
 			</header>
 
 			{tenantsQuery.isLoading ? <Skeleton lines={8} /> : null}
 
 			{tenantsQuery.isSuccess && tenantsQuery.data.length === 0 ? (
 				<p className={styles.empty}>
-					{t('locataires.empty')}
+					{t('tenants.empty')}
 				</p>
 			) : null}
 
@@ -95,11 +95,11 @@ export const LocatairesPage = () => {
 									</div>
 									<div className={styles.itemMeta}>
 										{tenant.phone ? (
-											<span>{t('locataires.phoneLabel', { phone: tenant.phone })}</span>
+											<span>{t('tenants.phoneLabel', { phone: tenant.phone })}</span>
 										) : null}
 										{tenant.birthDate ? (
 											<span>
-												{t('locataires.birthDateLabel', {
+												{t('tenants.birthDateLabel', {
 													date: formatBirthDate(tenant.birthDate),
 												})}
 											</span>
@@ -108,11 +108,11 @@ export const LocatairesPage = () => {
 									<div className={styles.status}>
 										{hasAccount ? (
 											<span className={styles.statusOk}>
-												{t('locataires.status.accountCreated')}
+												{t('tenants.status.accountCreated')}
 											</span>
 										) : (
 											<span className={styles.statusPending}>
-												{t('locataires.status.notInvited')}
+												{t('tenants.status.notInvited')}
 											</span>
 										)}
 									</div>
@@ -127,13 +127,13 @@ export const LocatairesPage = () => {
 										variant="outlined"
 									>
 										{hasAccount
-											? t('locataires.invite.buttonDone')
+											? t('tenants.invite.buttonDone')
 											: isInviting
-												? t('locataires.invite.buttonPending')
-												: t('locataires.invite.button')}
+												? t('tenants.invite.buttonPending')
+												: t('tenants.invite.button')}
 									</Button>
 									<Button
-										aria-label={t('locataires.deleteAriaLabel', { name: fullName(tenant) })}
+										aria-label={t('tenants.deleteAriaLabel', { name: fullName(tenant) })}
 										onPress={() => setConfirmDelete(tenant)}
 										variant="danger"
 									>
@@ -153,19 +153,19 @@ export const LocatairesPage = () => {
 			/>
 
 			<ConfirmDialog
-				description={t('locataires.confirmDelete.description')}
+				description={t('tenants.confirmDelete.description')}
 				isOpen={confirmDelete !== null}
 				isPending={deleteMutation.isPending}
 				onConfirm={async () => {
 					if (!confirmDelete) return;
 					await deleteMutation.mutateAsync(confirmDelete.id);
-					toast.success(t('locataires.toast.tenantDeleted'));
+					toast.success(t('tenants.toast.tenantDeleted'));
 					setConfirmDelete(null);
 				}}
 				onOpenChange={(open) => {
 					if (!open) setConfirmDelete(null);
 				}}
-				title={t('locataires.confirmDelete.title')}
+				title={t('tenants.confirmDelete.title')}
 				variant="danger"
 			/>
 

@@ -27,12 +27,12 @@ const formatBirthDate = (iso: string): string => {
 
 const guarantorDisplayName = (g: Guarantor, t: TFunction): string => {
 	if (g.guarantorTypeKey === 'organization') {
-		return g.organizationName ?? t('garants.list.organizationNoName');
+		return g.organizationName ?? t('guarantors.list.organizationNoName');
 	}
 	const civ = g.civility ? `${g.civility} ` : '';
 	const first = g.firstName ?? '';
 	const last = g.lastName ?? '';
-	return `${civ}${first} ${last}`.trim() || t('garants.list.fallbackName');
+	return `${civ}${first} ${last}`.trim() || t('guarantors.list.fallbackName');
 };
 
 interface GuarantorListProps {
@@ -61,8 +61,8 @@ const GuarantorList = ({
 		return (
 			<p className={styles.empty}>
 				{typeFilter === 'person'
-					? t('garants.list.emptyPerson')
-					: t('garants.list.emptyOrganization')}
+					? t('guarantors.list.emptyPerson')
+					: t('guarantors.list.emptyOrganization')}
 			</p>
 		);
 	}
@@ -84,18 +84,18 @@ const GuarantorList = ({
 							</div>
 							<div className={styles.itemMeta}>
 								{g.phone ? (
-									<span>{t('garants.list.phone', { phone: g.phone })}</span>
+									<span>{t('guarantors.list.phone', { phone: g.phone })}</span>
 								) : null}
 								{isPerson && g.birthDate ? (
 									<span>
-										{t('garants.list.birthDate', {
+										{t('guarantors.list.birthDate', {
 											date: formatBirthDate(g.birthDate),
 										})}
 									</span>
 								) : null}
 								{!isPerson && g.organizationReference ? (
 									<span>
-										{t('garants.list.reference', {
+										{t('guarantors.list.reference', {
 											reference: g.organizationReference,
 										})}
 									</span>
@@ -105,11 +105,11 @@ const GuarantorList = ({
 								<div className={styles.status}>
 									{hasAccount ? (
 										<span className={styles.statusOk}>
-											✓ {t('garants.list.accountCreated')}
+											✓ {t('guarantors.list.accountCreated')}
 										</span>
 									) : (
 										<span className={styles.statusPending}>
-											⏳ {t('garants.list.notInvited')}
+											⏳ {t('guarantors.list.notInvited')}
 										</span>
 									)}
 								</div>
@@ -126,14 +126,14 @@ const GuarantorList = ({
 									variant="outlined"
 								>
 									{hasAccount
-										? t('garants.list.accountCreated')
+										? t('guarantors.list.accountCreated')
 										: isInviting
-											? t('garants.actions.inviting')
-											: t('garants.actions.invite')}
+											? t('guarantors.actions.inviting')
+											: t('guarantors.actions.invite')}
 								</Button>
 							) : null}
 							<Button
-								aria-label={t('garants.actions.deleteAria', {
+								aria-label={t('guarantors.actions.deleteAria', {
 									name: guarantorDisplayName(g, t),
 								})}
 								onPress={() => onDelete(g)}
@@ -190,7 +190,7 @@ export const GarantsPage = () => {
 				onSuccess: (data) => {
 					setInvitePayload({ shareUrl: data.shareUrl, expiresAt: data.expiresAt });
 					setInviteModalOpen(true);
-					toast.success(t('garants.toasts.inviteLinkGenerated'));
+					toast.success(t('guarantors.toasts.inviteLinkGenerated'));
 				},
 			},
 		);
@@ -207,8 +207,8 @@ export const GarantsPage = () => {
 	return (
 		<div className={styles.page}>
 			<header className={styles.header}>
-				<h1>{t('garants.title')}</h1>
-				<Button onPress={openCreate}>+ {t('garants.actions.add')}</Button>
+				<h1>{t('guarantors.title')}</h1>
+				<Button onPress={openCreate}>+ {t('guarantors.actions.add')}</Button>
 			</header>
 
 			<Tabs
@@ -217,7 +217,7 @@ export const GarantsPage = () => {
 				tabs={[
 					{
 						key: 'person',
-						label: t('garants.tabs.persons', { count: personsCount }),
+						label: t('guarantors.tabs.persons', { count: personsCount }),
 						panel: (
 							<GuarantorList
 								invitingId={invitingId}
@@ -230,7 +230,7 @@ export const GarantsPage = () => {
 					},
 					{
 						key: 'organization',
-						label: t('garants.tabs.organizations', { count: orgsCount }),
+						label: t('guarantors.tabs.organizations', { count: orgsCount }),
 						panel: (
 							<GuarantorList
 								invitingId={invitingId}
@@ -252,19 +252,19 @@ export const GarantsPage = () => {
 			/>
 
 			<ConfirmDialog
-				description={t('garants.deleteConfirm.description')}
+				description={t('guarantors.deleteConfirm.description')}
 				isOpen={confirmDelete !== null}
 				isPending={deleteMutation.isPending}
 				onConfirm={async () => {
 					if (!confirmDelete) return;
 					await deleteMutation.mutateAsync(confirmDelete.id);
-					toast.success(t('garants.toasts.deleted'));
+					toast.success(t('guarantors.toasts.deleted'));
 					setConfirmDelete(null);
 				}}
 				onOpenChange={(open) => {
 					if (!open) setConfirmDelete(null);
 				}}
-				title={t('garants.deleteConfirm.title')}
+				title={t('guarantors.deleteConfirm.title')}
 				variant="danger"
 			/>
 

@@ -29,8 +29,8 @@ export const BailPrintPage = () => {
 	const [dateSignature, setDateSignature] = useState(todayIso());
 	const [bailleurSig, setBailleurSig] = useState('');
 	const [locataireSig, setLocataireSig] = useState('');
-	const [bailleurMention, setBailleurMention] = useState(t('baux.print.defaultMention'));
-	const [locataireMention, setLocataireMention] = useState(t('baux.print.defaultMention'));
+	const [bailleurMention, setBailleurMention] = useState(t('leases.print.defaultMention'));
+	const [locataireMention, setLocataireMention] = useState(t('leases.print.defaultMention'));
 
 	if (leaseQ.isLoading || propertyQ.isLoading || landlordQ.isLoading) {
 		return (
@@ -43,8 +43,8 @@ export const BailPrintPage = () => {
 	if (!leaseQ.data || !propertyQ.data) {
 		return (
 			<div className={styles.toolbar}>
-				<p>{t('baux.print.leaseNotFound')}</p>
-				<Button onPress={() => navigate(paths.biens())}>{t('baux.actions.backPlain')}</Button>
+				<p>{t('leases.print.leaseNotFound')}</p>
+				<Button onPress={() => navigate(paths.biens())}>{t('leases.actions.backPlain')}</Button>
 			</div>
 		);
 	}
@@ -52,8 +52,8 @@ export const BailPrintPage = () => {
 	if (!landlordQ.data) {
 		return (
 			<div className={styles.toolbar}>
-				<p>{t('baux.print.landlordProfileIncomplete')}</p>
-				<Button onPress={() => navigate(paths.reglages())}>{t('baux.print.goToSettings')}</Button>
+				<p>{t('leases.print.landlordProfileIncomplete')}</p>
+				<Button onPress={() => navigate(paths.reglages())}>{t('leases.print.goToSettings')}</Button>
 			</div>
 		);
 	}
@@ -67,45 +67,45 @@ export const BailPrintPage = () => {
 		<div className={styles.wrap}>
 			<div className={`${styles.toolbar} no-print`}>
 				<Button onPress={() => navigate(paths.leaseEdit(propertyId, leaseId))} variant="ghost">
-					{t('baux.actions.back')}
+					{t('leases.actions.back')}
 				</Button>
 				<TextField
-					label={t('baux.print.placeLabel')}
+					label={t('leases.print.placeLabel')}
 					onChange={(e) => setLieu(e.target.value)}
 					value={effectiveLieu}
 				/>
 				<TextField
-					label={t('baux.print.dateLabel')}
+					label={t('leases.print.dateLabel')}
 					onChange={(e) => setDateSignature(e.target.value)}
 					type="date"
 					value={dateSignature}
 				/>
-				<Button onPress={() => window.print()}>{t('baux.print.printButton')}</Button>
+				<Button onPress={() => window.print()}>{t('leases.print.printButton')}</Button>
 			</div>
 
 			<div className={`${styles.sigs} no-print`}>
 				<div className={styles.sigCol}>
 					<TextField
-						hint={t('baux.print.mentionHint')}
-						label={t('baux.print.bailleurMentionLabel')}
+						hint={t('leases.print.mentionHint')}
+						label={t('leases.print.landlordMentionLabel')}
 						onChange={(e) => setBailleurMention(e.target.value)}
 						value={bailleurMention}
 					/>
 					<SignaturePad
-						label={t('baux.print.bailleurSignatureLabel')}
+						label={t('leases.print.landlordSignatureLabel')}
 						onChange={setBailleurSig}
 						value={bailleurSig}
 					/>
 				</div>
 				<div className={styles.sigCol}>
 					<TextField
-						hint={t('baux.print.mentionHint')}
-						label={t('baux.print.locataireMentionLabel')}
+						hint={t('leases.print.mentionHint')}
+						label={t('leases.print.tenantMentionLabel')}
 						onChange={(e) => setLocataireMention(e.target.value)}
 						value={locataireMention}
 					/>
 					<SignaturePad
-						label={t('baux.print.locataireSignatureLabel')}
+						label={t('leases.print.tenantSignatureLabel')}
 						onChange={setLocataireSig}
 						value={locataireSig}
 					/>

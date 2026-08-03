@@ -169,7 +169,7 @@ export const GuarantorFormModal = ({
 		let body: CreateGuarantorBody;
 		if (type === 'person') {
 			if (!personForm.firstName.trim() || !personForm.lastName.trim()) {
-				toast.error(t('garants.form.errors.personRequired'));
+				toast.error(t('guarantors.form.errors.personRequired'));
 				return;
 			}
 			body = {
@@ -187,7 +187,7 @@ export const GuarantorFormModal = ({
 			};
 		} else {
 			if (!orgForm.organizationName.trim()) {
-				toast.error(t('garants.form.errors.organizationNameRequired'));
+				toast.error(t('guarantors.form.errors.organizationNameRequired'));
 				return;
 			}
 			body = {
@@ -203,7 +203,7 @@ export const GuarantorFormModal = ({
 		}
 		createMutation.mutate(body, {
 			onSuccess: () => {
-				toast.success(t('garants.toasts.created'));
+				toast.success(t('guarantors.toasts.created'));
 				onOpenChange(false);
 			},
 		});
@@ -242,7 +242,7 @@ export const GuarantorFormModal = ({
 			{ id: guarantor.id, body },
 			{
 				onSuccess: () => {
-					toast.success(t('garants.toasts.updated'));
+					toast.success(t('guarantors.toasts.updated'));
 					onOpenChange(false);
 				},
 			},
@@ -260,20 +260,20 @@ export const GuarantorFormModal = ({
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
 			size="lg"
-			title={isEdit ? t('garants.form.editTitle') : t('garants.form.createTitle')}
+			title={isEdit ? t('guarantors.form.editTitle') : t('guarantors.form.createTitle')}
 		>
 			<form className={styles.form} onSubmit={onSubmit}>
 				{/* Type : éditable uniquement en création. */}
 				<div className={styles.typeRow}>
 					<label className={styles.typeLabel} htmlFor="guarantor-type">
-						{t('garants.form.typeLabel')}
+						{t('guarantors.form.typeLabel')}
 					</label>
 					{isEdit ? (
 						<span className={styles.typeReadonly}>
-							{t(`garants.form.type.${type}` as never)}
+							{t(`guarantors.form.type.${type}` as never)}
 							<span className={styles.muted}>
 								{' '}
-								{t('garants.form.typeLockedHint')}
+								{t('guarantors.form.typeLockedHint')}
 							</span>
 						</span>
 					) : (
@@ -285,7 +285,7 @@ export const GuarantorFormModal = ({
 						>
 							{TYPE_OPTIONS.map((key) => (
 								<option key={key} value={key}>
-									{t(`garants.form.type.${key}` as never)}
+									{t(`guarantors.form.type.${key}` as never)}
 								</option>
 							))}
 						</select>
@@ -296,61 +296,61 @@ export const GuarantorFormModal = ({
 					<>
 						<div className={styles.grid}>
 							<SelectField
-								label={t('garants.form.civility')}
+								label={t('guarantors.form.civility')}
 								onChange={(e) => setPersonField('civility', e.target.value)}
 								options={CIVILITIES}
 								value={personForm.civility}
 							/>
 							<TextField
-								label={t('garants.form.firstName')}
+								label={t('guarantors.form.firstName')}
 								onChange={(e) => setPersonField('firstName', e.target.value)}
 								required
 								value={personForm.firstName}
 							/>
 							<TextField
-								label={t('garants.form.lastName')}
+								label={t('guarantors.form.lastName')}
 								onChange={(e) => setPersonField('lastName', e.target.value)}
 								required
 								value={personForm.lastName}
 							/>
 							<TextField
-								label={t('garants.form.email')}
+								label={t('guarantors.form.email')}
 								onChange={(e) => setPersonField('email', e.target.value)}
 								type="email"
 								value={personForm.email}
 							/>
 							<TextField
-								label={t('garants.form.phone')}
+								label={t('guarantors.form.phone')}
 								onChange={(e) => setPersonField('phone', e.target.value)}
 								value={personForm.phone}
 							/>
 							<DatePickerField
-								label={t('garants.form.birthDate')}
+								label={t('guarantors.form.birthDate')}
 								onChange={(v) => setPersonField('birthDate', v)}
 								value={personForm.birthDate}
 							/>
 							<TextField
-								label={t('garants.form.birthPlace')}
+								label={t('guarantors.form.birthPlace')}
 								onChange={(e) => setPersonField('birthPlace', e.target.value)}
 								value={personForm.birthPlace}
 							/>
 						</div>
 
-						<h3 className={styles.subsection}>{t('garants.form.addressSection')}</h3>
+						<h3 className={styles.subsection}>{t('guarantors.form.addressSection')}</h3>
 						<div className={styles.grid}>
 							<TextField
 								className={styles.fullRow}
-								label={t('garants.form.address')}
+								label={t('guarantors.form.address')}
 								onChange={(e) => setPersonField('addressLine', e.target.value)}
 								value={personForm.addressLine}
 							/>
 							<TextField
-								label={t('garants.form.postalCode')}
+								label={t('guarantors.form.postalCode')}
 								onChange={(e) => setPersonField('postalCode', e.target.value)}
 								value={personForm.postalCode}
 							/>
 							<TextField
-								label={t('garants.form.city')}
+								label={t('guarantors.form.city')}
 								onChange={(e) => setPersonField('city', e.target.value)}
 								value={personForm.city}
 							/>
@@ -361,47 +361,47 @@ export const GuarantorFormModal = ({
 						<div className={styles.grid}>
 							<TextField
 								className={styles.fullRow}
-								label={t('garants.form.organizationName')}
+								label={t('guarantors.form.organizationName')}
 								onChange={(e) => setOrgField('organizationName', e.target.value)}
 								required
 								value={orgForm.organizationName}
 							/>
 							<TextField
-								hint={t('garants.form.organizationReferenceHint')}
-								label={t('garants.form.organizationReference')}
+								hint={t('guarantors.form.organizationReferenceHint')}
+								label={t('guarantors.form.organizationReference')}
 								onChange={(e) =>
 									setOrgField('organizationReference', e.target.value)
 								}
 								value={orgForm.organizationReference}
 							/>
 							<TextField
-								label={t('garants.form.emailOptional')}
+								label={t('guarantors.form.emailOptional')}
 								onChange={(e) => setOrgField('email', e.target.value)}
 								type="email"
 								value={orgForm.email}
 							/>
 							<TextField
-								label={t('garants.form.phone')}
+								label={t('guarantors.form.phone')}
 								onChange={(e) => setOrgField('phone', e.target.value)}
 								value={orgForm.phone}
 							/>
 						</div>
 
-						<h3 className={styles.subsection}>{t('garants.form.addressSection')}</h3>
+						<h3 className={styles.subsection}>{t('guarantors.form.addressSection')}</h3>
 						<div className={styles.grid}>
 							<TextField
 								className={styles.fullRow}
-								label={t('garants.form.address')}
+								label={t('guarantors.form.address')}
 								onChange={(e) => setOrgField('addressLine', e.target.value)}
 								value={orgForm.addressLine}
 							/>
 							<TextField
-								label={t('garants.form.postalCode')}
+								label={t('guarantors.form.postalCode')}
 								onChange={(e) => setOrgField('postalCode', e.target.value)}
 								value={orgForm.postalCode}
 							/>
 							<TextField
-								label={t('garants.form.city')}
+								label={t('guarantors.form.city')}
 								onChange={(e) => setOrgField('city', e.target.value)}
 								value={orgForm.city}
 							/>

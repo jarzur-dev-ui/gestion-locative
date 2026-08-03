@@ -36,17 +36,17 @@ export const InviteLinkModal = ({
 		try {
 			await navigator.clipboard.writeText(shareUrl);
 			setCopied(true);
-			toast.success(t('locataires.toast.linkCopied'));
+			toast.success(t('tenants.toast.linkCopied'));
 			window.setTimeout(() => setCopied(false), 2000);
 		} catch {
-			toast.error(t('locataires.toast.copyFailed'));
+			toast.error(t('tenants.toast.copyFailed'));
 		}
 	};
 
 	return (
-		<Modal isOpen={isOpen} onOpenChange={onOpenChange} title={t('locataires.invite.modalTitle')}>
+		<Modal isOpen={isOpen} onOpenChange={onOpenChange} title={t('tenants.invite.modalTitle')}>
 			<div className={styles.inviteBody}>
-				<p>{t('locataires.invite.description')}</p>
+				<p>{t('tenants.invite.description')}</p>
 				{shareUrl ? (
 					<div className={styles.shareUrlBox}>
 						<code className={styles.shareUrl}>{shareUrl}</code>
@@ -54,7 +54,7 @@ export const InviteLinkModal = ({
 				) : null}
 				{expiresAt ? (
 					<p className={styles.muted}>
-						{t('locataires.invite.expiresUntil', { date: formatExpiry(expiresAt) })}
+						{t('tenants.invite.expiresUntil', { date: formatExpiry(expiresAt) })}
 					</p>
 				) : null}
 				<div className={styles.actions}>
@@ -67,7 +67,7 @@ export const InviteLinkModal = ({
 							void onCopy();
 						}}
 					>
-						{copied ? t('locataires.invite.copyButtonDone') : t('locataires.invite.copyButton')}
+						{copied ? t('tenants.invite.copyButtonDone') : t('tenants.invite.copyButton')}
 					</Button>
 				</div>
 			</div>

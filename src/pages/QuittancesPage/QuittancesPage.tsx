@@ -129,10 +129,10 @@ export const QuittancesPage = () => {
 	return (
 		<div className={styles.page}>
 			<header className={styles.header}>
-				<h1>{t('quittances.title')}</h1>
+				<h1>{t('rentReceipts.title')}</h1>
 				<div className={styles.headerControl}>
 					<label className={styles.headerLabel} htmlFor="period-month">
-						{t('quittances.monthLabel')}
+						{t('rentReceipts.monthLabel')}
 					</label>
 					<select
 						className={styles.headerSelect}
@@ -152,7 +152,7 @@ export const QuittancesPage = () => {
 			{isLoading ? (
 				<Skeleton lines={6} />
 			) : !rentPeriods || rentPeriods.length === 0 ? (
-				<p className={styles.empty}>{t('quittances.empty')}</p>
+				<p className={styles.empty}>{t('rentReceipts.empty')}</p>
 			) : (
 				<ul className={styles.cardList}>
 					{rentPeriods.map((rp) => {
@@ -215,7 +215,7 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 	const handleMarkPaid = (): void => {
 		markPaid.mutate(rentPeriod.id, {
 			onSuccess: () => {
-				toast.success(t('quittances.toast.paidSuccess'));
+				toast.success(t('rentReceipts.toast.paidSuccess'));
 			},
 		});
 	};
@@ -223,7 +223,7 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 	// Action : tentative d'annulation depuis "Non".
 	const handleRequestUnpaid = (): void => {
 		if (!canUndoUnpaid) {
-			toast.error(t('quittances.toast.undoWindowExpired'));
+			toast.error(t('rentReceipts.toast.undoWindowExpired'));
 			return;
 		}
 		setConfirmUnpaidOpen(true);
@@ -231,13 +231,13 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 
 	const handleConfirmUnpaid = async (): Promise<void> => {
 		await markUnpaid.mutateAsync(rentPeriod.id);
-		toast.success(t('quittances.toast.unpaidSuccess'));
+		toast.success(t('rentReceipts.toast.unpaidSuccess'));
 	};
 
 	const handleSendNotice = (): void => {
 		sendNotice.mutate(rentPeriod.id, {
 			onSuccess: () => {
-				toast.success(t('quittances.toast.noticeSentSuccess'));
+				toast.success(t('rentReceipts.toast.noticeSentSuccess'));
 			},
 		});
 	};
@@ -247,42 +247,42 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 			<div className={styles.cardHeader}>
 				<div>
 					<div className={styles.cardTitle}>
-						{tenantNames || t('quittances.card.defaultTitle')}
+						{tenantNames || t('rentReceipts.card.defaultTitle')}
 					</div>
 					{propertyAddress ? (
 						<div className={styles.cardSubtitle}>{propertyAddress}</div>
 					) : null}
 				</div>
 				<span className={classNames(styles.statusBadge, styles[`status_${rentPeriod.statusKey}`])}>
-					{t(`quittances.status.${STATUS_I18N_KEY[rentPeriod.statusKey]}` as never)}
+					{t(`rentReceipts.status.${STATUS_I18N_KEY[rentPeriod.statusKey]}` as never)}
 				</span>
 			</div>
 
 			<dl className={styles.cardFacts}>
 				<div className={styles.fact}>
-					<dt>{t('quittances.card.facts.period')}</dt>
+					<dt>{t('rentReceipts.card.facts.period')}</dt>
 					<dd>{formatPeriodMonth(rentPeriod.periodMonth)}</dd>
 				</div>
 				<div className={styles.fact}>
-					<dt>{t('quittances.card.facts.dueDate')}</dt>
+					<dt>{t('rentReceipts.card.facts.dueDate')}</dt>
 					<dd>{formatDateFr(rentPeriod.dueDate)}</dd>
 				</div>
 				<div className={styles.fact}>
-					<dt>{t('quittances.card.facts.rent')}</dt>
+					<dt>{t('rentReceipts.card.facts.rent')}</dt>
 					<dd>{formatCents(rentPeriod.baseRentCents)}</dd>
 				</div>
 				<div className={styles.fact}>
-					<dt>{t('quittances.card.facts.charges')}</dt>
+					<dt>{t('rentReceipts.card.facts.charges')}</dt>
 					<dd>{formatCents(rentPeriod.baseChargesCents)}</dd>
 				</div>
 				{rentPeriod.adjustments.length > 0 ? (
 					<div className={styles.fact}>
-						<dt>{t('quittances.card.facts.adjustments')}</dt>
+						<dt>{t('rentReceipts.card.facts.adjustments')}</dt>
 						<dd>{formatCents(totalAdjustments)}</dd>
 					</div>
 				) : null}
 				<div className={classNames(styles.fact, styles.factTotal)}>
-					<dt>{t('quittances.card.facts.totalDue')}</dt>
+					<dt>{t('rentReceipts.card.facts.totalDue')}</dt>
 					<dd>{formatCents(rentPeriod.totalDueCents)}</dd>
 				</div>
 			</dl>
@@ -292,7 +292,7 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 					{rentPeriod.adjustments.map((adj, i) => (
 						<li className={styles.adjustment} key={`${adj.type}-${i}`}>
 							<span>
-								{adj.label || t(`quittances.adjustmentType.${ADJUSTMENT_TYPE_I18N_KEY[adj.type]}` as never)}
+								{adj.label || t(`rentReceipts.adjustmentType.${ADJUSTMENT_TYPE_I18N_KEY[adj.type]}` as never)}
 							</span>
 							<span>{formatCents(adj.amountCents)}</span>
 						</li>
@@ -302,15 +302,15 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 
 			{rentPeriod.noticeSentAt ? (
 				<p className={styles.cardNote}>
-					{t('quittances.card.noticeSentOn', { date: formatDateFr(rentPeriod.noticeSentAt) })}
+					{t('rentReceipts.card.noticeSentOn', { date: formatDateFr(rentPeriod.noticeSentAt) })}
 				</p>
 			) : null}
 
 			{/* Toggle Oui/Non : feature centrale */}
 			<div className={styles.toggleRow}>
-				<span className={styles.toggleLabel}>{t('quittances.card.toggleLabel')}</span>
+				<span className={styles.toggleLabel}>{t('rentReceipts.card.toggleLabel')}</span>
 				<div
-					aria-label={t('quittances.card.toggleAriaLabel')}
+					aria-label={t('rentReceipts.card.toggleAriaLabel')}
 					className={styles.toggle}
 					role="group"
 				>
@@ -321,7 +321,7 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 						onClick={handleMarkPaid}
 						type="button"
 					>
-						{t('quittances.card.yes')}
+						{t('rentReceipts.card.yes')}
 					</button>
 					<button
 						aria-pressed={!isPaid}
@@ -330,14 +330,14 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 						onClick={handleRequestUnpaid}
 						type="button"
 					>
-						{t('quittances.card.no')}
+						{t('rentReceipts.card.no')}
 					</button>
 				</div>
 			</div>
 
 			{isPaid && rentPeriod.paidAt ? (
 				<p className={styles.cardNote}>
-					{t('quittances.card.receiptGeneratedOn', { date: formatDateFr(rentPeriod.paidAt) })}
+					{t('rentReceipts.card.receiptGeneratedOn', { date: formatDateFr(rentPeriod.paidAt) })}
 				</p>
 			) : null}
 
@@ -349,7 +349,7 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 						onPress={handleRequestUnpaid}
 						variant="danger"
 					>
-						{t('quittances.card.cancelPayment')}
+						{t('rentReceipts.card.cancelPayment')}
 					</Button>
 				</div>
 			) : null}
@@ -362,21 +362,21 @@ const RentPeriodCard = ({ rentPeriod, property }: RentPeriodCardProps) => {
 						onPress={handleSendNotice}
 						variant="outlined"
 					>
-						{t('quittances.card.sendNoticeNow')}
+						{t('rentReceipts.card.sendNoticeNow')}
 					</Button>
 					<Button onPress={() => setAdjustModalOpen(true)} variant="outlined">
-						{t('quittances.card.addAdjustment')}
+						{t('rentReceipts.card.addAdjustment')}
 					</Button>
 				</div>
 			) : null}
 
 			<ConfirmDialog
-				description={t('quittances.confirmUnpaid.description')}
+				description={t('rentReceipts.confirmUnpaid.description')}
 				isOpen={confirmUnpaidOpen}
 				isPending={markUnpaid.isPending}
 				onConfirm={handleConfirmUnpaid}
 				onOpenChange={setConfirmUnpaidOpen}
-				title={t('quittances.confirmUnpaid.title')}
+				title={t('rentReceipts.confirmUnpaid.title')}
 				variant="danger"
 			/>
 
@@ -450,7 +450,7 @@ const AddAdjustmentModal = ({
 			// succès (toast + fermeture) et éviter une promesse non gérée.
 			return;
 		}
-		toast.success(t('quittances.toast.adjustmentAdded'));
+		toast.success(t('rentReceipts.toast.adjustmentAdded'));
 		onOpenChange(false);
 	};
 
@@ -459,25 +459,25 @@ const AddAdjustmentModal = ({
 			isOpen={isOpen}
 			onOpenChange={handleOpenChange}
 			size="sm"
-			title={t('quittances.adjustmentModal.title')}
+			title={t('rentReceipts.adjustmentModal.title')}
 		>
 			<form className={styles.adjustmentForm} onSubmit={handleSubmit}>
 				<SelectField
-					label={t('quittances.adjustmentModal.typeLabel')}
+					label={t('rentReceipts.adjustmentModal.typeLabel')}
 					onChange={(e) => setType(e.target.value as AdjustmentType)}
 					options={ADJUSTMENT_TYPES}
 					value={type}
 				/>
 				<TextField
-					label={t('quittances.adjustmentModal.labelFieldLabel')}
+					label={t('rentReceipts.adjustmentModal.labelFieldLabel')}
 					onChange={(e) => setLabel(e.target.value)}
-					placeholder={t(`quittances.adjustmentType.${ADJUSTMENT_TYPE_I18N_KEY[type]}` as never)}
+					placeholder={t(`rentReceipts.adjustmentType.${ADJUSTMENT_TYPE_I18N_KEY[type]}` as never)}
 					type="text"
 					value={label}
 				/>
 				<TextField
-					hint={t('quittances.adjustmentModal.amountHint')}
-					label={t('quittances.adjustmentModal.amountLabel')}
+					hint={t('rentReceipts.adjustmentModal.amountHint')}
+					label={t('rentReceipts.adjustmentModal.amountLabel')}
 					onChange={(e) => setAmountCents(Number(e.target.value) || 0)}
 					step={1}
 					type="number"
@@ -492,7 +492,7 @@ const AddAdjustmentModal = ({
 						{t('common.actions.cancel')}
 					</Button>
 					<Button isDisabled={patch.isPending} type="submit">
-						{patch.isPending ? t('quittances.adjustmentModal.submitting') : t('common.actions.add')}
+						{patch.isPending ? t('rentReceipts.adjustmentModal.submitting') : t('common.actions.add')}
 					</Button>
 				</div>
 			</form>

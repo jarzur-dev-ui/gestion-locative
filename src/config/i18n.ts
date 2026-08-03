@@ -41,7 +41,7 @@ const applyHtmlLang = (lng: string): void => {
 applyHtmlLang(i18n.language);
 i18n.on('languageChanged', applyHtmlLang);
 
-// Typage : `t('layout.nav.biens')` autocomplété, erreur TS sur clé inexistante.
+// Typage : `t('layout.nav.properties')` autocomplété, erreur TS sur clé inexistante.
 declare module 'i18next' {
 	interface CustomTypeOptions {
 		defaultNS: typeof DEFAULT_NS;

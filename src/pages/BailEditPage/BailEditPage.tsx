@@ -108,7 +108,7 @@ export const BailEditPage = () => {
 		e.preventDefault();
 		if (!propertyId) return;
 		if (form.tenantIds.length === 0) {
-			toast.error(t('baux.edit.selectTenantError'));
+			toast.error(t('leases.edit.selectTenantError'));
 			return;
 		}
 
@@ -129,7 +129,7 @@ export const BailEditPage = () => {
 		if (isEdit && leaseId) {
 			patchMut.mutate(
 				{ id: leaseId, body: basePayload },
-				{ onSuccess: () => toast.success(t('baux.edit.updatedToast')) },
+				{ onSuccess: () => toast.success(t('leases.edit.updatedToast')) },
 			);
 		} else {
 			createMut.mutate(
@@ -141,7 +141,7 @@ export const BailEditPage = () => {
 				},
 				{
 					onSuccess: (created) => {
-						toast.success(t('baux.edit.createdToast'));
+						toast.success(t('leases.edit.createdToast'));
 						navigate(paths.leaseEdit(propertyId, created.id));
 					},
 				},
@@ -156,7 +156,7 @@ export const BailEditPage = () => {
 			{
 				onSuccess: () =>
 					toast.success(
-						t('baux.edit.statusChangedToast', { status: t(`domain.leaseStatus.${statusKey}` as never) }),
+						t('leases.edit.statusChangedToast', { status: t(`domain.leaseStatus.${statusKey}` as never) }),
 					),
 			},
 		);
@@ -166,7 +166,7 @@ export const BailEditPage = () => {
 		if (!leaseId || !propertyId) return;
 		deleteMut.mutate(leaseId, {
 			onSuccess: () => {
-				toast.success(t('baux.edit.deletedToast'));
+				toast.success(t('leases.edit.deletedToast'));
 				navigate(paths.biens());
 			},
 		});
@@ -178,8 +178,8 @@ export const BailEditPage = () => {
 	if (!propertyQ.data) {
 		return (
 			<div className={styles.wrap}>
-				<p>{t('baux.edit.propertyNotFound')}</p>
-				<Button onPress={() => navigate(paths.biens())}>{t('baux.actions.backPlain')}</Button>
+				<p>{t('leases.edit.propertyNotFound')}</p>
+				<Button onPress={() => navigate(paths.biens())}>{t('leases.actions.backPlain')}</Button>
 			</div>
 		);
 	}
@@ -193,28 +193,28 @@ export const BailEditPage = () => {
 		<form className={styles.wrap} onSubmit={onSubmit}>
 			<header className={styles.header}>
 				<div>
-					<h1>{isEdit ? t('baux.edit.editTitle') : t('baux.edit.newTitle')}</h1>
+					<h1>{isEdit ? t('leases.edit.editTitle') : t('leases.edit.newTitle')}</h1>
 					<p className={styles.subtitle}>
 						{property.addressLine} — {property.postalCode} {property.city}
 						{lease
-							? ` · ${t('baux.edit.statusLabel', { status: t(`domain.leaseStatus.${status}` as never) })}`
+							? ` · ${t('leases.edit.statusLabel', { status: t(`domain.leaseStatus.${status}` as never) })}`
 							: null}
 					</p>
 				</div>
 				<Button onPress={() => navigate(paths.biens())} variant="ghost">
-					{t('baux.actions.back')}
+					{t('leases.actions.back')}
 				</Button>
 			</header>
 
 			{/* ── Locataires ── */}
 			<section className={styles.section}>
-				<h2>{t('baux.edit.tenantsTitle')}</h2>
-				<p className={styles.hint}>{t('baux.edit.tenantsHint')}</p>
+				<h2>{t('leases.edit.tenantsTitle')}</h2>
+				<p className={styles.hint}>{t('leases.edit.tenantsHint')}</p>
 				{tenantOptions.length === 0 ? (
 					<p className={styles.empty}>
-						{t('baux.edit.noTenants')}{' '}
+						{t('leases.edit.noTenants')}{' '}
 						<Button onPress={() => navigate(paths.locataires())} variant="ghost">
-							{t('baux.edit.createTenant')}
+							{t('leases.edit.createTenant')}
 						</Button>
 					</p>
 				) : (
@@ -246,14 +246,14 @@ export const BailEditPage = () => {
 			{/* ── Garants (optionnel) ── */}
 			<section className={styles.section}>
 				<h2>
-					{t('baux.edit.guarantorsTitle')}{' '}
-					<span className={styles.optional}>{t('baux.edit.optional')}</span>
+					{t('leases.edit.guarantorsTitle')}{' '}
+					<span className={styles.optional}>{t('leases.edit.optional')}</span>
 				</h2>
 				{guarantorOptions.length === 0 ? (
 					<p className={styles.empty}>
-						{t('baux.edit.noGuarantors')}{' '}
+						{t('leases.edit.noGuarantors')}{' '}
 						<Button onPress={() => navigate(paths.garants())} variant="ghost">
-							{t('baux.edit.createGuarantor')}
+							{t('leases.edit.createGuarantor')}
 						</Button>
 					</p>
 				) : (
@@ -262,7 +262,7 @@ export const BailEditPage = () => {
 							const selected = form.guarantorIds.includes(g.id);
 							const label =
 								g.guarantorTypeKey === 'organization'
-									? (g.organizationName ?? t('baux.edit.organizationFallback'))
+									? (g.organizationName ?? t('leases.edit.organizationFallback'))
 									: `${g.firstName ?? ''} ${g.lastName ?? ''}`.trim();
 							return (
 								<button
@@ -288,62 +288,62 @@ export const BailEditPage = () => {
 
 			{/* ── Conditions ── */}
 			<section className={styles.section}>
-				<h2>{t('baux.edit.conditionsTitle')}</h2>
+				<h2>{t('leases.edit.conditionsTitle')}</h2>
 				<div className={styles.grid}>
 					<SelectField
-						label={t('baux.edit.leaseTypeLabel')}
+						label={t('leases.edit.leaseTypeLabel')}
 						onChange={(e) => set('leaseTypeKey', e.target.value as 'empty' | 'furnished')}
 						options={[
-							{ value: 'empty', label: t('baux.edit.leaseTypeEmptyOption') },
+							{ value: 'empty', label: t('leases.edit.leaseTypeEmptyOption') },
 							{ value: 'furnished', label: t('domain.furnished.furnished') },
 						]}
 						value={form.leaseTypeKey}
 					/>
 					<SelectField
-						label={t('baux.edit.chargesTypeLabel')}
+						label={t('leases.edit.chargesTypeLabel')}
 						onChange={(e) => set('chargesTypeKey', e.target.value as 'package' | 'real')}
 						options={[
-							{ value: 'package', label: t('baux.edit.chargesTypePackage') },
-							{ value: 'real', label: t('baux.edit.chargesTypeReal') },
+							{ value: 'package', label: t('leases.edit.chargesTypePackage') },
+							{ value: 'real', label: t('leases.edit.chargesTypeReal') },
 						]}
 						value={form.chargesTypeKey}
 					/>
 					<TextField
-						label={t('baux.edit.startDateLabel')}
+						label={t('leases.edit.startDateLabel')}
 						onChange={(e) => set('startDate', e.target.value)}
 						type="date"
 						value={form.startDate}
 					/>
 					<TextField
-						hint={t('baux.edit.endDateHint')}
-						label={t('baux.edit.endDateLabel')}
+						hint={t('leases.edit.endDateHint')}
+						label={t('leases.edit.endDateLabel')}
 						onChange={(e) => set('endDate', e.target.value)}
 						type="date"
 						value={form.endDate}
 					/>
 					<TextField
-						label={t('baux.edit.rentLabel')}
+						label={t('leases.edit.rentLabel')}
 						onChange={(e) => set('monthlyRentCents', eurosToCents(e.target.value))}
 						step="0.01"
 						type="number"
 						value={euros(form.monthlyRentCents)}
 					/>
 					<TextField
-						label={t('baux.edit.chargesLabel')}
+						label={t('leases.edit.chargesLabel')}
 						onChange={(e) => set('monthlyChargesCents', eurosToCents(e.target.value))}
 						step="0.01"
 						type="number"
 						value={euros(form.monthlyChargesCents)}
 					/>
 					<TextField
-						label={t('baux.edit.depositLabel')}
+						label={t('leases.edit.depositLabel')}
 						onChange={(e) => set('depositCents', eurosToCents(e.target.value))}
 						step="0.01"
 						type="number"
 						value={euros(form.depositCents)}
 					/>
 					<TextField
-						label={t('baux.edit.paymentDayLabel')}
+						label={t('leases.edit.paymentDayLabel')}
 						max="31"
 						min="1"
 						onChange={(e) => set('paymentDay', parseInt(e.target.value, 10) || 1)}
@@ -357,7 +357,7 @@ export const BailEditPage = () => {
 						onChange={(e) => set('solidarity', e.target.checked)}
 						type="checkbox"
 					/>
-					{t('baux.edit.solidarityLabel')}
+					{t('leases.edit.solidarityLabel')}
 				</label>
 			</section>
 
@@ -365,26 +365,26 @@ export const BailEditPage = () => {
 			<div className={styles.actions}>
 				<Button disabled={createMut.isPending || patchMut.isPending} type="submit">
 					{createMut.isPending || patchMut.isPending
-						? t('baux.edit.submitSaving')
+						? t('leases.edit.submitSaving')
 						: isEdit
-							? t('baux.edit.submitEdit')
-							: t('baux.edit.submitCreate')}
+							? t('leases.edit.submitEdit')
+							: t('leases.edit.submitCreate')}
 				</Button>
 
 				{isEdit && lease ? (
 					<>
 						{status === 'draft' ? (
 							<Button onPress={() => onChangeStatus('active')} variant="filled">
-								{t('baux.edit.markActive')}
+								{t('leases.edit.markActive')}
 							</Button>
 						) : null}
 						{status === 'active' ? (
 							<Button onPress={() => onChangeStatus('ended')} variant="outlined">
-								{t('baux.edit.markEnded')}
+								{t('leases.edit.markEnded')}
 							</Button>
 						) : null}
 						<Button onPress={() => navigate(paths.leasePrint(propertyId, leaseId))} variant="outlined">
-							{t('baux.edit.printPreview')}
+							{t('leases.edit.printPreview')}
 						</Button>
 						{isDraft ? (
 							<Button onPress={() => setConfirmDeleteOpen(true)} variant="danger">
@@ -396,12 +396,12 @@ export const BailEditPage = () => {
 			</div>
 
 			<ConfirmDialog
-				description={t('baux.edit.deleteDescription')}
+				description={t('leases.edit.deleteDescription')}
 				isOpen={confirmDeleteOpen}
 				isPending={deleteMut.isPending}
 				onConfirm={onDelete}
 				onOpenChange={setConfirmDeleteOpen}
-				title={t('baux.edit.deleteTitle')}
+				title={t('leases.edit.deleteTitle')}
 				variant="danger"
 			/>
 		</form>

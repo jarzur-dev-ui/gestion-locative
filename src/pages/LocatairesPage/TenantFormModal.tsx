@@ -105,7 +105,7 @@ export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModa
 		e.preventDefault();
 
 		if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
-			toast.error(t('locataires.toast.missingRequiredFields'));
+			toast.error(t('tenants.toast.missingRequiredFields'));
 			return;
 		}
 
@@ -126,7 +126,7 @@ export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModa
 				{ id: tenant.id, body },
 				{
 					onSuccess: () => {
-						toast.success(t('locataires.toast.tenantUpdated'));
+						toast.success(t('tenants.toast.tenantUpdated'));
 						onOpenChange(false);
 					},
 				},
@@ -146,7 +146,7 @@ export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModa
 			};
 			createMutation.mutate(body, {
 				onSuccess: () => {
-					toast.success(t('locataires.toast.tenantCreated'));
+					toast.success(t('tenants.toast.tenantCreated'));
 					onOpenChange(false);
 				},
 			});
@@ -158,67 +158,67 @@ export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModa
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
 			size="lg"
-			title={isEdit ? t('locataires.form.editTitle') : t('locataires.form.createTitle')}
+			title={isEdit ? t('tenants.form.editTitle') : t('tenants.form.createTitle')}
 		>
 			<form className={styles.form} onSubmit={onSubmit}>
 				<div className={styles.grid}>
 					<SelectField
-						label={t('locataires.form.civility')}
+						label={t('tenants.form.civility')}
 						onChange={(e) => setField('civility', e.target.value)}
 						options={CIVILITIES}
 						value={form.civility}
 					/>
 					<TextField
-						label={t('locataires.form.firstName')}
+						label={t('tenants.form.firstName')}
 						onChange={(e) => setField('firstName', e.target.value)}
 						required
 						value={form.firstName}
 					/>
 					<TextField
-						label={t('locataires.form.lastName')}
+						label={t('tenants.form.lastName')}
 						onChange={(e) => setField('lastName', e.target.value)}
 						required
 						value={form.lastName}
 					/>
 					<TextField
-						label={t('locataires.form.email')}
+						label={t('tenants.form.email')}
 						onChange={(e) => setField('email', e.target.value)}
 						required
 						type="email"
 						value={form.email}
 					/>
 					<TextField
-						label={t('locataires.form.phone')}
+						label={t('tenants.form.phone')}
 						onChange={(e) => setField('phone', e.target.value)}
 						value={form.phone}
 					/>
 					<DatePickerField
-						label={t('locataires.form.birthDate')}
+						label={t('tenants.form.birthDate')}
 						onChange={(v) => setField('birthDate', v)}
 						value={form.birthDate}
 					/>
 					<TextField
-						label={t('locataires.form.birthPlace')}
+						label={t('tenants.form.birthPlace')}
 						onChange={(e) => setField('birthPlace', e.target.value)}
 						value={form.birthPlace}
 					/>
 				</div>
 
-				<h3 className={styles.subsection}>{t('locataires.form.currentAddressSection')}</h3>
+				<h3 className={styles.subsection}>{t('tenants.form.currentAddressSection')}</h3>
 				<div className={styles.grid}>
 					<TextField
 						className={styles.fullRow}
-						label={t('locataires.form.addressLine')}
+						label={t('tenants.form.addressLine')}
 						onChange={(e) => setField('currentAddressLine', e.target.value)}
 						value={form.currentAddressLine}
 					/>
 					<TextField
-						label={t('locataires.form.postalCode')}
+						label={t('tenants.form.postalCode')}
 						onChange={(e) => setField('currentPostalCode', e.target.value)}
 						value={form.currentPostalCode}
 					/>
 					<TextField
-						label={t('locataires.form.city')}
+						label={t('tenants.form.city')}
 						onChange={(e) => setField('currentCity', e.target.value)}
 						value={form.currentCity}
 					/>
@@ -234,7 +234,7 @@ export const TenantFormModal = ({ isOpen, onOpenChange, tenant }: TenantFormModa
 					</Button>
 					<Button disabled={isPending} type="submit">
 						{isPending
-							? t('locataires.form.submitting')
+							? t('tenants.form.submitting')
 							: isEdit
 								? t('common.actions.save')
 								: t('common.actions.create')}
