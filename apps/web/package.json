@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "lint:css": "stylelint \"src/**/*.scss\"",
     "preview": "vite preview",
     "gen:api": "openapi-typescript ${API_URL:-http://localhost:3000}/openapi.json -o src/api/schema.gen.ts",
     "typecheck": "tsc -b"
@@ -34,6 +35,7 @@
     "eslint": "^10.3.0",
     "openapi-typescript": "^7.13.0",
     "sass": "^1.100.0",
+    "stylelint": "^17.16.0",
     "typescript": "~6.0.2",
     "vite": "^8.0.12"
   }

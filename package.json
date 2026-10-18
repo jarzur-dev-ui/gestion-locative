@@ -9,6 +9,7 @@
     "gen:api": "pnpm --filter @gestion-locative/web gen:api",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
+    "lint:css": "pnpm -r lint:css",
     "typecheck": "pnpm -r typecheck"
   },
   "engines": {
