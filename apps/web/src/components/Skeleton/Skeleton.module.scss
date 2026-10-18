@@ -10,9 +10,9 @@
 
 	background: linear-gradient(
 		90deg,
-		rgba(0, 0, 0, 0.06) 25%,
-		rgba(0, 0, 0, 0.12) 50%,
-		rgba(0, 0, 0, 0.06) 75%
+		rgb(0 0 0 / 6%) 25%,
+		rgb(0 0 0 / 12%) 50%,
+		rgb(0 0 0 / 6%) 75%
 	);
 	background-size: 200% 100%;
 	animation: shimmer 1.4s ease-in-out infinite;
@@ -25,6 +25,7 @@
 	0% {
 		background-position: 200% 0;
 	}
+
 	100% {
 		background-position: -200% 0;
 	}

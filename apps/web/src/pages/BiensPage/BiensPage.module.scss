@@ -158,7 +158,7 @@
 	}
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
 	.header,
 	.propertyHead {
 		flex-wrap: wrap;

@@ -150,7 +150,7 @@
 	justify-content: flex-end;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
 	.header {
 		flex-wrap: wrap;
 		gap: var(--space-3);

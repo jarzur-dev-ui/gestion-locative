@@ -1,4 +1,4 @@
-@use './tokens.scss';
+@use './tokens';
 
 * {
 	box-sizing: border-box;
@@ -36,7 +36,7 @@ button {
 /* Aperçu "papier" A4 à l'écran */
 .paper {
 	background: #fff;
-	box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 1px 6px rgb(0 0 0 / 15%);
 	margin: 0 auto;
 	max-width: 21cm;
 	min-height: 29.7cm;
@@ -46,7 +46,7 @@ button {
 /* Impression : on isole la zone .print-area */
 @page {
 	margin: 1.8cm 2cm;
-	size: A4;
+	size: a4;
 }
 
 @media print {
@@ -84,6 +84,6 @@ button {
 
 	.page-break,
 	.print-area .paper + .paper {
-		page-break-before: always;
+		break-before: page;
 	}
 }

@@ -206,7 +206,7 @@
 		cursor: not-allowed;
 	}
 
-	&:hover:not(:disabled):not(.toggleBtnActive) {
+	&:hover:not(:disabled, .toggleBtnActive) {
 		background: var(--bg);
 	}
 }

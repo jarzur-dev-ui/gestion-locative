@@ -1,6 +1,6 @@
 .overlay {
 	align-items: center;
-	background: rgba(0, 0, 0, 0.4);
+	background: rgb(0 0 0 / 40%);
 	display: flex;
 	inset: 0;
 	justify-content: center;
@@ -24,7 +24,7 @@
 .modal {
 	background: var(--surface);
 	border-radius: var(--radius);
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 8px 32px rgb(0 0 0 / 15%);
 	max-height: calc(100vh - var(--space-6));
 	max-width: 100%;
 	opacity: 1;
