@@ -10,8 +10,10 @@ import type { paths } from './schema.gen';
  *   (HttpOnly, géré par le backend après login).
  * - L'URL de base vient de `VITE_API_URL` (configurable par environnement).
  */
+export const API_BASE_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+
 export const api = createClient<paths>({
-	baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
+	baseUrl: API_BASE_URL,
 	credentials: 'include',
 });
 

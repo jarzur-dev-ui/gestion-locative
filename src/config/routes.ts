@@ -53,6 +53,10 @@ export const paths = {
 	reglages: (): string => build(currentLang(), 'reglages'),
 	migration: (): string => build(currentLang(), 'migration'),
 	monDossier: (): string => build(currentLang(), 'monDossier'),
+	acceptInvitation: (token: string): string =>
+		`${build(currentLang(), 'acceptInvitation')}/${encodeURIComponent(token)}`,
+	resetPassword: (token: string): string =>
+		`${build(currentLang(), 'resetPassword')}/${encodeURIComponent(token)}`,
 	// propertyId / leaseId proviennent de params de route garantis par le
 	// pattern (:propertyId, :leaseId) → toujours présents à l'appel.
 	leaseNew: (propertyId: string | undefined): string => {

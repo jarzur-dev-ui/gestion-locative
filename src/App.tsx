@@ -7,6 +7,11 @@ import { Layout } from '@/components/Layout';
 import { RequireAuth } from '@/components/RequireAuth';
 import { Skeleton } from '@/components/Skeleton';
 import { LoginPage } from '@/pages/LoginPage/LoginPage';
+import {
+	LegacyLeaseRedirect,
+	LegacyShareRedirect,
+	LegacyTokenRedirect,
+} from '@/routes/LegacyRedirects';
 
 // Code splitting des routes : chaque page protégée est chargée à la demande.
 // La LoginPage reste eager (premier écran possible, on optimise le LCP).
@@ -121,6 +126,17 @@ export const App = () => (
 	<Suspense fallback={<PageFallback />}>
 		<Routes>
 			{SUPPORTED_LANGUAGES.map((lng) => langRoutes(lng))}
+			{/* Liens hérités (emails déjà envoyés, liens émis par l'API) */}
+			<Route
+				element={<LegacyTokenRedirect to={paths.acceptInvitation} />}
+				path="accept-invitation/:token"
+			/>
+			<Route
+				element={<LegacyTokenRedirect to={paths.resetPassword} />}
+				path="reset-password/:token"
+			/>
+			<Route element={<LegacyLeaseRedirect />} path="leases/:leaseId" />
+			<Route element={<LegacyShareRedirect />} path="share/:token" />
 			<Route element={<RootRedirect />} path="/" />
 			<Route element={<RootRedirect />} path="*" />
 		</Routes>

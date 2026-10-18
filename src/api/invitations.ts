@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { paths } from '@/config/routes';
+
 import { api, type components } from './client';
 import { GUARANTORS_QUERY_KEY } from './guarantors';
 import { TENANTS_QUERY_KEY } from './tenants';
@@ -20,7 +22,7 @@ export interface InvitationCreated extends InvitationCreatedRaw {
 
 function buildShareUrl(token: string): string {
 	const origin = typeof window !== 'undefined' ? window.location.origin : '';
-	return `${origin}/accept-invitation/${token}`;
+	return `${origin}${paths.acceptInvitation(token)}`;
 }
 
 /**
