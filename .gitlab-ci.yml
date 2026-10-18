@@ -33,6 +33,8 @@ compile:
     - npm install -g corepack@latest pnpm@latest && corepack enable && corepack prepare pnpm@latest --activate
     - pnpm config set store-dir $CI_PROJECT_DIR/.pnpm-store
     - pnpm install --frozen-lockfile
+    - pnpm lint
+    - pnpm lint:css
     - pnpm build
   artifacts:
     name: build-$NODE_VERSION-$CI_COMMIT_SHORT_SHA
