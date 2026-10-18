@@ -20,9 +20,9 @@ Vérification minimale après changement : `pnpm build` **et** `node_modules/.bi
 
 ## Architecture (rapide)
 
-- **Routing** (`src/App.tsx`) : routes publiques (login, accept-invitation, forgot/reset password) eager pour la `LoginPage`, le reste en `lazy()`. Routes protégées via `<RequireAuth roles={[...]} />` (`src/components/RequireAuth`) qui gate sur le rôle (`landlord` vs `tenant`/`guarantor`) puis monte `<Layout />`.
+- **Routing** (`src/App.tsx`) : URLs localisées `/fr-FR/…` / `/en-US/…` (slugs dans `src/config/routes.ts`, liens via `paths.*()`). Routes publiques (login, accept-invitation, forgot/reset password) eager pour la `LoginPage`, le reste en `lazy()`. Anciens liens sans langue émis par l'API → redirections (`src/routes/LegacyRedirects.tsx`). Routes protégées via `<RequireAuth roles={[...]} />` (`src/components/RequireAuth`) qui gate sur le rôle (`landlord` vs `tenant`/`guarantor`) puis monte `<Layout />`.
 - **react-query** (`src/api/query-client.ts`) : query keys par ressource (ex. `ME_QUERY_KEY`, `PROPERTIES_QUERY_KEY`), invalidation après mutation, optimistic update dans `useMarkPaid`, et **handler global 401** → toast + `window.location.href = '/login'`. `useAuth`/`useLandlordProfile` retournent `null` sur 401/404 plutôt que de throw.
-- **Client API** (`src/api/client.ts`) : `openapi-fetch` typé sur `paths` (de `schema.gen.ts`), `credentials: 'include'` (envoie le cookie `gl_session`), baseUrl = `VITE_API_URL` (défaut `http://localhost:3000`). Chaque hook ressource suit le pattern `{ data, response }`.
+- **Client API** (`src/api/client.ts`) : `openapi-fetch` typé sur `paths` (de `schema.gen.ts`), `credentials: 'include'` (envoie le cookie `gl_session`), baseUrl = `API_BASE_URL` = `VITE_API_URL` (défaut `http://localhost:3000`). Chaque hook ressource suit le pattern `{ data, response }`.
 
 ## Conventions clés
 
