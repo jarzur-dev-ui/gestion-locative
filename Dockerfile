@@ -11,7 +11,7 @@ RUN pnpm install --frozen-lockfile && VITE_APP_URL=${VITE_APP_URL:https://gestio
 
 FROM nginx:stable-alpine AS runner
 
-COPY --from=builder /packaged_app/dist /usr/share/nginx/html
+COPY --from=builder /packaged_app/apps/web/dist /usr/share/nginx/html
 RUN sed -i '9 a try_files $uri $uri/ /index.html;' /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["/bin/sh", "-c", "nginx -g \"daemon off;\""]

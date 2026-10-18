@@ -14,7 +14,7 @@ pnpm typecheck    # tsc -b (suit les références : src + vite.config.ts)
 pnpm gen:api      # régénère src/api/schema.gen.ts depuis l'OpenAPI du back
 ```
 
-Vérification minimale après changement : `pnpm build` **et** `node_modules/.bin/eslint .`.
+Vérification minimale après changement : `pnpm build` **et** `pnpm lint`.
 
 **GOTCHA `pnpm gen:api`** : appelle `openapi-typescript ${API_URL:-http://localhost:3000}/openapi.json`. Le **backend doit tourner** (par défaut `localhost:3000`, sinon exporter `API_URL=...`). Sans API joignable, la commande échoue. Ne jamais éditer `src/api/schema.gen.ts` à la main : c'est un artefact généré. Le code doit rester compatible avec ces types générés.
 
