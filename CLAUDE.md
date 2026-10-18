@@ -10,7 +10,7 @@ SPA React de gestion locative pour bailleurs (biens, baux, locataires, garants, 
 pnpm dev          # serveur de dev Vite (ouvre le navigateur)
 pnpm build        # = tsc -b && vite build (type-check projet + bundle)
 pnpm lint         # eslint .
-pnpm typecheck    # tsc --noEmit
+pnpm typecheck    # tsc -b (suit les références : src + vite.config.ts)
 pnpm gen:api      # régénère src/api/schema.gen.ts depuis l'OpenAPI du back
 ```
 
