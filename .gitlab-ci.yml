@@ -13,7 +13,9 @@ before_script:
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
-  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  # Clé d'hôte épinglée (variable CI `SSH_KNOWN_HOSTS` = sortie de `ssh-keyscan <hôte>`) : pas de MITM possible au deploy.
+  - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
 
 compile:
   image: node:$NODE_VERSION-alpine
@@ -27,7 +29,7 @@ compile:
         - $CI_PROJECT_DIR/.pnpm-store
       policy: pull-push
   script:
-    - env | grep VITE
+    - echo "VITE_API_URL=${VITE_API_URL:-<non défini>}"
     - npm install -g corepack@latest pnpm@latest && corepack enable && corepack prepare pnpm@latest --activate
     - pnpm config set store-dir $CI_PROJECT_DIR/.pnpm-store
     - pnpm install --frozen-lockfile
@@ -73,6 +75,8 @@ deploy:
     name: $CI_COMMIT_REF_SLUG
     url: $VITE_APP_URL
   script:
-    - ssh root@$MAIN_DOCKER_HOST -t "echo $CI_REGISTRY_PASSWORD | docker login -u \"$CI_REGISTRY_USER\" --password-stdin $CI_REGISTRY;docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG && docker stop $CONTAINER_NAME; docker rm $CONTAINER_NAME;docker run -d --restart=always --name $CONTAINER_NAME -p $EXPOSED_PORT:80 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    # Mot de passe passé par stdin : il n'apparaît ni dans la ligne de commande distante ni dans `ps`.
+    - echo "$CI_REGISTRY_PASSWORD" | ssh root@$MAIN_DOCKER_HOST "docker login -u \"$CI_REGISTRY_USER\" --password-stdin $CI_REGISTRY"
+    - ssh root@$MAIN_DOCKER_HOST "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG && docker stop $CONTAINER_NAME; docker rm $CONTAINER_NAME;docker run -d --restart=always --name $CONTAINER_NAME -p $EXPOSED_PORT:80 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   only:
     - main
