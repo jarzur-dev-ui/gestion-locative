@@ -1,0 +1,20 @@
+{
+  "name": "@gestion-locative/lint-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint": "./eslint.js"
+  },
+  "dependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "typescript-eslint": "^8.59.2"
+  },
+  "peerDependencies": {
+    "eslint": "^10.3.0",
+    "typescript": "~6.0.2"
+  }
+}

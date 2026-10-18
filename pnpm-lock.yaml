@@ -44,9 +44,9 @@ importers:
         specifier: ^7.15.1
         version: 7.15.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
     devDependencies:
-      '@eslint/js':
-        specifier: ^10.0.1
-        version: 10.0.1(eslint@10.4.0)
+      '@gestion-locative/lint-config':
+        specifier: workspace:*
+        version: link:../../packages/lint-config
       '@tanstack/react-query-devtools':
         specifier: ^5.100.14
         version: 5.100.14(@tanstack/react-query@5.100.14(react@19.2.6))(react@19.2.6)
@@ -65,15 +65,6 @@ importers:
       eslint:
         specifier: ^10.3.0
         version: 10.4.0
-      eslint-plugin-react-hooks:
-        specifier: ^7.1.1
-        version: 7.1.1(eslint@10.4.0)
-      eslint-plugin-react-refresh:
-        specifier: ^0.5.2
-        version: 0.5.2(eslint@10.4.0)
-      globals:
-        specifier: ^17.6.0
-        version: 17.6.0
       openapi-typescript:
         specifier: ^7.13.0
         version: 7.13.0(typescript@6.0.3)
@@ -83,12 +74,33 @@ importers:
       typescript:
         specifier: ~6.0.2
         version: 6.0.3
-      typescript-eslint:
-        specifier: ^8.59.2
-        version: 8.60.0(eslint@10.4.0)(typescript@6.0.3)
       vite:
         specifier: ^8.0.12
         version: 8.0.14(@types/node@24.12.4)(sass@1.100.0)
+
+  packages/lint-config:
+    dependencies:
+      '@eslint/js':
+        specifier: ^10.0.1
+        version: 10.0.1(eslint@10.4.0)
+      eslint:
+        specifier: ^10.3.0
+        version: 10.4.0
+      eslint-plugin-react-hooks:
+        specifier: ^7.1.1
+        version: 7.1.1(eslint@10.4.0)
+      eslint-plugin-react-refresh:
+        specifier: ^0.5.2
+        version: 0.5.2(eslint@10.4.0)
+      globals:
+        specifier: ^17.6.0
+        version: 17.6.0
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      typescript-eslint:
+        specifier: ^8.59.2
+        version: 8.60.0(eslint@10.4.0)(typescript@6.0.3)
 
 packages:
 
