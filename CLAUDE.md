@@ -9,28 +9,36 @@ SPA React de gestion locative pour bailleurs (biens, baux, locataires, garants, 
 ```bash
 pnpm dev          # serveur de dev Vite (ouvre le navigateur)
 pnpm build        # = tsc -b && vite build (type-check projet + bundle)
-pnpm lint         # eslint .
+pnpm lint         # eslint (pnpm -r : chaque package qui a le script)
+pnpm lint:css     # stylelint sur les *.scss (pnpm -r)
 pnpm typecheck    # tsc -b (suit les références : src + vite.config.ts)
-pnpm gen:api      # régénère src/api/schema.gen.ts depuis l'OpenAPI du back
+pnpm gen:api      # régénère apps/web/src/api/schema.gen.ts depuis l'OpenAPI du back
 ```
 
-Vérification minimale après changement : `pnpm build` **et** `pnpm lint`.
+Vérification minimale après changement : `pnpm typecheck && pnpm build && pnpm lint && pnpm lint:css`.
 
-**GOTCHA `pnpm gen:api`** : appelle `openapi-typescript ${API_URL:-http://localhost:3000}/openapi.json`. Le **backend doit tourner** (par défaut `localhost:3000`, sinon exporter `API_URL=...`). Sans API joignable, la commande échoue. Ne jamais éditer `src/api/schema.gen.ts` à la main : c'est un artefact généré. Le code doit rester compatible avec ces types générés.
+**Workspace pnpm** (`pnpm-workspace.yaml` : `apps/*`, `packages/*`, `e2e`) :
+
+- `apps/web` (`@gestion-locative/web`) : l'app ; build dans `apps/web/dist` (CI + `Dockerfile.ci`).
+- `packages/lint-config` (`@gestion-locative/lint-config`) : ESLint (`/eslint`, exports `base` et `react`) et stylelint (`/stylelint`).
+- Scripts racine : `dev`, `preview`, `gen:api` → `pnpm --filter @gestion-locative/web <script>` ; `build`, `lint`, `lint:css`, `typecheck` → `pnpm -r`.
+- **Vite se lance depuis `apps/web`** (scripts racine ou `pnpm --filter`), jamais `vite --config apps/web/vite.config.ts` depuis la racine : `index.html` et `.env.local` sont lus dans le dossier courant (`apps/web/.env.local`).
+
+**GOTCHA `pnpm gen:api`** : appelle `openapi-typescript ${API_URL:-http://localhost:3000}/openapi.json`. Le **backend doit tourner** (par défaut `localhost:3000`, sinon exporter `API_URL=...`). Sans API joignable, la commande échoue. Ne jamais éditer `apps/web/src/api/schema.gen.ts` à la main : c'est un artefact généré. Le code doit rester compatible avec ces types générés.
 
 ## Architecture (rapide)
 
-- **Routing** (`src/App.tsx`) : URLs localisées `/fr-FR/…` / `/en-US/…` (slugs dans `src/config/routes.ts`, liens via `paths.*()`). Routes publiques (login, accept-invitation, forgot/reset password) eager pour la `LoginPage`, le reste en `lazy()`. Anciens liens sans langue émis par l'API → redirections (`src/routes/LegacyRedirects.tsx`). Routes protégées via `<RequireAuth roles={[...]} />` (`src/components/RequireAuth`) qui gate sur le rôle (`landlord` vs `tenant`/`guarantor`) puis monte `<Layout />`.
-- **react-query** (`src/api/query-client.ts`) : query keys par ressource (ex. `ME_QUERY_KEY`, `PROPERTIES_QUERY_KEY`), invalidation après mutation, optimistic update dans `useMarkPaid`, et **handler global 401** → toast + `window.location.href = '/login'`. `useAuth`/`useLandlordProfile` retournent `null` sur 401/404 plutôt que de throw.
-- **Client API** (`src/api/client.ts`) : `openapi-fetch` typé sur `paths` (de `schema.gen.ts`), `credentials: 'include'` (envoie le cookie `gl_session`), baseUrl = `API_BASE_URL` = `VITE_API_URL` (défaut `http://localhost:3000`). Chaque hook ressource suit le pattern `{ data, response }`.
+- **Routing** (`apps/web/src/App.tsx`) : URLs localisées `/fr-FR/…` / `/en-US/…` (slugs dans `apps/web/src/config/routes.ts`, liens via `paths.*()`). Routes publiques (login, accept-invitation, forgot/reset password) eager pour la `LoginPage`, le reste en `lazy()`. Anciens liens sans langue émis par l'API → redirections (`apps/web/src/routes/LegacyRedirects.tsx`). Routes protégées via `<RequireAuth roles={[...]} />` (`apps/web/src/components/RequireAuth`) qui gate sur le rôle (`landlord` vs `tenant`/`guarantor`) puis monte `<Layout />`.
+- **react-query** (`apps/web/src/api/query-client.ts`) : query keys par ressource (ex. `ME_QUERY_KEY`, `PROPERTIES_QUERY_KEY`), invalidation après mutation, optimistic update dans `useMarkPaid`, et **handler global 401** → toast + `window.location.href = '/login'`. `useAuth`/`useLandlordProfile` retournent `null` sur 401/404 plutôt que de throw.
+- **Client API** (`apps/web/src/api/client.ts`) : `openapi-fetch` typé sur `paths` (de `schema.gen.ts`), `credentials: 'include'` (envoie le cookie `gl_session`), baseUrl = `API_BASE_URL` = `VITE_API_URL` (défaut `http://localhost:3000`). Chaque hook ressource suit le pattern `{ data, response }`.
 
 ## Conventions clés
 
 - **Indentation = TABS** (tout le code source).
 - **Copy UI en français.**
 - **SCSS modules** : un `*.module.scss` par composant.
-- Alias d'import **`@/` → `src/`** (vite.config.ts + tsconfig.app.json).
-- Les hooks API vivent dans `src/api/<ressource>.ts`.
+- Alias d'import **`@/` → `apps/web/src/`** (vite.config.ts + tsconfig.app.json).
+- Les hooks API vivent dans `apps/web/src/api/<ressource>.ts`.
 - Ne pas casser la compatibilité avec les types API générés (`schema.gen.ts`).
 
 ## GOTCHAS dépôt (introuvables dans le code)

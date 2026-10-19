@@ -2,7 +2,7 @@
 
 Convention transverse : chaque composant/page a son **SCSS module** (`*.module.scss`) à côté du `.tsx`, importé en `import styles from './X.module.scss'`. Les composants interactifs s'appuient sur **`react-aria-components`** (Button → `onPress`, Modal/DatePicker, etc.).
 
-## Pages — `src/pages/<Page>/<Page>.tsx`
+## Pages — `apps/web/src/pages/<Page>/<Page>.tsx`
 
 | Page | Rôle | Rôle accès |
 |---|---|---|
@@ -22,7 +22,7 @@ Convention transverse : chaque composant/page a son **SCSS module** (`*.module.s
 
 Sous-composants notables : `LocatairesPage/TenantFormModal.tsx`, `LocatairesPage/InviteLinkModal.tsx` (réutilisé par GarantsPage), `GarantsPage/GuarantorFormModal.tsx`.
 
-## Composants réutilisables — `src/components/<Name>/`
+## Composants réutilisables — `apps/web/src/components/<Name>/`
 
 | Composant | Description |
 |---|---|
@@ -41,11 +41,11 @@ Sous-composants notables : `LocatairesPage/TenantFormModal.tsx`, `LocatairesPage
 | `FileUpload` | Sélecteur de fichier (utilisé par MonDossierPage) |
 | `RequireAuth` | Gate de route par rôle (voir `docs/architecture.md`) |
 
-## Documents — `src/documents/<Name>/`
+## Documents — `apps/web/src/documents/<Name>/`
 
 | Composant | Description |
 |---|---|
 | `BailDocument` | Rendu imprimable d'un bail ; consomme `Bail`/`Bailleur` (via `@/utils/bail-adapter`) |
 | `QuittanceDocument` | Rendu imprimable d'une quittance ; consomme `QuittanceVM` (`@/utils/quittance`) |
 
-Helpers de vue/format associés : `src/utils/format.ts`, `src/utils/dates.ts`, `src/utils/quittance.ts`, `src/utils/bail-adapter.ts`.
+Helpers de vue/format associés : `apps/web/src/utils/format.ts`, `apps/web/src/utils/dates.ts`, `apps/web/src/utils/quittance.ts`, `apps/web/src/utils/bail-adapter.ts`.

@@ -11,7 +11,7 @@ La **copy UI est en français** (labels, messages, toasts). Les commentaires de 
 ## Structure de fichiers
 
 ```
-src/
+apps/web/src/
   api/            hooks react-query + client typé (un fichier par ressource)
                   client.ts, query-client.ts, schema.gen.ts (généré), <ressource>.ts
   components/     composants réutilisables — un dossier par composant :
@@ -34,17 +34,18 @@ Un dossier composant expose généralement : implémentation `.tsx`, `*.module.s
 
 ## Imports
 
-- Alias **`@/` → `src/`** (déclaré dans `vite.config.ts` et `tsconfig.app.json`). Préférer `@/...` aux chemins relatifs longs.
+- Alias **`@/` → `apps/web/src/`** (déclaré dans `vite.config.ts` et `tsconfig.app.json`). Préférer `@/...` aux chemins relatifs longs.
 - Style importé **en dernier** : `import styles from './X.module.scss'`.
 
 ## API & types
 
-- Les hooks API vivent dans `src/api/<ressource>.ts` ; voir `docs/architecture.md` pour le pattern.
-- Tous les types de données dérivent de `components['schemas'][...]` (de `src/api/schema.gen.ts`, **généré**). Ne pas éditer le fichier généré ; le code doit rester compatible avec lui.
+- Les hooks API vivent dans `apps/web/src/api/<ressource>.ts` ; voir `docs/architecture.md` pour le pattern.
+- Tous les types de données dérivent de `components['schemas'][...]` (de `apps/web/src/api/schema.gen.ts`, **généré**). Ne pas éditer le fichier généré ; le code doit rester compatible avec lui.
 
 ## Lint / TypeScript
 
-- ESLint flat config (`eslint.config.js`) : `@eslint/js` recommended, `typescript-eslint` recommended, **`eslint-plugin-react-hooks` v7** (flat recommended), `eslint-plugin-react-refresh` (vite). `dist` ignoré.
+- ESLint flat config partagée dans `packages/lint-config/eslint.js` (exports `base` et `react` ; `apps/web/eslint.config.js` étend `react`) : `@eslint/js` recommended, `typescript-eslint` recommended, **`eslint-plugin-react-hooks` v7** (flat recommended), `eslint-plugin-react-refresh` (vite). `dist` ignoré.
   - Conséquence react-refresh : un fichier qui exporte un composant ne doit exporter que des composants (raison de la séparation `Toast.tsx` / `toast-store.ts`).
 - TypeScript strict (`tsconfig.app.json`) : `strict`, `noUnusedLocals`, `noUnusedParameters`, `verbatimModuleSyntax` (imports de types via `import type`), `noImplicitOverride`. `noUncheckedIndexedAccess` est **désactivé** volontairement.
-- Vérifs : `pnpm lint`, `pnpm typecheck`, `pnpm build`.
+- Stylelint (`packages/lint-config/stylelint.js`, `pnpm lint:css`) : `stylelint-config-standard-scss` + `stylelint-config-css-modules`. Classes de module en **camelCase** (lues via `styles.fooBar`) ; kebab/snake toléré seulement quand le TSX calcule le nom (``styles[`state-${x}`]``, ``styles[`status_${key}`]``) et pour les classes `react-aria-*`.
+- Vérifs : `pnpm typecheck`, `pnpm build`, `pnpm lint`, `pnpm lint:css` (lint et lint:css bloquent le déploiement en CI).
