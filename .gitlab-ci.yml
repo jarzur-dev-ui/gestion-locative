@@ -1,43 +1,65 @@
-image: docker:git
 stages:
   - build
+  - test
   - docker-build
   - deploy
 
-services:
-  - docker:dind
+include:
+  - component: $CI_SERVER_FQDN/infrajo/ci/node-mr@1.1.0
+    inputs:
+      lint: pnpm lint && pnpm lint:css
+      typecheck: pnpm typecheck
+      build: pnpm build
+  - component: $CI_SERVER_FQDN/infrajo/ci/mr-bot@1.0.2
 
-before_script:
-  - "which ssh-agent || ( apk add --update --no-cache openssh-client )"
-  - eval $(ssh-agent -s)
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  - mkdir -p ~/.ssh
-  - chmod 700 ~/.ssh
-  # Clé d'hôte épinglée (variable CI `SSH_KNOWN_HOSTS` = sortie de `ssh-keyscan <hôte>`) : pas de MITM possible au deploy.
-  - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-  - chmod 644 ~/.ssh/known_hosts
+# Kept out of the global scope so the included MR jobs never see the deploy key.
+.ssh-setup:
+  before_script:
+    - "which ssh-agent || ( apk add --update --no-cache openssh-client )"
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    # Clé d'hôte épinglée (variable CI `SSH_KNOWN_HOSTS` = sortie de `ssh-keyscan <hôte>`) : pas de MITM possible au deploy.
+    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
 
 compile:
-  image: node:$NODE_VERSION-alpine
+  image: node:lts-slim
   stage: build
   interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
   environment:
     name: $CI_COMMIT_REF_SLUG
+  variables:
+    N_PREFIX: $CI_PROJECT_DIR/.n
   cache:
-    - key: pnpm-store-$NODE_VERSION
-      paths:
-        - $CI_PROJECT_DIR/.pnpm-store
+    - key:
+        files: [.nvmrc]
+      paths: [.n/]
+    - key:
+        prefix: pnpm-store
+        files: [pnpm-lock.yaml]
+      paths: [.pnpm-store/]
       policy: pull-push
+  before_script:
+    # n needs curl, absent from -slim; the cached N_PREFIX makes reruns skip the download.
+    - command -v curl >/dev/null || (apt-get update -qq && apt-get install -y -qq --no-install-recommends curl ca-certificates)
+    - wanted="$(tr -d 'v \n' < .nvmrc)"
+    - '[ "$("$N_PREFIX/bin/node" -v 2>/dev/null)" = "v$wanted" ] || npx --yes n@11.0.0 "$wanted"'
+    - export PATH="$N_PREFIX/bin:$PATH"
+    - npm i -g corepack@0.36.0
+    - corepack enable
+    - pnpm config set store-dir "$CI_PROJECT_DIR/.pnpm-store"
   script:
     - echo "VITE_API_URL=${VITE_API_URL:-<non défini>}"
-    - npm install -g corepack@latest pnpm@latest && corepack enable && corepack prepare pnpm@latest --activate
-    - pnpm config set store-dir $CI_PROJECT_DIR/.pnpm-store
     - pnpm install --frozen-lockfile
     - pnpm lint
     - pnpm lint:css
     - pnpm build
   artifacts:
-    name: build-$NODE_VERSION-$CI_COMMIT_SHORT_SHA
+    name: build-$CI_COMMIT_SHORT_SHA
     paths:
       - apps/web/dist/
     expire_in: 2 hour
@@ -47,6 +69,8 @@ build-docker-image-multiarch:
   stage: docker-build
   needs: ["compile"]
   interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
   environment:
     name: $CI_COMMIT_REF_SLUG
   services:
@@ -63,14 +87,16 @@ build-docker-image-multiarch:
     - docker context create builder-context --docker "host=tcp://docker:2376,ca=/certs/client/ca.pem,cert=/certs/client/cert.pem,key=/certs/client/key.pem"
     - docker buildx create --driver docker-container --use builder-context
     - docker buildx inspect --bootstrap
-    - docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64 --push -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --build-arg VITE_APP_URL=$VITE_APP_URL --build-arg NODE_VERSION=$NODE_VERSION -f Dockerfile.ci .
-  only:
-    - main
+    - docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64 --push -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --build-arg VITE_APP_URL=$VITE_APP_URL -f Dockerfile.ci .
 
 deploy:
+  image: docker:git
+  extends: .ssh-setup
   stage: deploy
   needs: ["build-docker-image-multiarch"]
   interruptible: false
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
   variables:
     GIT_STRATEGY: none
   environment:
@@ -80,5 +106,3 @@ deploy:
     # Mot de passe passé par stdin : il n'apparaît ni dans la ligne de commande distante ni dans `ps`.
     - echo "$CI_REGISTRY_PASSWORD" | ssh root@$MAIN_DOCKER_HOST "docker login -u \"$CI_REGISTRY_USER\" --password-stdin $CI_REGISTRY"
     - ssh root@$MAIN_DOCKER_HOST "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG && docker stop $CONTAINER_NAME; docker rm $CONTAINER_NAME;docker run -d --restart=always --name $CONTAINER_NAME -p $EXPOSED_PORT:80 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-  only:
-    - main

@@ -1,6 +1,6 @@
 ARG NODE_VERSION
 ARG VITE_APP_URL
-FROM node:${NODE_VERSION:-26}-alpine AS builder
+FROM node:${NODE_VERSION:-24.15.0}-alpine AS builder
 
 ENV CI=true
 RUN npm install -g corepack@latest pnpm@latest && corepack enable && corepack prepare pnpm@latest --activate
