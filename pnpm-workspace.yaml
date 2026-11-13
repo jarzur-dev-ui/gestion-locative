@@ -6,6 +6,11 @@ packages:
 allowBuilds:
   "@parcel/watcher": true
 
+# Libraries resolve `react` types from the root (react-aria render props become `any` otherwise)
+publicHoistPattern:
+  - '@types/react'
+  - '@types/react-dom'
+
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@infrajo/*'
